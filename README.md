@@ -24,6 +24,8 @@ Sorta is a library that lets you:
 
 -   specify default values for parameters
 
+-   expand hash keys into local variables
+
 Installation
 ============
 
@@ -94,7 +96,7 @@ Set Default Values
 
 Like most high-level languages, setting a default value for a parameter
 allows you to not pass that argument into the function. In that case,
-the parameter will be automatically set to the default value.  Like most
+the parameter will be automatically set to the default value. Like most
 implementations, any default-valued parameters have to come in a
 contiguous set on the end of the definition:
 
@@ -120,9 +122,9 @@ Note that supplying an empty string overrides the default:
     $ my_function2 ''
     first:
 
-That means calling `my_function2 "$myvar"`, where
-`myvar` is empty or unset, is different from calling `my_function2`
-without an argument.  Caller beware.
+That means calling `my_function2 "$myvar"`, where `myvar` is empty or
+unset, is different from calling `my_function2` without an argument.
+Caller beware.
 
 Pass Arrays
 -----------
@@ -224,3 +226,55 @@ parentheses around it to get the string it was returning.
 Hashes are passed back the same way, by name. There's no special syntax
 for dealing with arrays differently from hashes, they're treated the
 same.
+
+Expand Hash Keys into Local Variables
+-------------------------------------
+
+Now that hashes can be passed around, it can be handy to pass a hash to
+a function and then import key-value pairs from that hash into the local
+namespace:
+
+    source sorta.bash
+
+    my_function6() {
+      local _params=( %myhash )
+      eval "$(passed _params "$@")"
+      eval "$(fromh myhash '( one )')"
+      echo 'one: '"$one"
+    }
+
+Outputs:
+
+    $ declare -A hash=( [one]=1 )
+    $ my_function6 hash
+    one: 1
+
+`fromh` takes an array of key names:
+
+    source sorta.bash
+
+    my_function7() {
+      local _params=( %myhash )
+      eval "$(passed _params "$@")"
+      eval "$(fromh myhash '( one two three )')"
+      echo 'one: '"$one"
+      echo 'two: '"$two"
+      echo 'three: '"$three"
+    }
+
+Outputs:
+
+    $ declare -A hash=( [one]=1 [two]=2 [three]=3 )
+    $ my_function7 hash
+    one: 1
+    two: 2
+    three: 3
+
+Future: `assigna` will be provided to allow the mass reassignment of
+variable names expanded from a hash a la:
+
+    $ eval "$(assigna '( new_one new_two )' "$(fromh myhash '( one two )')")"
+    $ echo "$new_one"
+    myhash[one]'s value
+    $ echo "$new_two"
+    myhash[two]'s value
