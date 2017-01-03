@@ -45,8 +45,7 @@ passed() {
       '@' | '%' )
         _parameter=${_parameter:1}
         if [[ $_argument == '('* ]]; then
-          _declaration=$(printf 'declare -%s %s=%s%s%s' "$(_options "$_type")" "$_parameter" \' "$_argument" \')
-          eval "$_declaration"
+          declare -"$(_options "$_type")" "$_parameter"="$_argument"
           _declaration=$(declare -p "$_parameter")
         else
           _declaration=$(declare -p "$_argument")

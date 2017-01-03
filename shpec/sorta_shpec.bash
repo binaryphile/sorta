@@ -165,4 +165,11 @@ describe 'passed'
     expected=$(printf 'declare -A hash=%s([one]="1" [zero]="0" )%s' \' \')
     assert equal "$expected" "$(passed params "$@")"
   end
+
+  it 'allows arrays with single quoted values'
+    set -- "('*')"
+    params=( @samples ) # shellcheck disable=SC2034
+    expected=$(printf 'declare -a samples=%s([0]="*")%s' \' \')
+    assert equal "$expected" "$(passed params "$@")"
+  end
 end
