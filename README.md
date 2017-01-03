@@ -45,8 +45,8 @@ the `passed` function:
     source sorta.bash
 
     my_function() {
-      local params=( first second )
-      eval "$(passed params "$@")"
+      local _params=( first second )
+      eval "$(passed _params "$@")"
 
       echo 'first: '"$first"
       echo 'second: '"$second"
@@ -101,8 +101,8 @@ contiguous set on the end of the definition:
     source sorta.bash
 
     my_function2() {
-      local params=( first=1 )
-      eval "$(passed params "$@")"
+      local _params=( first=1 )
+      eval "$(passed _params "$@")"
 
       echo 'first: '"$first"
     }
@@ -138,8 +138,8 @@ variable name:
     source sorta.bash
 
     my_function3() {
-      local params=( @first )
-      eval "$(passed params "$@")"
+      local _params=( @first )
+      eval "$(passed _params "$@")"
 
       declare -p first
     }
@@ -171,8 +171,8 @@ specified with a "%" (thanks, Perl) rather than an "@":
     source sorta.bash
 
     my_function4() {
-      local params=( %first )
-      eval "$(passed params "$@")"
+      local _params=( %first )
+      eval "$(passed _params "$@")"
 
       declare -p first
     }
