@@ -22,6 +22,28 @@ assign() {
   printf '%s' "${_value/$_name/$_ref}"
 }
 
+fromh() {
+  # shellcheck disable=SC2034
+  local _params=( %hash @keys )
+  eval "$(passed _params "$@")"
+
+  local -a declarations
+  local IFS
+  local key
+  local value
+
+  { (( ${#keys[@]} == 1 )) && [[ ${keys[0]} == '*' ]] ;} && keys=( "${!hash[@]}" )
+  # shellcheck disable=SC2154
+  for key in "${keys[@]}"; do
+    value=${hash[$key]}
+    value=$(declare -p value)
+    value=${value#*=}
+    declarations+=( "$(printf 'declare -- %s=%s' "$key" "$value")" )
+  done
+  IFS=';'
+  printf '%s\n' "${declarations[*]}"
+}
+
 pass() { declare -p "$1" ;}
 
 passed() {
