@@ -1,10 +1,4 @@
-source kzn.bash
-
-library=../lib/shpec-helper.bash
-source "${BASH_SOURCE%/*}/$library" 2>/dev/null || source "$library"
-unset -v library
-
-initialize_shpec_helper
+source sorta.bash
 
 describe 'assign'
   it 'assigns an array result'
@@ -170,30 +164,5 @@ describe 'passed'
     params=( %hash='([zero]="0" [one]="1")' ) # shellcheck disable=SC2034
     expected=$(printf 'declare -A hash=%s([one]="1" [zero]="0" )%s' \' \')
     assert equal "$expected" "$(passed params "$@")"
-  end
-end
-
-describe 'fromh'
-  it 'imports a hash key into the current scope'
-    unset -v zero
-    # shellcheck disable=SC2034
-    declare -A sampleh=( [zero]=0 )
-    assert equal 'declare -- zero="0"' "$(fromh sampleh)"
-  end
-
-  it 'imports a key with a space in its value'
-    unset -v zero
-    # shellcheck disable=SC2034
-    declare -A sampleh=( [zero]="0 1" )
-    assert equal 'declare -- zero="0 1"' "$(fromh sampleh)"
-  end
-
-  it 'imports only named keys'
-    unset -v zero one
-    # shellcheck disable=SC2034
-    declare -A sampleh=( [zero]="0" [one]="1" )
-    # shellcheck disable=SC2034
-    params=( one )
-    assert equal 'declare -- one="1"' "$(fromh sampleh params)"
   end
 end
