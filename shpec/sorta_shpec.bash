@@ -63,6 +63,14 @@ describe 'froms'
     assert equal 'declare -- one="1";declare -- zero="0"' "$(froms sampleh '*')"
   end
 
+  it 'imports all keys with a prefix if given prefix_*'
+    unset -v zero one
+    # shellcheck disable=SC2034
+    declare -A sampleh=( [zero]="0" [one]="1" )
+    # shellcheck disable=SC2034
+    assert equal 'declare -- prefix_one="1";declare -- prefix_zero="0"' "$(froms sampleh 'prefix_*')"
+  end
+
   it 'imports a key with a space in its value'
     unset -v zero
     # shellcheck disable=SC2034

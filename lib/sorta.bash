@@ -49,16 +49,16 @@ froma() {
   local _params=( %hash @keys )
   eval "$(passed _params "$@")"
 
-  local -a declarations
+  local -a results
   local IFS
   local key
 
   # shellcheck disable=SC2154
   for key in "${keys[@]}"; do
-    declarations+=( "$(froms hash key)" )
+    results+=( "$(froms hash key)" )
   done
   IFS=';'
-  printf '%s\n' "${declarations[*]}"
+  printf '%s\n' "${results[*]}"
 }
 
 fromh() {
@@ -82,11 +82,18 @@ froms() {
   eval "$(passed _params "$@")"
 
   local -a keys
+  local -a prefixes
+  local prefix
   local value
 
-  [[ $key == '*' ]] && {
+  [[ $key == *'*' ]] && {
+    prefix=${key%?}
     keys=( "${!hash[@]}" )
-    froma hash keys
+    # shellcheck disable=SC2154
+    for key in "${keys[@]}"; do
+      prefixes+=( "$prefix$key" )
+    done
+    assigna prefixes "$(froma hash keys)"
     return
   }
   # shellcheck disable=SC2154

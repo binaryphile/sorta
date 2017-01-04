@@ -24,7 +24,7 @@ Sorta is a library that lets you:
 
 -   specify default values for parameters
 
--   expand hash keys into local variables
+-   import hash keys into local variables
 
 For example, let's say you have a couple data structures:
 
@@ -264,14 +264,14 @@ Hashes are passed back the same way, by name. There's no special syntax
 for dealing with arrays differently from hashes, they're treated the
 same.
 
-Expand Hash Keys into Local Variables
+Import Hash Keys into Local Variables
 -------------------------------------
 
-Finally, we address expanding hashes into the local namespace.
+Finally, we address importing hashes into the local namespace.
 
 Now that hashes can be passed around, it can be handy to pass a hash to
 a function and then import key-value pairs from that hash into the local
-namespace on the receiving side.  `froms` expands a single key name:
+namespace on the receiving side.  `froms` import a single key name:
 
     source sorta.bash
 
@@ -288,7 +288,19 @@ Outputs:
     $ my_function6 hash
     one: 1
 
-`froma` takes an array of key names (a literal or named array variable):
+`froms` can also import _all_ keys by passing it `*`:
+
+    eval "$(froms myhash '*')"
+
+You can also apply a prefix to all of the imported names like so:
+
+    eval "$(froms myhash 'prefix_*')"
+
+For example, a key named `myhash[key]` imported this way gives the
+variable `prefix_key`.
+
+Alternatively, `froma` takes an array of key names (a literal or named
+array variable):
 
     source sorta.bash
 
@@ -310,7 +322,7 @@ Outputs:
     three: 3
 
 `fromh` does the same as `froma` but uses a hash mapping to specify the
-names of the variables to expand the keys to:
+names of the variables to import the keys to:
 
     source sorta.bash
 
@@ -331,7 +343,7 @@ Outputs:
     inthe: 2
     rain: 3
 
-An alternative way to assign different variable names to expanded keys
+An alternative way to assign different variable names to imported keys
 is to use the `assigna` function:
 
     $ local names=( new_one new_two )
