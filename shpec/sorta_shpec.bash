@@ -55,6 +55,11 @@ describe 'passed'
     assert equal 'declare -- zero="0"' "$(passed params "$@")"
   end
 
+  it 'allows a literal for parameters'
+    set -- 0
+    assert equal 'declare -- zero="0"' "$(passed '( zero )' "$@")"
+  end
+
   it 'accepts empty values'
     set --
     params=( zero ) # shellcheck disable=SC2034

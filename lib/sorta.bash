@@ -47,7 +47,7 @@ fromh() {
 pass() { declare -p "$1" ;}
 
 passed() {
-  local -n _parameters=$1; shift
+  local _temp=$1; shift
   local -a _arguments=( "$@" )
   local -a _results
   local IFS
@@ -57,6 +57,8 @@ passed() {
   local _parameter
   local _type
 
+  # shellcheck disable=SC2015
+  declare -p "$_temp" >/dev/null 2>&1 && local -n _parameters=$_temp || local -a '_parameters='"$_temp"
   for _i in "${!_parameters[@]}"; do
     _parameter=${_parameters[$_i]}
     [[ $_parameter == *=* ]] && _argument=${_parameter#*=}
