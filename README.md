@@ -60,6 +60,9 @@ You can do this with sorta by adding special type designators to the
 
 Your dad's bash can't do that easily.
 
+(note that `hash` and `array` could be any variable names, I'm just
+using those names for clarity)
+
 Installation
 ============
 
