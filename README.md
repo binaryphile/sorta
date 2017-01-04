@@ -26,6 +26,40 @@ Sorta is a library that lets you:
 
 -   expand hash keys into local variables
 
+For example, let's say you have a couple data structures:
+
+    declare -A myhash=([this]=that [humpty]=dumpty)
+    declare -a myarray=( one two three )
+
+and you want to pass some of the values to a function:
+
+    my_function "${myhash[humpty]}" "${myarray[2]}"
+
+With sorta, you can call it with this instead:
+
+    my_function myhash[humpty] myarray[2]
+
+by adding this to the beginning of `my_function`:
+
+    local _params=( first_arg second_arg )
+    eval "$(passed _params "$@")"
+
+In that scenario, `first_arg` will get "dumpty", `second_arg` will get
+"three".
+
+That may be nice, but it's not anything you can't do already in bash.
+
+How about passing a hash and an array directly by name:
+
+    my_function myhash myarray
+
+You can do this with sorta by adding special type designators to the
+`_params` list:
+
+    local _params=( %hash @array )
+
+Your dad's bash can't do that easily.
+
 Installation
 ============
 
