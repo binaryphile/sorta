@@ -71,7 +71,6 @@ keys_of() {
   # shellcheck disable=SC2034
   local _params=( %hash )
   eval "$(passed _params "$@")"
-  # shellcheck disable=SC2154
 
   local -a results
 
@@ -136,4 +135,19 @@ passed() {
   done
   IFS=';'
   printf '%s\n' "${_results[*]}"
+}
+
+values_of() {
+  # shellcheck disable=SC2034
+  local _params=( %hash )
+  eval "$(passed _params "$@")"
+
+  local -a results
+  local key
+
+  # shellcheck disable=SC2034
+  for key in "${!hash[@]}"; do
+    results+=( "${hash[$key]}" )
+  done
+  pass results
 }

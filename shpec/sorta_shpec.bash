@@ -241,3 +241,13 @@ describe 'passed'
     assert equal "$expected" "$(passed params "$@")"
   end
 end
+
+describe 'values_of'
+  it 'declares the values of a hash'
+    # shellcheck disable=SC2034
+    declare -A sampleh=([zero]=0 [one]=1)
+    printf -v expected 'declare -a results=%s([0]="1" [1]="0")%s' \' \'
+    assert equal "$expected" "$(values_of sampleh)"
+  end
+end
+
