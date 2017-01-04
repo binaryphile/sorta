@@ -22,7 +22,7 @@ assign() {
   printf '%s' "${_value/$_name/$_ref}"
 }
 
-fromh() {
+froma() {
   # shellcheck disable=SC2034
   local _params=( %hash @keys )
   eval "$(passed _params "$@")"
