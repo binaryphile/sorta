@@ -81,8 +81,14 @@ froms() {
   local _params=( %hash key )
   eval "$(passed _params "$@")"
 
+  local -a keys
   local value
 
+  [[ $key == '*' ]] && {
+    keys=( "${!hash[@]}" )
+    froma hash keys
+    return
+  }
   # shellcheck disable=SC2154
   value=${hash[$key]}
   # shellcheck disable=SC2034

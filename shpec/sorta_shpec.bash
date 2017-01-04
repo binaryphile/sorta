@@ -55,6 +55,14 @@ describe 'froms'
     assert equal 'declare -- zero="0"' "$(froms sampleh zero)"
   end
 
+  it 'imports all keys if given *'
+    unset -v zero one
+    # shellcheck disable=SC2034
+    declare -A sampleh=( [zero]="0" [one]="1" )
+    # shellcheck disable=SC2034
+    assert equal 'declare -- one="1";declare -- zero="0"' "$(froms sampleh '*')"
+  end
+
   it 'imports a key with a space in its value'
     unset -v zero
     # shellcheck disable=SC2034
@@ -244,4 +252,3 @@ describe 'values_of'
     assert equal "$expected" "$(values_of sampleh)"
   end
 end
-
