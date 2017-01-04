@@ -15,6 +15,23 @@ describe 'assign'
   end
 end
 
+describe 'assigna'
+  it 'assigns a set of array results'
+    printf -v sample    'declare -a sample=%s([0]="zero" [1]="one")%s;declare -a sample2=%s([0]="three" [1]="four")%s' \' \' \' \'
+    printf -v expected  'declare -a other1=%s([0]="zero" [1]="one")%s;declare -a other2=%s([0]="three" [1]="four")%s' \' \' \' \'
+    # shellcheck disable=SC2034
+    names=( other1 other2 )
+    assert equal "$expected" "$(assigna names "$sample")"
+  end
+
+  # it 'assigns a set of hash results'
+  #   printf -v sample    'declare -A sample=%s([one]="1" [zero]="0" )%s' \' \'
+  #   printf -v expected  'declare -A otherv=%s([one]="1" [zero]="0" )%s' \' \'
+  #   # shellcheck disable=SC2034
+  #   assert equal "$expected" "$(assign otherv "$sample")"
+  # end
+end
+
 describe 'froma'
   it 'imports named keys'
     unset -v zero one

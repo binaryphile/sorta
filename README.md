@@ -267,9 +267,11 @@ same.
 Expand Hash Keys into Local Variables
 -------------------------------------
 
+Finally, we address expanding hashes into the local namespace.
+
 Now that hashes can be passed around, it can be handy to pass a hash to
 a function and then import key-value pairs from that hash into the local
-namespace:
+namespace on the receiving side.  `froms` expands a single key name:
 
     source sorta.bash
 
@@ -286,14 +288,14 @@ Outputs:
     $ my_function6 hash
     one: 1
 
-`froma` takes an array of key names:
+`froma` takes an array of key names (a literal or named array variable):
 
     source sorta.bash
 
     my_function7() {
-      local _params=( %myhash )
-      eval "$(passed _params "$@")"
-      eval "$(froma myhash '( one two three )')"
+      eval "$(passed %myhash "$@")"
+      local keys=( one two three )
+      eval "$(froma myhash keys)"
       echo 'one: '"$one"
       echo 'two: '"$two"
       echo 'three: '"$three"
@@ -313,9 +315,9 @@ names of the variables to expand the keys to:
     source sorta.bash
 
     my_function8() {
-      local _params=( %myhash )
-      eval "$(passed _params "$@")"
-      eval "$(fromh myhash '( [one]=singing [two]=inthe [three]=rain )')"
+      eval "$(passed %myhash "$@")"
+      local keymap=( [one]=singing [two]=inthe [three]=rain )
+      eval "$(fromh myhash keymap)"
       echo 'singing: '"$singing"
       echo 'inthe: '"$inthe"
       echo 'rain: '"$rain"
@@ -329,11 +331,12 @@ Outputs:
     inthe: 2
     rain: 3
 
-Future: `assigna` will be provided to allow the mass reassignment of
-variable names expanded from a hash a la:
+An alternative way to assign different variable names to expanded keys
+is to use the `assigna` function:
 
-    $ eval "$(assigna '( new_one new_two )' "$(fromh myhash '( one two )')")"
+    $ local names=( new_one new_two )
+    $ eval "$(assigna names "$(fromh myhash '( one two )')")"
     $ echo "$new_one"
-    myhash[one]'s value
+    the value from myhash[one]
     $ echo "$new_two"
-    myhash[two]'s value
+    the value from myhash[two]

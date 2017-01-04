@@ -19,7 +19,29 @@ assign() {
 
   _name=${_value%%=*}
   _name=${_name##* }
-  printf '%s' "${_value/$_name/$_ref}"
+  printf '%s\n' "${_value/$_name/$_ref}"
+}
+
+assigna() {
+  local -n _refa=$1
+  local _value=$2
+  local -a _results
+  local -a _values
+  local IFS
+  local _IFS
+  local _i
+
+  _IFS=$IFS
+  IFS=';'
+  # shellcheck disable=SC2086
+  set -- $_value
+  _values=( "$@" )
+  IFS=$_IFS
+  for _i in "${!_values[@]}"; do
+    _results+=( "$(assign "${_refa[$_i]}" "${_values[$_i]}")" )
+  done
+  IFS=';'
+  printf '%s\n' "${_results[*]}"
 }
 
 froma() {
