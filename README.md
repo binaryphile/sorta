@@ -1,5 +1,5 @@
-Sorta-sane Parameter Passing in Bash
-====================================
+Sorta-sane Parameter Handling in Bash
+=====================================
 
 Requires Bash 4.3 or higher.
 
@@ -47,7 +47,7 @@ by adding this to the beginning of `my_function`:
 In that scenario, `first_arg` will get "dumpty", `second_arg` will get
 "three".
 
-That may be nice, but it's not anything you can't do already in bash.
+That may be nice, but it's not anything you can't already do in bash.
 
 How about passing a hash and an array directly by name:
 
@@ -113,8 +113,8 @@ that will still work:
     second: two
 
 But that's because the expansion happens prior to the function call,
-making this case the same as the first example that called my\_function
-with literals.
+making this case the same as the first example which called
+`my_function` with literals.
 
 You can also index arrays and hashes when supplying scalars:
 
@@ -276,7 +276,7 @@ namespace:
     my_function6() {
       local _params=( %myhash )
       eval "$(passed _params "$@")"
-      eval "$(fromh myhash '( one )')"
+      eval "$(froms myhash one)"
       echo 'one: '"$one"
     }
 
@@ -286,14 +286,14 @@ Outputs:
     $ my_function6 hash
     one: 1
 
-`fromh` takes an array of key names:
+`froma` takes an array of key names:
 
     source sorta.bash
 
     my_function7() {
       local _params=( %myhash )
       eval "$(passed _params "$@")"
-      eval "$(fromh myhash '( one two three )')"
+      eval "$(froma myhash '( one two three )')"
       echo 'one: '"$one"
       echo 'two: '"$two"
       echo 'three: '"$three"
@@ -306,6 +306,28 @@ Outputs:
     one: 1
     two: 2
     three: 3
+
+`fromh` does the same as `froma` but uses a hash mapping to specify the
+names of the variables to expand the keys to:
+
+    source sorta.bash
+
+    my_function8() {
+      local _params=( %myhash )
+      eval "$(passed _params "$@")"
+      eval "$(fromh myhash '( [one]=singing [two]=inthe [three]=rain )')"
+      echo 'singing: '"$singing"
+      echo 'inthe: '"$inthe"
+      echo 'rain: '"$rain"
+    }
+
+Outputs:
+
+    $ declare -A hash=( [one]=1 [two]=2 [three]=3 )
+    $ my_function8 hash
+    singing: 1
+    inthe: 2
+    rain: 3
 
 Future: `assigna` will be provided to allow the mass reassignment of
 variable names expanded from a hash a la:
