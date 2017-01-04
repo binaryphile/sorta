@@ -23,13 +23,6 @@ describe 'assigna'
     names=( other1 other2 )
     assert equal "$expected" "$(assigna names "$sample")"
   end
-
-  # it 'assigns a set of hash results'
-  #   printf -v sample    'declare -A sample=%s([one]="1" [zero]="0" )%s' \' \'
-  #   printf -v expected  'declare -A otherv=%s([one]="1" [zero]="0" )%s' \' \'
-  #   # shellcheck disable=SC2034
-  #   assert equal "$expected" "$(assign otherv "$sample")"
-  # end
 end
 
 describe 'froma'
@@ -43,32 +36,16 @@ describe 'froma'
   end
 end
 
-# describe 'fromh'
-#   it 'imports a hash key into the current scope given a name'
-#     unset -v zero
-#     # shellcheck disable=SC2034
-#     declare -A sampleh=( [zero]=0 )
-#     # shellcheck disable=SC2034
-#     declare -A keys=( [zero]=one )
-#     assert equal 'declare -- one="0"' "$(fromh sampleh keys)"
-#   end
-#
-#   # it 'imports a key with a space in its value'
-#   #   unset -v zero
-#   #   # shellcheck disable=SC2034
-#   #   declare -A sampleh=( [zero]="0 1" )
-#   #   assert equal 'declare -- zero="0 1"' "$(fromh sampleh '("*")')"
-#   # end
-#   #
-#   # it 'imports only named keys'
-#   #   unset -v zero one
-#   #   # shellcheck disable=SC2034
-#   #   declare -A sampleh=( [zero]="0" [one]="1" )
-#   #   # shellcheck disable=SC2034
-#   #   params=( one )
-#   #   assert equal 'declare -- one="1"' "$(fromh sampleh params)"
-#   # end
-# end
+describe 'fromh'
+  it 'imports a hash key into the current scope given a name'
+    unset -v zero
+    # shellcheck disable=SC2034
+    declare -A sampleh=( [zero]=0 )
+    # shellcheck disable=SC2034
+    declare -A keys=( [zero]=one )
+    assert equal 'declare -- one="0"' "$(fromh sampleh keys)"
+  end
+end
 
 describe 'froms'
   it 'imports a hash key into the current scope'
