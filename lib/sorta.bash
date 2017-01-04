@@ -39,6 +39,21 @@ froma() {
   printf '%s\n' "${declarations[*]}"
 }
 
+# fromh() {
+#   # shellcheck disable=SC2034
+#   local _params=( %hash %keyh )
+#   eval "$(passed _params "$@")"
+#
+#   # shellcheck disable=SC2034
+#   local -a keys
+#   # shellcheck disable=SC2034
+#   local -a values
+#
+#   eval "$(assign keys "$(keys_of keyh)")"
+#   eval "$(assign values "$(values_of keyh)")"
+#   assigna values "$(froma hash keys)"
+# }
+
 froms() {
   # shellcheck disable=SC2034
   local _params=( %hash key )
@@ -50,6 +65,19 @@ froms() {
   value=${hash[$key]}
   # shellcheck disable=SC2034
   assign "$key" "$(declare -p value)"
+}
+
+keys_of() {
+  # shellcheck disable=SC2034
+  local _params=( %hash )
+  eval "$(passed _params "$@")"
+  # shellcheck disable=SC2154
+
+  local -a results
+
+  # shellcheck disable=SC2034
+  results=( "${!hash[@]}" )
+  pass results
 }
 
 pass() { declare -p "$1" ;}
