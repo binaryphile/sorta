@@ -75,6 +75,15 @@ describe 'intoa'
     assert equal "$expected" "$(intoa '( one two )')"
     return "$_shpec_failures" )
   end
+
+  it "generates a declaration for a hash merging the named keys with the existing key(s)"; (
+    one=1
+    two=2
+    declare -A sampleh=([three]=3)
+    printf -v expected 'declare -A hash=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
+    assert equal "$expected" "$(intoa '( one two )' sampleh)"
+    return "$_shpec_failures" )
+  end
 end
 
 describe 'intos'
