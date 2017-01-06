@@ -114,6 +114,11 @@ describe 'passed'
     assert equal 'declare -- zero="0"' "$(passed '( zero )' "$@")"
   end
 
+  it "allows a literal for parameters with multiple items"
+    set -- 0 1
+    assert equal 'declare -- zero="0";declare -- one="1"' "$(passed '( zero one )' "$@")"
+  end
+
   it "accepts empty values"
     set --
     params=( zero )
@@ -124,6 +129,16 @@ describe 'passed'
     set --
     params=( zero="one two" )
     assert equal 'declare -- zero="one two"' "$(passed params "$@")"
+  end
+
+  it "allows default values in literals"
+    set --
+    assert equal 'declare -- zero="one two"' "$(passed '( zero="one two" )' "$@")"
+  end
+
+  it "allows default values in literals"
+    set --
+    assert equal 'declare -- zero="one two"' "$(passed '( zero="one two" )' "$@")"
   end
 
   it "overrides default values with empty parameters"
@@ -245,11 +260,37 @@ describe 'passed'
     assert equal "$expected" "$(passed params "$@")"
   end
 
+  it "accepts an empty array default"
+    set --
+    params=( @array='()' )
+    expected=$(printf 'declare -a array=%s()%s' \' \' )
+    assert equal "$expected" "$(passed params "$@")"
+  end
+
+  it "accepts an empty array default literal"
+    set --
+    expected=$(printf 'declare -a array=%s()%s' \' \' )
+    assert equal "$expected" "$(passed '( @array="()" )' "$@")"
+  end
+
   it "allows arrays with single quoted values"
     set -- "('*')"
     params=( @samples )
     expected=$(printf 'declare -a samples=%s([0]="*")%s' \' \')
     assert equal "$expected" "$(passed params "$@")"
+  end
+
+  it "accepts an empty hash default"
+    set --
+    params=( %hash='()' )
+    expected=$(printf 'declare -A hash=%s()%s' \' \' )
+    assert equal "$expected" "$(passed params "$@")"
+  end
+
+  it "accepts an empty hash default literal"
+    set --
+    expected=$(printf 'declare -A hash=%s()%s' \' \' )
+    assert equal "$expected" "$(passed '( %hash="()" )' "$@")"
   end
 end
 
