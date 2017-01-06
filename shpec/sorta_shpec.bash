@@ -86,6 +86,25 @@ describe 'intoa'
   end
 end
 
+describe 'intoh'
+  it "generates a declaration for a hash with the named keys from the local namespace"; (
+    one=1
+    two=2
+    printf -v expected 'declare -A hash=%s([dumpty]="2" [humpty]="1" )%s' \' \'
+    assert equal "$expected" "$(intoh '( [one]=humpty [two]=dumpty )')"
+    return "$_shpec_failures" )
+  end
+
+  it "generates a declaration for a hash merging the named keys with the existing key(s)"; (
+    one=1
+    two=2
+    declare -A sampleh=([three]=3)
+    printf -v expected 'declare -A hash=%s([dumpty]="2" [humpty]="1" [three]="3" )%s' \' \'
+    assert equal "$expected" "$(intoh '( [one]=humpty [two]=dumpty )' sampleh)"
+    return "$_shpec_failures" )
+  end
+end
+
 describe 'intos'
   it "generates a declaration for a hash with the named key from the local namespace"; (
     one=1

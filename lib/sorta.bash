@@ -57,7 +57,6 @@ froma() {
 fromh() {
   local _params=( %hash %keyh )
   eval "$(passed _params "$@")"
-
   local -a keys
   local -a values
 
@@ -69,7 +68,6 @@ fromh() {
 froms() {
   local _params=( %hash key )
   eval "$(passed _params "$@")"
-
   local -a keys
   local -a prefixes
   local prefix
@@ -94,6 +92,20 @@ intoa() {
 
   for key in "${keys[@]}"; do
     eval "$(intos key hash)"
+  done
+  pass hash
+}
+
+intoh() {
+  eval "$(passed '( %keyh %hash="()" )' "$@")"
+  local -a keys
+  local -a values
+  local -A resulth
+
+  eval "$(assign keys "$(keys_of keyh)")"
+  eval "$(assign resulth "$(intoa keys hash)")"
+  for key in "${keys[@]}"; do
+    hash[${keyh[$key]}]=${resulth[$key]}
   done
   pass hash
 }
