@@ -3,12 +3,8 @@ readonly _sorta=loaded
 
 _options() {
   case $1 in
-    '@')
-      printf 'a'
-      ;;
-    '%')
-      printf 'A'
-      ;;
+    '@') printf 'a';;
+    '%') printf 'A';;
   esac
 }
 
@@ -33,7 +29,6 @@ assigna() {
 
   _IFS=$IFS
   IFS=';'
-  # shellcheck disable=SC2086
   set -- $_value
   _values=( "$@" )
   IFS=$_IFS
@@ -45,7 +40,6 @@ assigna() {
 }
 
 froma() {
-  # shellcheck disable=SC2034
   local _params=( %hash @keys )
   eval "$(passed _params "$@")"
 
@@ -53,7 +47,6 @@ froma() {
   local IFS
   local key
 
-  # shellcheck disable=SC2154
   for key in "${keys[@]}"; do
     results+=( "$(froms hash key)" )
   done
@@ -62,13 +55,10 @@ froma() {
 }
 
 fromh() {
-  # shellcheck disable=SC2034
   local _params=( %hash %keyh )
   eval "$(passed _params "$@")"
 
-  # shellcheck disable=SC2034
   local -a keys
-  # shellcheck disable=SC2034
   local -a values
 
   eval "$(assign keys "$(keys_of keyh)")"
@@ -77,7 +67,6 @@ fromh() {
 }
 
 froms() {
-  # shellcheck disable=SC2034
   local _params=( %hash key )
   eval "$(passed _params "$@")"
 
@@ -89,27 +78,22 @@ froms() {
   [[ $key == *'*' ]] && {
     prefix=${key%?}
     keys=( "${!hash[@]}" )
-    # shellcheck disable=SC2154
     for key in "${keys[@]}"; do
       prefixes+=( "$prefix$key" )
     done
     assigna prefixes "$(froma hash keys)"
     return
   }
-  # shellcheck disable=SC2154
   value=${hash[$key]}
-  # shellcheck disable=SC2034
   assign "$key" "$(declare -p value)"
 }
 
 keys_of() {
-  # shellcheck disable=SC2034
   local _params=( %hash )
   eval "$(passed _params "$@")"
 
   local -a results
 
-  # shellcheck disable=SC2034
   results=( "${!hash[@]}" )
   pass results
 }
@@ -127,7 +111,6 @@ passed() {
   local _parameter
   local _type
 
-  # shellcheck disable=SC2015
   declare -p "$_temp" >/dev/null 2>&1 && local -n _parameters=$_temp || local -a '_parameters='"$_temp"
   for _i in "${!_parameters[@]}"; do
     _parameter=${_parameters[$_i]}
@@ -160,7 +143,6 @@ passed() {
             [[ ${!_argument+x} == 'x' ]] || return
             _argument=${!_argument}
           }
-          # shellcheck disable=SC2030
           _declaration=$(declare -p _argument)
           _declaration=${_declaration/_argument/$_parameter}
         fi
@@ -173,14 +155,12 @@ passed() {
 }
 
 values_of() {
-  # shellcheck disable=SC2034
   local _params=( %hash )
   eval "$(passed _params "$@")"
 
   local -a results
   local key
 
-  # shellcheck disable=SC2034
   for key in "${!hash[@]}"; do
     results+=( "${hash[$key]}" )
   done
