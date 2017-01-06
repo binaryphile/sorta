@@ -44,38 +44,40 @@ end
 describe 'froms'
   it "imports a hash key into the current scope"
     unset -v zero
-    # shellcheck disable=SC2034
     declare -A sampleh=( [zero]=0 )
     assert equal 'declare -- zero="0"' "$(froms sampleh zero)"
   end
 
   it "imports all keys if given *"
     unset -v zero one
-    # shellcheck disable=SC2034
     declare -A sampleh=( [zero]="0" [one]="1" )
-    # shellcheck disable=SC2034
     assert equal 'declare -- one="1";declare -- zero="0"' "$(froms sampleh '*')"
   end
 
   it "imports all keys with a prefix if given prefix_*"
     unset -v zero one
-    # shellcheck disable=SC2034
     declare -A sampleh=( [zero]="0" [one]="1" )
-    # shellcheck disable=SC2034
     assert equal 'declare -- prefix_one="1";declare -- prefix_zero="0"' "$(froms sampleh 'prefix_*')"
   end
 
   it "imports a key with a space in its value"
     unset -v zero
-    # shellcheck disable=SC2034
     declare -A sampleh=( [zero]="0 1" )
     assert equal 'declare -- zero="0 1"' "$(froms sampleh zero)"
   end
 end
 
+describe 'intos'
+  it "generates a declaration for a hash with the named keys from the local namespace"; (
+    one=1
+    printf -v expected 'declare -A resulth=%s([one]="1" )%s' \' \'
+    assert equal "$expected" "$(intos one)"
+    return "$_shpec_failures" )
+  end
+end
+
 describe 'keys_of'
-  it 'declares the keys of a hash'
-    # shellcheck disable=SC2034
+  it "declares the keys of a hash"
     declare -A sampleh=([zero]=0 [one]=1)
     printf -v expected 'declare -a results=%s([0]="one" [1]="zero")%s' \' \'
     assert equal "$expected" "$(keys_of sampleh)"

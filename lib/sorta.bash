@@ -88,9 +88,16 @@ froms() {
   assign "$key" "$(declare -p value)"
 }
 
+intos() {
+  eval "$(passed '( key )' "$@")"
+  local -A resulth
+
+  resulth["$key"]=${!key}
+  pass resulth
+}
+
 keys_of() {
-  local _params=( %hash )
-  eval "$(passed _params "$@")"
+  eval "$(passed '( %hash )' "$@")"
 
   local -a results
 
@@ -155,8 +162,7 @@ passed() {
 }
 
 values_of() {
-  local _params=( %hash )
-  eval "$(passed _params "$@")"
+  eval "$(passed '( %hash )' "$@")"
 
   local -a results
   local key
