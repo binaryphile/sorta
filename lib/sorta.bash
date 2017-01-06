@@ -89,11 +89,12 @@ froms() {
 }
 
 intos() {
-  eval "$(passed '( key )' "$@")"
-  local -A resulth
+  local _params=( href key )
+  eval "$(passed _params "$@")"
 
-  resulth["$key"]=${!key}
-  pass resulth
+  declare -p "$href" >/dev/null 2>&1 || local -A "$href"
+  printf -v "$href[$key]" "${!key}"
+  pass "$href"
 }
 
 keys_of() {

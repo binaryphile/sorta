@@ -68,10 +68,21 @@ describe 'froms'
 end
 
 describe 'intos'
-  it "generates a declaration for a hash with the named keys from the local namespace"; (
+  it "generates a declaration for a hash with the named key from the local namespace"; (
     one=1
+    ref=one
     printf -v expected 'declare -A resulth=%s([one]="1" )%s' \' \'
-    assert equal "$expected" "$(intos one)"
+    assert equal "$expected" "$(intos resulth ref)"
+    return "$_shpec_failures" )
+  end
+
+  it "generates a declaration for a hash merging the named key with the existing key(s)"; (
+    one=1
+    ref=one
+    declare -A resulth=([two]=2)
+    href=resulth
+    printf -v expected 'declare -A resulth=%s([one]="1" [two]="2" )%s' \' \'
+    assert equal "$expected" "$(intos href ref)"
     return "$_shpec_failures" )
   end
 end
