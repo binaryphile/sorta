@@ -88,13 +88,21 @@ froms() {
   assign "$key" "$(declare -p value)"
 }
 
-intos() {
-  local _params=( href key )
-  eval "$(passed _params "$@")"
+intoa() {
+  eval "$(passed '( @keys %hash="()" )' "$@")"
+  local key
 
-  declare -p "$href" >/dev/null 2>&1 || local -A "$href"
-  printf -v "$href[$key]" "${!key}"
-  pass "$href"
+  for key in "${keys[@]}"; do
+    eval "$(intos key hash)"
+  done
+  pass hash
+}
+
+intos() {
+  eval "$(passed '( ref %hash="()" )' "$@")"
+
+  hash[$ref]=${!ref}
+  pass hash
 }
 
 keys_of() {

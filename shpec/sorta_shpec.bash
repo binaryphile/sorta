@@ -67,22 +67,31 @@ describe 'froms'
   end
 end
 
+describe 'intoa'
+  it "generates a declaration for a hash with the named keys from the local namespace"; (
+    one=1
+    two=2
+    printf -v expected 'declare -A hash=%s([one]="1" [two]="2" )%s' \' \'
+    assert equal "$expected" "$(intoa '( one two )')"
+    return "$_shpec_failures" )
+  end
+end
+
 describe 'intos'
   it "generates a declaration for a hash with the named key from the local namespace"; (
     one=1
     ref=one
-    printf -v expected 'declare -A resulth=%s([one]="1" )%s' \' \'
-    assert equal "$expected" "$(intos resulth ref)"
+    printf -v expected 'declare -A hash=%s([one]="1" )%s' \' \'
+    assert equal "$expected" "$(intos ref)"
     return "$_shpec_failures" )
   end
 
   it "generates a declaration for a hash merging the named key with the existing key(s)"; (
     one=1
     ref=one
-    declare -A resulth=([two]=2)
-    href=resulth
-    printf -v expected 'declare -A resulth=%s([one]="1" [two]="2" )%s' \' \'
-    assert equal "$expected" "$(intos href ref)"
+    declare -A sampleh=([two]=2)
+    printf -v expected 'declare -A hash=%s([one]="1" [two]="2" )%s' \' \'
+    assert equal "$expected" "$(intos ref sampleh)"
     return "$_shpec_failures" )
   end
 end
