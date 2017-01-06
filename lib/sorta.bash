@@ -127,7 +127,7 @@ passed() {
   local _parameter
   local _type
 
-  declare -p "$_temp" >/dev/null 2>&1 && local -n _parameters=$_temp || local -a '_parameters='"$_temp"
+  declare -p "$_temp" >/dev/null 2>&1 && local -n _parameters=$_temp || local -a _parameters=$_temp
   for _i in "${!_parameters[@]}"; do
     _parameter=${_parameters[$_i]}
     [[ $_parameter == *=* ]] && _argument=${_parameter#*=}
