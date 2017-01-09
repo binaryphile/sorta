@@ -71,8 +71,9 @@ describe 'intoa'
   it "generates a declaration for a hash with the named keys from the local namespace"; (
     one=1
     two=2
+    declare -A hash=()
     printf -v expected 'declare -A hash=%s([one]="1" [two]="2" )%s' \' \'
-    assert equal "$expected" "$(intoa '( one two )')"
+    assert equal "$expected" "$(intoa hash '( one two )')"
     return "$_shpec_failures" )
   end
 
@@ -81,7 +82,7 @@ describe 'intoa'
     two=2
     declare -A sampleh=([three]=3)
     printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
-    assert equal "$expected" "$(intoa '( one two )' sampleh)"
+    assert equal "$expected" "$(intoa sampleh '( one two )')"
     return "$_shpec_failures" )
   end
 end
@@ -90,8 +91,9 @@ describe 'intoh'
   it "generates a declaration for a hash with the named keys from the local namespace"; (
     one=1
     two=2
+    declare -A hash=()
     printf -v expected 'declare -A hash=%s([dumpty]="2" [humpty]="1" )%s' \' \'
-    assert equal "$expected" "$(intoh '( [one]=humpty [two]=dumpty )')"
+    assert equal "$expected" "$(intoh hash '( [one]=humpty [two]=dumpty )')"
     return "$_shpec_failures" )
   end
 
@@ -100,7 +102,7 @@ describe 'intoh'
     two=2
     declare -A sampleh=([three]=3)
     printf -v expected 'declare -A sampleh=%s([dumpty]="2" [humpty]="1" [three]="3" )%s' \' \'
-    assert equal "$expected" "$(intoh '( [one]=humpty [two]=dumpty )' sampleh)"
+    assert equal "$expected" "$(intoh sampleh '( [one]=humpty [two]=dumpty )')"
     return "$_shpec_failures" )
   end
 end
@@ -109,8 +111,9 @@ describe 'intos'
   it "generates a declaration for a hash with the named key from the local namespace"; (
     one=1
     ref=one
+    declare -A hash=()
     printf -v expected 'declare -A hash=%s([one]="1" )%s' \' \'
-    assert equal "$expected" "$(intos ref)"
+    assert equal "$expected" "$(intos hash ref)"
     return "$_shpec_failures" )
   end
 
@@ -119,7 +122,7 @@ describe 'intos'
     ref=one
     declare -A sampleh=([two]=2)
     printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" )%s' \' \'
-    assert equal "$expected" "$(intos ref sampleh)"
+    assert equal "$expected" "$(intos sampleh ref)"
     return "$_shpec_failures" )
   end
 end

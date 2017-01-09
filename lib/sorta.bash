@@ -87,37 +87,36 @@ froms() {
 }
 
 intoa() {
-  eval "$(passed '( @keys %hash="()" )' "$@")"
+  eval "$(passed '( %hash @keys )' "$@")"
   local key
 
   for key in "${keys[@]}"; do
-    eval "$(intos key hash)"
+    eval "$(intos hash key)"
   done
-  [[ -z $2 || $2 == '('* ]] && { pass hash; return ;}
-  assign "$2" "$(pass hash)"
+  [[ -z $1 || $1 == '('* ]] && { pass hash; return ;}
+  assign "$1" "$(pass hash)"
 }
 
 intoh() {
-  eval "$(passed '( %keyh %hash="()" )' "$@")"
+  eval "$(passed '( %hash %keyh )' "$@")"
   local -a keys
   local -a values
-  local -A resulth
 
   eval "$(assign keys "$(keys_of keyh)")"
-  eval "$(assign resulth "$(intoa keys hash)")"
+  eval "$(assign resulth "$(intoa hash keys)")"
   for key in "${keys[@]}"; do
     hash[${keyh[$key]}]=${resulth[$key]}
   done
-  [[ -z $2 || $2 == '('* ]] && { pass hash; return ;}
-  assign "$2" "$(pass hash)"
+  [[ -z $1 || $1 == '('* ]] && { pass hash; return ;}
+  assign "$1" "$(pass hash)"
 }
 
 intos() {
-  eval "$(passed '( ref %hash="()" )' "$@")"
+  eval "$(passed '( %hash ref )' "$@")"
 
   hash[$ref]=${!ref}
-  [[ -z $2 || $2 == '('* ]] && { pass hash; return ;}
-  assign "$2" "$(pass hash)"
+  [[ -z $1 || $1 == '('* ]] && { pass hash; return ;}
+  assign "$1" "$(pass hash)"
 }
 
 keys_of() {
