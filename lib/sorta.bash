@@ -141,7 +141,11 @@ passed() {
   local _parameter
   local _type
 
-  declare -p "$_temp" >/dev/null 2>&1 && local -n _parameters=$_temp || local -a _parameters=$_temp
+  if declare -p "$_temp" >/dev/null 2>&1; then
+    local -n _parameters=$_temp
+  else
+    local -a _parameters=$_temp
+  fi
   for _i in "${!_parameters[@]}"; do
     _parameter=${_parameters[$_i]}
     [[ $_parameter == *=* ]] && _argument=${_parameter#*=}
@@ -155,7 +159,7 @@ passed() {
           declare -"$(_options "$_type")" "$_parameter"="$_argument"
           _declaration=$(declare -p "$_parameter")
         else
-          _declaration=$(declare -p "$_argument")
+          _declaration=$(declare -p "$_argument") || return
           _declaration=${_declaration/$_argument/$_parameter}
         fi
         _results+=( "$_declaration" )

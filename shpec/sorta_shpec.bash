@@ -229,6 +229,15 @@ describe 'passed'
     assert equal "$expected" "$(passed params "$@")"
   end
 
+  it "errors on a non-declared array"; (
+    unset -v values
+    set -- values
+    params=( @array )
+    passed params "$@" >/dev/null 2>&1
+    assert unequal 0 $?
+    return "$_shpec_failures" )
+  end
+
   it "creates an array declaration with quotes"
     values=( '"zero one"' two )
     set -- values
