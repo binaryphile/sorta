@@ -80,7 +80,7 @@ describe 'intoa'
     one=1
     two=2
     declare -A sampleh=([three]=3)
-    printf -v expected 'declare -A hash=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
+    printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
     assert equal "$expected" "$(intoa '( one two )' sampleh)"
     return "$_shpec_failures" )
   end
@@ -99,7 +99,7 @@ describe 'intoh'
     one=1
     two=2
     declare -A sampleh=([three]=3)
-    printf -v expected 'declare -A hash=%s([dumpty]="2" [humpty]="1" [three]="3" )%s' \' \'
+    printf -v expected 'declare -A sampleh=%s([dumpty]="2" [humpty]="1" [three]="3" )%s' \' \'
     assert equal "$expected" "$(intoh '( [one]=humpty [two]=dumpty )' sampleh)"
     return "$_shpec_failures" )
   end
@@ -118,7 +118,7 @@ describe 'intos'
     one=1
     ref=one
     declare -A sampleh=([two]=2)
-    printf -v expected 'declare -A hash=%s([one]="1" [two]="2" )%s' \' \'
+    printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" )%s' \' \'
     assert equal "$expected" "$(intos ref sampleh)"
     return "$_shpec_failures" )
   end

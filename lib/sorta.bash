@@ -93,7 +93,8 @@ intoa() {
   for key in "${keys[@]}"; do
     eval "$(intos key hash)"
   done
-  pass hash
+  [[ -z $2 || $2 == '('* ]] && { pass hash; return ;}
+  assign "$2" "$(pass hash)"
 }
 
 intoh() {
@@ -107,14 +108,16 @@ intoh() {
   for key in "${keys[@]}"; do
     hash[${keyh[$key]}]=${resulth[$key]}
   done
-  pass hash
+  [[ -z $2 || $2 == '('* ]] && { pass hash; return ;}
+  assign "$2" "$(pass hash)"
 }
 
 intos() {
   eval "$(passed '( ref %hash="()" )' "$@")"
 
   hash[$ref]=${!ref}
-  pass hash
+  [[ -z $2 || $2 == '('* ]] && { pass hash; return ;}
+  assign "$2" "$(pass hash)"
 }
 
 keys_of() {
