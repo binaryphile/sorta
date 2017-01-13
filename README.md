@@ -1,53 +1,93 @@
-Sorta-sane Parameter Handling in Bash
-=====================================
+Sane Parameter Handling in Bash, Sorta
+======================================
+
+Sorta lets you write Bash functions which:
+
+-   name your function parameters
+
+-   specify the default values of parameters
+
+-   accept variable names as arguments
+
+-   expand those values into your named parameters
+
+-   accept array and hash arguments
+
+-   accept array and hash literals for those parameters
+
+-   return array and hash values
+
+Basically, Sorta is about controlling your variable namespace as much as
+possible. These features are designed to help you do that.
+
+In addition, to help control your namespace, sorta also lets you:
+
+-   write libraries which can have a subset of their functions sourced,
+    specified by the caller
+
+-   pack/unpack variables into/out of hashes as key/value pairs
 
 Requires Bash 4.3 or higher.
 
-So Bash (hereafter, "bash") doesn't let you pass anything other than
-string literals, not even variables (if you ask it to, it expands
-variables to strings and then passes those).
+So Bash (hereafter, "bash") has an interesting way of passing variables.
+Since it has to pass things to commands, which only take strings, it has
+to expand every variable reference to a string prior to handing it to a
+command/function. It doesn't have a concept of passing anything other
+than a string, even though it has structured data types such as arrays
+and hashes (or los associative arrayerinos, if you're, like, not into
+the whole brevity thing).
 
-That makes it a tricky language to work with any kind of structured
-datatype. It's not even pretty when you're just passing strings.
+Examples
+========
 
-Sorta is a library that lets you:
+Regular bash:
 
--   pass scalar values by variable name instead of using expansions
+    my_function() { echo "$1: $2" ;}
 
--   pass arrays literals or by variable name
+    declare -A myhash=( [this]=that )
+    myarray=( one )
 
--   pass hashes literals or by variable name
+    my_function "${myhash[this]}" "${myarray[0]}"
 
--   return arrays
+Run that as a script and you'll get:
 
--   return hashes
+    that: one
 
--   specify default values for parameters
+The same thing with sorta looks like this:
 
--   import hash keys into local variables
+    # use "passed" with a parameter array:
 
-For example, let's say you have a couple data structures:
+    my_function() {
+      local _params=( key value )
+      eval "$(passed _params "$@")"
 
-    declare -A myhash=([this]=that [humpty]=dumpty)
-    declare -a myarray=( one two three )
+      echo "$key: $value"
+    }
 
-and you want to pass some of the values to a function:
+    # same as before
+    declare -A myhash=( [this]=that )
+    myarray=( one )
 
-    my_function "${myhash[humpty]}" "${myarray[2]}"
+    # pass scalar values by name and they're automatically expanded by the
+    # receiver, even indexed like so:
 
-With sorta, you can call it with this instead:
+    my_function myhash[this] myarray[0]
 
-    my_function myhash[humpty] myarray[2]
+With the addition of the call at the beginning of `my_function`, I can
+receive variables by name and have them automatically expanded to their
+values. The resulting parameters are copies of the values, scoped
+locally to my function. Changing their values doesn't change anything
+anywhere else in the script.
 
-by adding this to the beginning of `my_function`:
+Notice that the `passed` function accepts the parameter array by name
+(no expansion of "${\_params\[@\]}" necessary): \`eval "$(passed
+\_params "$@")"\`.
 
-    local _params=( first_arg second_arg )
-    eval "$(passed _params "$@")"
+You could also use a literal to save a line:
+`eval "$(passed '( key value )' "$@")"`.
 
-In that scenario, `first_arg` will get "dumpty", `second_arg` will get
-"three".
-
-That may be nice, but it's not anything you can't already do in bash.
+So passing strings like that may be nicer than the syntax for variable
+expansion, but it's not anything you can't do with bash as-is.
 
 How about passing a hash and an array directly by name:
 
@@ -58,10 +98,10 @@ You can do this with sorta by adding special type designators to the
 
     local _params=( %hash @array )
 
-Your dad's bash can't do that easily.
+Note that `hash` and `array` could be any variable names, I'm just using
+those names for clarity.
 
-(note that `hash` and `array` could be any variable names, I'm just
-using those names for clarity)
+Your dad's bash can't do that easily.
 
 Installation
 ============
@@ -271,7 +311,7 @@ Finally, we address importing hashes into the local namespace.
 
 Now that hashes can be passed around, it can be handy to pass a hash to
 a function and then import key-value pairs from that hash into the local
-namespace on the receiving side.  `froms` import a single key name:
+namespace on the receiving side. `froms` import a single key name:
 
     source sorta.bash
 
@@ -288,7 +328,7 @@ Outputs:
     $ my_function6 hash
     one: 1
 
-`froms` can also import _all_ keys by passing it `*`:
+`froms` can also import *all* keys by passing it `*`:
 
     eval "$(froms myhash '*')"
 
