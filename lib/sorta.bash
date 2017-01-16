@@ -203,22 +203,22 @@ passed() {
 }
 
 reta() {
-  eval "$(passed '( _value "*_ref" )' "$@")"
+  eval "$(passed '( @_values "*_ref" )' "$@")"
   local _declaration
 
   unset -v "$_ref"
-  _declaration=$(declare -p _value)
+  _declaration=$(declare -p _values)
   _declaration=${_declaration#*=}
   _declaration=${_declaration:1:-1}
   eval "$(printf '%s=%s' "$_ref" "$_declaration")"
 }
 
 reth() {
-  eval "$(passed '( _value "*_ref" )' "$@")"
+  eval "$(passed '( %_valueh "*_ref" )' "$@")"
   local _declaration
 
   unset -v "$_ref"
-  _declaration=$(declare -p _value)
+  _declaration=$(declare -p _valueh)
   _declaration=${_declaration#*=}
   _declaration=${_declaration:1:-1}
   eval "$(printf '%s=%s' "$_ref" "$_declaration")"
