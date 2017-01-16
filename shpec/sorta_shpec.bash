@@ -176,22 +176,24 @@ describe 'passed'
     assert equal 'declare -- zero="one two"' "$(passed '( zero="one two" )' "$@")"
   end
 
-  it "allows default values in literals"
-    set --
-    assert equal 'declare -- zero="one two"' "$(passed '( zero="one two" )' "$@")"
-  end
-
   it "overrides default values with empty parameters"
     set -- ""
     params=( zero="one two" )
     assert equal 'declare -- zero=""' "$(passed params "$@")"
   end
 
-  it "creates a scalar declaration from a scalar reference"
+  it "creates a scalar declaration from a scalar variable name"
     sample=0
     set -- sample
     params=( zero )
     assert equal 'declare -- zero="0"' "$(passed params "$@")"
+  end
+
+  it "doesn't create a declaration from a variable name of the wrong type"
+    declare -A sampleh=()
+    set -- sampleh
+    params=( zero )
+    assert equal 'declare -- zero="sampleh"' "$(passed params "$@")"
   end
 
   it "creates a scalar declaration from an indexed array reference"
@@ -201,12 +203,11 @@ describe 'passed'
     assert equal 'declare -- zero="0"' "$(passed params "$@")"
   end
 
-  it "errors on a scalar declaration from an unset value of an array reference"
+  it "ignores an what appears to be an unset array reference"
     samples=( 0 )
     set -- samples[1]
     params=( zero )
-    passed params "$@" >/dev/null
-    assert unequal 0 $?
+    assert equal 'declare -- zero="samples[1]"' "$(passed params "$@")"
   end
 
   it "works for two arguments"
@@ -268,7 +269,7 @@ describe 'passed'
   end
 
   it "accepts an array literal without indices"
-    set -- '("zero" "one")'
+    set -- '( "zero" "one" )'
     params=( @array )
     expected=$(printf 'declare -a array=%s([0]="zero" [1]="one")%s' \' \')
     assert equal "$expected" "$(passed params "$@")"
@@ -283,13 +284,13 @@ describe 'passed'
 
   it "allows array default values"
     set --
-    params=( @array='([0]="zero" [1]="one")' )
+    params=( @array='( "zero" "one" )' )
     expected=$(printf 'declare -a array=%s([0]="zero" [1]="one")%s' \' \' )
     assert equal "$expected" "$(passed params "$@")"
   end
 
   it "accepts a hash literal"
-    set -- '([zero]="0" [one]="1")'
+    set -- '( [zero]="0" [one]="1" )'
     params=( %hash )
     expected=$(printf 'declare -A hash=%s([one]="1" [zero]="0" )%s' \' \' )
     assert equal "$expected" "$(passed params "$@")"
@@ -323,7 +324,7 @@ describe 'passed'
   end
 
   it "allows arrays with single quoted values"
-    set -- "('*')"
+    set -- "( '*' )"
     params=( @samples )
     expected=$(printf 'declare -a samples=%s([0]="*")%s' \' \')
     assert equal "$expected" "$(passed params "$@")"
@@ -340,6 +341,13 @@ describe 'passed'
     set --
     expected=$(printf 'declare -A hash=%s()%s' \' \' )
     assert equal "$expected" "$(passed '( %hash="()" )' "$@")"
+  end
+
+  it "creates a reference to a variable name even when defined"
+    sample=one
+    set -- sample
+    params=( '*ref' )
+    assert equal 'declare -- ref="sample"' "$(passed params "$@")"
   end
 end
 

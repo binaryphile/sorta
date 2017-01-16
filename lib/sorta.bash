@@ -162,27 +162,37 @@ passed() {
           _declaration=$(declare -p "$_argument") || return
           _declaration=${_declaration/$_argument/$_parameter}
         fi
-        _results+=( "$_declaration" )
         ;;
       '&' )
         _parameter=${_parameter:1}
-        _results+=( "$(printf 'declare -n %s="%s"' "$_parameter" "$_argument")" )
+        _declaration=$(printf 'declare -n %s="%s"' "$_parameter" "$_argument")
+        ;;
+      '*' )
+        _parameter=${_parameter:1}
+        declare -p "$_argument" >/dev/null 2>&1 || return
+        if declare -p "${!_argument}" >/dev/null 2>&1; then
+          _declaration=$(declare -p "$_argument")
+        else declare -p "$argument" >/dev/null 2>&1
+          _declaration=$(declare -p _argument)
+        fi
+        _declaration=${_declaration#*=}
+        printf -v _declaration 'declare -- %s=%s' "$_parameter" "$_declaration"
         ;;
       * )
-        if declare -p "$_argument" >/dev/null 2>&1; then
-          _declaration=$(declare -p "$_argument")
-          _declaration=${_declaration/$_argument/$_parameter}
-        else
-          { [[ $_argument == *[* ]] && declare -p "${_argument%[*}" >/dev/null 2>&1 ;} && {
-            [[ ${!_argument+x} == 'x' ]] || return
+        _declaration=$(declare -p "$_argument" 2>/dev/null)
+        if [[ $_declaration == '' || $_declaration == declare\ -[aA]* ]]; then
+          [[ $_argument == *[* && ${!_argument+x} == 'x' ]] && {
             _argument=${!_argument}
           }
           _declaration=$(declare -p _argument)
-          _declaration=${_declaration/_argument/$_parameter}
+        else
+          _declaration=$(declare -p "$_argument")
         fi
-        _results+=( "$_declaration" )
+        _declaration=${_declaration#*=}
+        printf -v _declaration 'declare -- %s=%s' "$_parameter" "$_declaration"
         ;;
     esac
+    _results+=( "$_declaration" )
   done
   IFS=';'
   printf '%s\n' "${_results[*]}"
