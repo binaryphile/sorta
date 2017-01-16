@@ -188,6 +188,19 @@ passed() {
   printf '%s\n' "${_results[*]}"
 }
 
+ret() {
+  local _ref=$1; shift
+  local -a _values=( "$@" )
+  local _result
+
+  unset -v "$_ref" || return
+  (( $# == 1 )) && { printf -v "$_ref" '%s' "$1"; return ;}
+  _result=$(declare -p _values)
+  _result=${_result#*=}
+  _result=${_result:1:-1}
+  eval "$(printf '%s=%s' "$_ref" "$_result")"
+}
+
 values_of() {
   eval "$(passed '( %hash )' "$@")"
 
