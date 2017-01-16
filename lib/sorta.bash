@@ -160,6 +160,10 @@ passed() {
           _declaration=$(declare -p "$_parameter")
         else
           _declaration=$(declare -p "$_argument") || return
+          case $_type in
+            '@' ) [[ $_declaration == 'declare -a'* ]] || return;;
+            '%' ) [[ $_declaration == 'declare -A'* ]] || return;;
+          esac
           _declaration=${_declaration/$_argument/$_parameter}
         fi
         ;;
@@ -180,7 +184,7 @@ passed() {
         ;;
       * )
         _declaration=$(declare -p "$_argument" 2>/dev/null)
-        if [[ $_declaration == '' || $_declaration == declare\ -[aA]* ]]; then
+        if [[ $_declaration == '' || $_declaration == 'declare -'[aA]* ]]; then
           [[ $_argument == *[* && ${!_argument+x} == 'x' ]] && {
             _argument=${!_argument}
           }
@@ -198,17 +202,33 @@ passed() {
   printf '%s\n' "${_results[*]}"
 }
 
-ret() {
-  local _ref=$1; shift
-  local -a _values=( "$@" )
-  local _result
+reta() {
+  eval "$(passed '( _value "*_ref" )' "$@")"
+  local _declaration
 
-  unset -v "$_ref" || return
-  (( $# == 1 )) && { printf -v "$_ref" '%s' "$1"; return ;}
-  _result=$(declare -p _values)
-  _result=${_result#*=}
-  _result=${_result:1:-1}
-  eval "$(printf '%s=%s' "$_ref" "$_result")"
+  unset -v "$_ref"
+  _declaration=$(declare -p _value)
+  _declaration=${_declaration#*=}
+  _declaration=${_declaration:1:-1}
+  eval "$(printf '%s=%s' "$_ref" "$_declaration")"
+}
+
+reth() {
+  eval "$(passed '( _value "*_ref" )' "$@")"
+  local _declaration
+
+  unset -v "$_ref"
+  _declaration=$(declare -p _value)
+  _declaration=${_declaration#*=}
+  _declaration=${_declaration:1:-1}
+  eval "$(printf '%s=%s' "$_ref" "$_declaration")"
+}
+
+rets() {
+  eval "$(passed '( _value "*_ref" )' "$@")"
+
+  unset -v "$_ref"
+  printf -v "$_ref" '%s' "$_value"
 }
 
 values_of() {
