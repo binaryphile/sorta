@@ -143,7 +143,7 @@ passed() {
     parameter=${parameters[$i]}
     [[ $parameter == *=* ]] && { argument=${parameter#*=}; parameter=${parameter%%=*} ;}
     _is_set arguments[$i] && argument=${arguments[$i]}
-    results+=( "$(_map_arg_type "$parameter" "$argument" )" ) || return
+    _map_arg_type "$parameter" "$argument" || return
   done
   _print_joined ';' "${results[@]}"
 }
@@ -157,12 +157,21 @@ _map_arg_type() {
   type=${parameter:0:1}
   parm=${parameter:1}
   case $type in
-    '*' ) _ref_declaration    "$parm" "$argument"    || return ;;
-    '@' ) _array_declaration  "$parm" "$argument" a  || return ;;
-    '%' ) _array_declaration  "$parm" "$argument" A  || return ;;
-    '&' ) printf 'declare -n %s="%s"' "$parm" "$argument"      ;;
-    *   ) _scalar_declaration "$parameter" "$argument"         ;;
+    '*' ) _ref_declaration    "$parm" "$argument"    || return  ;;
+    '@' ) _array_declaration  "$parm" "$argument" a  || return  ;;
+    '%' ) _array_declaration  "$parm" "$argument" A  || return  ;;
+    '&' ) _deref_declaration  "$parm" "$argument"               ;;
+    *   ) _scalar_declaration "$parameter" "$argument"          ;;
   esac
+}
+
+_deref_declaration() {
+  local parameter=$1
+  local argument=$2
+  local declaration
+
+  printf -v declaration 'declare -n %s="%s"' "$parameter" "$argument"
+  results+=( "$declaration" )
 }
 
 _array_declaration() {
@@ -174,7 +183,7 @@ _array_declaration() {
   [[ $argument == '('* ]] && { _safe_declare "$parameter" "$argument" "$option"; return ;}
   declaration=$(declare -p "$argument")
   [[ $declaration == 'declare -'"$option"* ]] || return
-  printf '%s' "${declaration/$argument/$parameter}"
+  results+=( "${declaration/$argument/$parameter}" )
 }
 
 _safe_declare() {
@@ -198,7 +207,8 @@ _ref_declaration() {
     declaration=$(declare -p argument)
   fi
   declaration=${declaration#*=}
-  printf 'declare -- %s=%s' "$parameter" "$declaration"
+  printf -v declaration 'declare -- %s=%s' "$parameter" "$declaration"
+  results+=( "$declaration" )
 }
 
 _scalar_declaration() {
@@ -216,7 +226,8 @@ _scalar_declaration() {
     declaration=$(declare -p "$argument")
   fi
   declaration=${declaration#*=}
-  printf 'declare -- %s=%s' "$parameter" "$declaration"
+  printf -v declaration 'declare -- %s=%s' "$parameter" "$declaration"
+  results+=( "$declaration" )
 }
 
 _print_joined() {
