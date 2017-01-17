@@ -192,7 +192,7 @@ _safe_declare() {
   local option=$3
 
   declare -"$option" "$parameter"="$argument"
-  declare -p "$parameter"
+  results+=( "$(declare -p "$parameter")" )
 }
 
 _ref_declaration() {
