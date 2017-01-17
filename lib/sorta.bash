@@ -4,13 +4,6 @@ readonly _sorta=loaded
 _is_set() { [[ ${!1+x} == 'x' ]] ;}
 _is_ref() { local ref=${!1}; [[ ${!ref+x} == 'x' ]] ;}
 
-_options() {
-  case $1 in
-    '@') printf 'a';;
-    '%') printf 'A';;
-  esac
-}
-
 assign() {
   local _ref=$1
   local _value=$2
