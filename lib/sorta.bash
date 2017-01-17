@@ -1,6 +1,8 @@
 [[ -n ${_sorta:-} ]] && return
 readonly _sorta=loaded
 
+_is_set() { [[ ${!1+x} == 'x' ]] ;}
+
 _options() {
   case $1 in
     '@') printf 'a';;
@@ -136,12 +138,10 @@ passed() {
   local -a __results
   local IFS
   local __argument=''
-  local __declaration
   local __i
   local __parameter
-  local __type
 
-  if declare -p "$__temp" >/dev/null 2>&1; then
+  if _is_set "$__temp"; then
     local -n __parameters=$__temp
   else
     local -a __parameters=$__temp
@@ -151,57 +151,66 @@ passed() {
     [[ $__parameter == *=* ]] && __argument=${__parameter#*=}
     __parameter=${__parameter%%=*}
     [[ ${__arguments[$__i]+x} == 'x' ]] && __argument=${__arguments[$__i]}
-    __type=${__parameter:0:1}
-    case $__type in
-      '@' | '%' )
-        __parameter=${__parameter:1}
-        if [[ $__argument == '('* ]]; then
-          __declaration=$(
-            declare -"$(_options "$__type")" "$__parameter"="$__argument"
-            declare -p "$__parameter"
-          )
-        else
-          __declaration=$(declare -p "$__argument") || return
-          case $__type in
-            '@' ) [[ $__declaration == 'declare -a'* ]] || return;;
-            '%' ) [[ $__declaration == 'declare -A'* ]] || return;;
-          esac
-          __declaration=${__declaration/$__argument/$__parameter}
-        fi
-        ;;
-      '&' )
-        __parameter=${__parameter:1}
-        __declaration=$(printf 'declare -n %s="%s"' "$__parameter" "$__argument")
-        ;;
-      '*' )
-        __parameter=${__parameter:1}
-        declare -p "$__argument" >/dev/null 2>&1 || return
-        if declare -p "${!__argument}" >/dev/null 2>&1; then
-          __declaration=$(declare -p "$__argument")
-        else declare -p "$argument" >/dev/null 2>&1
-          __declaration=$(declare -p __argument)
-        fi
-        __declaration=${__declaration#*=}
-        printf -v __declaration 'declare -- %s=%s' "$__parameter" "$__declaration"
-        ;;
-      * )
-        __declaration=$(declare -p "$__argument" 2>/dev/null)
-        if [[ $__declaration == '' || $__declaration == 'declare -'[aA]* ]]; then
-          [[ $__argument == *[* && ${!__argument+x} == 'x' ]] && {
-            __argument=${!__argument}
-          }
-          __declaration=$(declare -p __argument)
-        else
-          __declaration=$(declare -p "$__argument")
-        fi
-        __declaration=${__declaration#*=}
-        printf -v __declaration 'declare -- %s=%s' "$__parameter" "$__declaration"
-        ;;
-    esac
-    __results+=( "$__declaration" )
+    __results+=( "$(_map_arg "$__parameter" "$__argument" )" ) || return
   done
   IFS=';'
   printf '%s\n' "${__results[*]}"
+}
+
+_map_arg() {
+  local __parameter=$1
+  local __argument=$2
+  local __declaration
+  local __type
+
+  __type=${__parameter:0:1}
+  case $__type in
+    '@' | '%' )
+      __parameter=${__parameter:1}
+      if [[ $__argument == '('* ]]; then
+        __declaration=$(
+          declare -"$(_options "$__type")" "$__parameter"="$__argument"
+          declare -p "$__parameter"
+        )
+      else
+        __declaration=$(declare -p "$__argument") || return
+        case $__type in
+          '@' ) [[ $__declaration == 'declare -a'* ]] || return;;
+          '%' ) [[ $__declaration == 'declare -A'* ]] || return;;
+        esac
+        __declaration=${__declaration/$__argument/$__parameter}
+      fi
+      ;;
+    '&' )
+      __parameter=${__parameter:1}
+      __declaration=$(printf 'declare -n %s="%s"' "$__parameter" "$__argument")
+      ;;
+    '*' )
+      __parameter=${__parameter:1}
+      declare -p "$__argument" >/dev/null 2>&1 || return
+      if declare -p "${!__argument}" >/dev/null 2>&1; then
+        __declaration=$(declare -p "$__argument")
+      else declare -p "$argument" >/dev/null 2>&1
+        __declaration=$(declare -p __argument)
+      fi
+      __declaration=${__declaration#*=}
+      printf -v __declaration 'declare -- %s=%s' "$__parameter" "$__declaration"
+      ;;
+    * )
+      __declaration=$(declare -p "$__argument" 2>/dev/null)
+      if [[ $__declaration == '' || $__declaration == 'declare -'[aA]* ]]; then
+        [[ $__argument == *[* && ${!__argument+x} == 'x' ]] && {
+          __argument=${!__argument}
+        }
+        __declaration=$(declare -p __argument)
+      else
+        __declaration=$(declare -p "$__argument")
+      fi
+      __declaration=${__declaration#*=}
+      printf -v __declaration 'declare -- %s=%s' "$__parameter" "$__declaration"
+      ;;
+  esac
+  printf '%s' "$__declaration"
 }
 
 reta() {
