@@ -349,6 +349,64 @@ describe 'passed'
     params=( '*ref' )
     assert equal 'declare -- ref="sample"' "$(passed params "$@")"
   end
+
+  it "allows the use of __temp"; (
+    set -- 0
+    params=( __temp )
+    assert equal 'declare -- __temp="0"' "$(passed params "$@")"
+    return "$_shpec_failures" )
+  end
+
+  it "allows the use of __arguments"; (
+    set -- '( one two )'
+    params=( @__arguments )
+    printf -v expected 'declare -a __arguments=%s([0]="one" [1]="two")%s' \' \'
+    assert equal "$expected" "$(passed params "$@")"
+    return "$_shpec_failures" )
+  end
+
+  it "allows the use of __results"; (
+    set -- '( one two )'
+    params=( @__results )
+    printf -v expected 'declare -a __results=%s([0]="one" [1]="two")%s' \' \'
+    assert equal "$expected" "$(passed params "$@")"
+    return "$_shpec_failures" )
+  end
+
+  it "allows the use of __argument"; (
+    set -- 0
+    params=( __argument )
+    assert equal 'declare -- __argument="0"' "$(passed params "$@")"
+    return "$_shpec_failures" )
+  end
+
+  it "allows the use of __declaration"; (
+    set -- 0
+    params=( __declaration )
+    assert equal 'declare -- __declaration="0"' "$(passed params "$@")"
+    return "$_shpec_failures" )
+  end
+
+  it "allows the use of __i"; (
+    set -- 0
+    params=( __i )
+    assert equal 'declare -- __i="0"' "$(passed params "$@")"
+    return "$_shpec_failures" )
+  end
+
+  it "allows the use of __parameter"; (
+    set -- 0
+    params=( __parameter )
+    assert equal 'declare -- __parameter="0"' "$(passed params "$@")"
+    return "$_shpec_failures" )
+  end
+
+  it "allows the use of __type"; (
+    set -- 0
+    params=( __type )
+    assert equal 'declare -- __type="0"' "$(passed params "$@")"
+    return "$_shpec_failures" )
+  end
 end
 
 describe 'reta'

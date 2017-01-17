@@ -156,8 +156,10 @@ passed() {
       '@' | '%' )
         __parameter=${__parameter:1}
         if [[ $__argument == '('* ]]; then
-          declare -"$(_options "$__type")" "$__parameter"="$__argument"
-          __declaration=$(declare -p "$__parameter")
+          __declaration=$(
+            declare -"$(_options "$__type")" "$__parameter"="$__argument"
+            declare -p "$__parameter"
+          )
         else
           __declaration=$(declare -p "$__argument") || return
           case $__type in
