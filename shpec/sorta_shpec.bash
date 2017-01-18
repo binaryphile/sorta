@@ -68,6 +68,14 @@ describe 'assigna'
   end
 end
 
+describe '_deref_declaration'
+  it "declares the parameter as dereferencing the argument"
+    results=()
+    _deref_declaration sample example
+    assert equal 'declare -n sample="example"' "${results[0]}"
+  end
+end
+
 describe 'froma'
   it "imports named keys"
     unset -v zero one
