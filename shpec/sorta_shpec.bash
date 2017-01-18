@@ -1,5 +1,50 @@
 source sorta.bash
 
+describe '_array_declaration'
+  it "declares an array from an existing array"
+    samples=( one two )
+    results=()
+    _array_declaration array samples a
+    printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+    assert equal "$expected" "${results[0]}"
+  end
+
+  it "passes a literal declaration to _literal_declaration"
+    results=()
+    _array_declaration array '( one two )' a
+    printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+    assert equal "$expected" "${results[0]}"
+  end
+
+  it "declares a hash from an existing hash"
+    declare -A sampleh=( [one]=1 [two]=2 )
+    results=()
+    _array_declaration hash sampleh A
+    printf -v expected 'declare -A hash=%s([one]="1" [two]="2" )%s' \' \'
+    assert equal "$expected" "${results[0]}"
+  end
+
+  it "errors on an array with a hash option"
+    samples=( one two )
+    results=()
+    _array_declaration array samples A
+    assert unequal 0 $?
+  end
+
+  it "propagates an error from _literal_declaration"
+    results=()
+    _array_declaration array '( one two )' A
+    assert unequal 0 $?
+  end
+
+  it "errors on a hash with an array option"
+    declare -A sampleh=( [one]=1 [two]=2 )
+    results=()
+    _array_declaration hash sampleh a
+    assert unequal 0 $?
+  end
+end
+
 describe 'assign'
   it "assigns an array result"
     printf -v sample    'declare -a sample=%s([0]="zero" [1]="one")%s' \' \'
@@ -135,6 +180,28 @@ describe 'keys_of'
   end
 end
 
+describe '_literal_declaration'
+  it "declares an array from an array literal"
+    results=()
+    _literal_declaration array '( one two )' a
+    printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+    assert equal "$expected" "${results[0]}"
+  end
+
+  it "declares a hash from a hash literal"
+    results=()
+    _literal_declaration hash '( [one]=1 [two]=2 )' A
+    printf -v expected 'declare -A hash=%s([one]="1" [two]="2" )%s' \' \'
+    assert equal "$expected" "${results[0]}"
+  end
+
+  it "errors on an array literal with a hash option"
+    results=()
+    _literal_declaration array '( one two )' A
+    assert unequal 0 $?
+  end
+end
+
 describe 'pass'
   it "declares a variable"
     sample=var
@@ -226,7 +293,7 @@ describe 'passed'
     values=( zero one )
     set -- values
     params=( @array )
-    expected=$(printf 'declare -a array=%s([0]="zero" [1]="one")%s' \' \')
+    printf -v expected 'declare -a array=%s([0]="zero" [1]="one")%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
@@ -243,7 +310,7 @@ describe 'passed'
     values=( '"zero one"' two )
     set -- values
     params=( @array )
-    expected=$(printf 'declare -a array=%s([0]="\\"zero one\\"" [1]="two")%s' \' \')
+    printf -v expected 'declare -a array=%s([0]="\\"zero one\\"" [1]="two")%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
@@ -251,7 +318,7 @@ describe 'passed'
     declare -A values=( [zero]=0 [one]=1 )
     set -- values
     params=( %hash )
-    expected=$(printf 'declare -A hash=%s([one]="1" [zero]="0" )%s' \' \')
+    printf -v expected 'declare -A hash=%s([one]="1" [zero]="0" )%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
@@ -264,82 +331,82 @@ describe 'passed'
   it "accepts an array literal"
     set -- '([0]="zero" [1]="one")'
     params=( @array )
-    expected=$(printf 'declare -a array=%s([0]="zero" [1]="one")%s' \' \')
+    printf -v expected 'declare -a array=%s([0]="zero" [1]="one")%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
   it "accepts an array literal without indices"
     set -- '( "zero" "one" )'
     params=( @array )
-    expected=$(printf 'declare -a array=%s([0]="zero" [1]="one")%s' \' \')
+    printf -v expected 'declare -a array=%s([0]="zero" [1]="one")%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
   it "accepts an empty array literal"
     set -- '()'
     params=( @array )
-    expected=$(printf 'declare -a array=%s()%s' \' \')
+    printf -v expected 'declare -a array=%s()%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
   it "allows array default values"
     set --
     params=( @array='( "zero" "one" )' )
-    expected=$(printf 'declare -a array=%s([0]="zero" [1]="one")%s' \' \' )
+    printf -v expected 'declare -a array=%s([0]="zero" [1]="one")%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
   it "accepts a hash literal"
     set -- '( [zero]="0" [one]="1" )'
     params=( %hash )
-    expected=$(printf 'declare -A hash=%s([one]="1" [zero]="0" )%s' \' \' )
+    printf -v expected 'declare -A hash=%s([one]="1" [zero]="0" )%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
   it "accepts an empty hash literal"
     set -- '()'
     params=( %hash )
-    expected=$(printf 'declare -A hash=%s()%s' \' \' )
+    printf -v expected 'declare -A hash=%s()%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
   it "allows hash default values"
     set --
     params=( %hash='([zero]="0" [one]="1")' )
-    expected=$(printf 'declare -A hash=%s([one]="1" [zero]="0" )%s' \' \')
+    printf -v expected 'declare -A hash=%s([one]="1" [zero]="0" )%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
   it "accepts an empty array default"
     set --
     params=( @array='()' )
-    expected=$(printf 'declare -a array=%s()%s' \' \' )
+    printf -v expected 'declare -a array=%s()%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
   it "accepts an empty array default literal"
     set --
-    expected=$(printf 'declare -a array=%s()%s' \' \' )
+    printf -v expected 'declare -a array=%s()%s' \' \'
     assert equal "$expected" "$(passed '( @array="()" )' "$@")"
   end
 
   it "allows arrays with single quoted values"
     set -- "( '*' )"
     params=( @samples )
-    expected=$(printf 'declare -a samples=%s([0]="*")%s' \' \')
+    printf -v expected 'declare -a samples=%s([0]="*")%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
   it "accepts an empty hash default"
     set --
     params=( %hash='()' )
-    expected=$(printf 'declare -A hash=%s()%s' \' \' )
+    printf -v expected 'declare -A hash=%s()%s' \' \'
     assert equal "$expected" "$(passed params "$@")"
   end
 
   it "accepts an empty hash default literal"
     set --
-    expected=$(printf 'declare -A hash=%s()%s' \' \' )
+    printf -v expected 'declare -A hash=%s()%s' \' \'
     assert equal "$expected" "$(passed '( %hash="()" )' "$@")"
   end
 
