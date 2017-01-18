@@ -180,6 +180,98 @@ describe 'intos'
   end
 end
 
+describe '_is_ref'
+  it "returns true if the named variable holds the name of a variable"; (
+    unset -v example
+    example=''
+    sample=example
+    _is_ref sample
+    assert equal 0 $?
+    return "$_shpec_failures" )
+  end
+
+  it "returns false if the named variable just holds a string"
+    unset -v example
+    sample=example
+    _is_ref sample
+    assert unequal 0 $?
+  end
+end
+
+describe '_is_set'
+  it "returns true if the named scalar has a value"
+    sample='example'
+    _is_set sample
+    assert equal 0 $?
+  end
+
+  it "returns true if the named scalar has a blank value"
+    sample=''
+    _is_set sample
+    assert equal 0 $?
+  end
+
+  it "returns true if the named array has a value"
+    samples=( one )
+    _is_set samples
+    assert equal 0 $?
+  end
+
+  it "returns true if the named array has a blank value"
+    samples=()
+    _is_set samples
+    assert equal 0 $?
+  end
+
+  it "returns true if the named hash has a value"
+    sampleh=( [one]=1 )
+    _is_set sampleh
+    assert equal 0 $?
+  end
+
+  it "returns true if the named hash has a blank value"
+    sampleh=()
+    _is_set sampleh
+    assert equal 0 $?
+  end
+
+  it "returns true if the named array item has a value"
+    samples=( one )
+    _is_set samples[0]
+    assert equal 0 $?
+  end
+
+  it "returns true if the named array item has a blank value"
+    samples=( '' )
+    _is_set samples[0]
+    assert equal 0 $?
+  end
+
+  it "returns true if the named hash item has a value"
+    sampleh=( [one]=1 )
+    _is_set sampleh[one]
+    assert equal 0 $?
+  end
+
+  it "returns true if the named hash item has a blank value"
+    sampleh=( [one]='' )
+    _is_set sampleh[one]
+    assert equal 0 $?
+  end
+
+  it "returns false if the named array item does not exist"
+    samples=( one )
+    _is_set samples[1]
+    assert unequal 0 $?
+  end
+
+  it "returns false if the named hash item does not exist"
+    sampleh=( [one]=1 )
+    _is_set sampleh[two]
+    assert unequal 0 $?
+  end
+end
+
 describe 'keys_of'
   it "declares the keys of a hash"
     declare -A sampleh=([zero]=0 [one]=1)

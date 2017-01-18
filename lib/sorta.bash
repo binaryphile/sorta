@@ -133,8 +133,12 @@ intos() {
   assign "$1" "$(pass hash)"
 }
 
-_is_ref() { local ref=${!1}; [[ ${!ref+x} == 'x' ]] ;}
-_is_set() { [[ ${!1+x} == 'x' ]] ;}
+_is_ref() { set -- ${!1}; _is_set "$1";}
+
+_is_set() {
+  [[ $1 == *[* ]] && { [[ ${!1+x} == 'x' ]]; return ;}
+  declare -p "$1" >/dev/null 2>&1
+}
 
 keys_of() {
   eval "$(passed '( %hash )' "$@")"
