@@ -1,5 +1,7 @@
 source sorta.bash
 
+set -o errexit
+
 describe '_array_declaration'
   it "declares an array from an existing array"
     samples=( one two )
@@ -27,21 +29,27 @@ describe '_array_declaration'
   it "errors on an array with a hash option"
     samples=( one two )
     results=()
+    set +o errexit
     _array_declaration array samples A
     assert unequal 0 $?
+    set -o errexit
   end
 
   it "propagates an error from _literal_declaration"
     results=()
+    set +o errexit
     _array_declaration array '( one two )' A
     assert unequal 0 $?
+    set -o errexit
   end
 
   it "errors on a hash with an array option"
     declare -A sampleh=( [one]=1 [two]=2 )
     results=()
+    set +o errexit
     _array_declaration hash sampleh a
     assert unequal 0 $?
+    set -o errexit
   end
 end
 
@@ -82,8 +90,10 @@ describe '_deref_declaration'
     unset -v example
     sample=example
     results=()
+    set +o errexit
     _deref_declaration result sample
     assert unequal 0 $?
+    set -o errexit
   end
 end
 
@@ -204,8 +214,10 @@ describe '_is_ref'
   it "returns false if the named variable just holds a string"
     unset -v example
     sample=example
+    set +o errexit
     _is_ref sample
     assert unequal 0 $?
+    set -o errexit
   end
 end
 
@@ -272,14 +284,18 @@ describe '_is_set'
 
   it "returns false if the named array item does not exist"
     samples=( one )
+    set +o errexit
     _is_set samples[1]
     assert unequal 0 $?
+    set -o errexit
   end
 
   it "returns false if the named hash item does not exist"
     sampleh=( [one]=1 )
+    set +o errexit
     _is_set sampleh[two]
     assert unequal 0 $?
+    set -o errexit
   end
 end
 
@@ -308,8 +324,10 @@ describe '_literal_declaration'
 
   it "errors on an array literal with a hash option"
     results=()
+    set +o errexit
     _literal_declaration array '( one two )' A
     assert unequal 0 $?
+    set -o errexit
   end
 end
 
@@ -355,22 +373,28 @@ describe '_map_arg_type'
   it "errors if _array_declaration errors on a hash"
     samples=( one two )
     results=()
+    set +o errexit
     _map_arg_type %hash samples A
     assert unequal 0 $?
+    set -o errexit
   end
 
   it "errors if _ref_declaration errors"
     unset -v sample
     results=()
+    set +o errexit
     _map_arg_type *ref sample
     assert unequal 0 $?
+    set -o errexit
   end
 
   it "errors if _array_declaration errors on an array"
     declare -A sampleh=( [one]=1 [two]=2 )
     results=()
+    set +o errexit
     _map_arg_type @array sampleh a
     assert unequal 0 $?
+    set -o errexit
   end
 end
 
@@ -420,8 +444,10 @@ describe 'passed'
   it "errors if _map_arg_type errors"
     set -- ''
     params=( '*ref' )
+    set +o errexit
     passed params "$@"
     assert unequal 0 $?
+    set -o errexit
   end
 end
 
@@ -451,8 +477,10 @@ describe '_ref_declaration'
 
   it "errors on an argument which isn't set"
     unset -v sample
+    set +o errexit
     _ref_declaration result sample
     assert unequal 0 $?
+    set -o errexit
   end
 end
 
