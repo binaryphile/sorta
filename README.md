@@ -37,6 +37,9 @@ than a string, even though it has structured data types such as arrays
 and hashes (or los associative arrayerinos, if you're, like, not into
 the whole brevity thing).
 
+Sorta helps you pass arguments like more like other languages do, by
+variable name.
+
 Examples
 ========
 
@@ -50,7 +53,7 @@ Examples
 <tbody>
 <tr valign="top">
 <td><pre><code lang="shell">
-myarray=( hello )
+myvar=hello
 
 my_function() {
   greeting=$1
@@ -59,12 +62,12 @@ my_function() {
   echo "$greeting"
 }
 
-my_function "${myarray[0]}"
+my_function "$myvar"
 
 &gt; hello
 </code></pre></td>
 <td><pre><code lang="bash">
-myarray=( hello )
+myvar=hello
 
 my_function() {
   local _params=( greeting )
@@ -73,7 +76,7 @@ my_function() {
   echo "$greeting"
 }
 
-my_function myarray[0]
+my_function myvar
 
 &gt; hello
 </code></pre></td>
@@ -81,31 +84,30 @@ my_function myarray[0]
 </tbody>
 </table>
 
-```bash
-#!/bin/bash
+Notice the call to `my_function` with the name of the variable, `myvar`,
+rather than the shell expansion.  `my_function`, however, doesn't see
+that name, it just gets the already-expanded value `hello` in
+`greeting`.
 
-echo "hello"
-```
-
-With the addition of the call at the beginning of `my_function`, the
-function receives variables by name and has them automatically expanded
-to their values.
+With the addition of the `eval` call at the beginning of `my_function`,
+the function receives variables by name and has them automatically
+expanded to their values.
 
 The resulting parameters are copies of the values, scoped locally to the
-function. Changing their values doesn't change anything anywhere else in
-the script.
+function. Changing their values doesn't change variables in the global
+nor calling scopes, as it would if they weren't scoped locally.
 
 Notice that the `passed` function accepts the parameter array by name
-(no expansion of `${_params[@\]}` necessary): `eval "$(passed
-_params "$@")"`.
+(no expansion of `${_params[@]}` necessary): `eval "$(passed _params
+"$@")"`.
 
 You could also use a literal to save a line:
-`eval "$(passed '( key value )' "$@")"`.
+`eval "$(passed '( greeting )' "$@")"`.
 
-So passing strings like that may be nicer than the syntax for variable
-expansion, but it's not anything you can't do with bash as-is.
+So anyway, passing strings like that may be nicer than the syntax for
+variable expansion, but it's not anything you can't do with bash as-is.
 
-How about passing a hash and an array directly by name:
+Instead, how about passing a hash and an array directly by name:
 
     my_function myhash myarray
 
