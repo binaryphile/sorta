@@ -50,6 +50,8 @@ Examples
 <tbody>
 <tr>
 <td><pre><code>
+myarray=( hello )
+
 my_function() {
   echo "$1"
 }
@@ -57,21 +59,19 @@ my_function() {
 
 
 
-myarray=( hello )
-
 my_function "${myarray[0]}"
 
 &gt; hello
 </code></pre></td>
 <td><pre><code>
+myarray=( hello )
+
 my_function() {
   local _params=( greeting )
   eval "$(passed params "$@")"
 
   echo "$greeting"
 }
-
-myarray=( hello )
 
 my_function myarray[0]
 
