@@ -40,7 +40,7 @@ the whole brevity thing).
 Examples
 ========
 
-<table>
+<table style="vertical-align:top">
 <thead>
 <tr>
 <th>Regular Bash</th>
