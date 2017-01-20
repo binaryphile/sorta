@@ -81,6 +81,10 @@ my_function myarray[0]
 </tbody>
 </table>
 
+```bash
+#!/bin/bash
+```
+
 With the addition of the call at the beginning of `my_function`, the
 function receives variables by name and has them automatically expanded
 to their values.
