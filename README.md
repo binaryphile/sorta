@@ -40,7 +40,7 @@ the whole brevity thing).
 Examples
 ========
 
-<table style="vertical-align:top">
+<table>
 <thead>
 <tr>
 <th>Regular Bash</th>
@@ -48,12 +48,13 @@ Examples
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr style="vertical-align:top">
 <td><pre><code>
 myarray=( hello )
 
 my_function() {
   greeting=$1
+
 
   echo "$greeting"
 }
