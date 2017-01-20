@@ -620,6 +620,31 @@ describe '_print_joined'
   end
 end
 
+describe '_ref_declaration'
+  it "declares a scalar with the name of a variable with a normal value"
+    unset -v one
+    sample=one
+    results=()
+    _ref_declaration result sample
+    assert equal 'declare -- result="sample"' "${results[0]}"
+  end
+
+  it "declares a scalar with the value of a variable which is the name of another variable"; (
+    one=1
+    sample=one
+    results=()
+    _ref_declaration result sample
+    assert equal 'declare -- result="one"' "${results[0]}"
+    return "$_shpec_failures" )
+  end
+
+  it "errors on an argument which isn't set"
+    unset -v sample
+    _ref_declaration result sample
+    assert unequal 0 $?
+  end
+end
+
 describe 'reta'
   it "sets an array of values in a named variable"; (
     my_func() { local values=( one two three ); local "$1"= && reta values "$1" ;}
