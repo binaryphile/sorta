@@ -83,6 +83,8 @@ my_function myarray[0]
 
 ```bash
 #!/bin/bash
+
+echo "hello"
 ```
 
 With the addition of the call at the beginning of `my_function`, the
