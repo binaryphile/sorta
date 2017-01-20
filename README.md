@@ -40,14 +40,41 @@ the whole brevity thing).
 Examples
 ========
 
-Regular bash:
+<table>
+<thead>
+<tr>
+<th>Regular Bash</th>
+<th>With Sorta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><pre><code>
+my_function() { echo "$1" ;}
 
-    my_function() { echo "$1: $2" ;}
+myarray=( hello )
 
-    declare -A myhash=( [this]=that )
-    myarray=( one )
+my_function "${myarray[0]}"
 
-    my_function "${myhash[this]}" "${myarray[0]}"
+&gt; hello
+</code></pre></td>
+<td><pre><code>
+my_function() {
+  local _params=( greeting )
+  eval "$(passed params "$@")"
+
+  echo "$greeting"
+}
+
+myarray=( hello )
+
+my_function myarray[0]
+
+&gt; hello
+</code></pre></td>
+</tr>
+</tbody>
+</table>
 
 Run that as a script and you'll get:
 
@@ -57,21 +84,6 @@ The same thing with sorta looks like this:
 
     # use "passed" with a parameter array:
 
-    my_function() {
-      local _params=( key value )
-      eval "$(passed _params "$@")"
-
-      echo "$key: $value"
-    }
-
-    # same as before
-    declare -A myhash=( [this]=that )
-    myarray=( one )
-
-    # pass scalar values by name and they're automatically expanded by the
-    # receiver, even indexed like so:
-
-    my_function myhash[this] myarray[0]
 
 With the addition of the call at the beginning of `my_function`, I can
 receive variables by name and have them automatically expanded to their
@@ -80,8 +92,8 @@ locally to my function. Changing their values doesn't change anything
 anywhere else in the script.
 
 Notice that the `passed` function accepts the parameter array by name
-(no expansion of "${\_params\[@\]}" necessary): \`eval "$(passed
-\_params "$@")"\`.
+(no expansion of `${_params[@\]}` necessary): `eval "$(passed
+_params "$@")"`.
 
 You could also use a literal to save a line:
 `eval "$(passed '( key value )' "$@")"`.
