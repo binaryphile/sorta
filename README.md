@@ -48,7 +48,7 @@ Examples
 </tr>
 </thead>
 <tbody>
-<tr style="vertical-align:top">
+<tr valign="top">
 <td><pre><code>
 myarray=( hello )
 
