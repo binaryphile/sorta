@@ -81,20 +81,13 @@ my_function myarray[0]
 </tbody>
 </table>
 
-Run that as a script and you'll get:
+With the addition of the call at the beginning of `my_function`, the
+function receives variables by name and has them automatically expanded
+to their values.
 
-    that: one
-
-The same thing with sorta looks like this:
-
-    # use "passed" with a parameter array:
-
-
-With the addition of the call at the beginning of `my_function`, I can
-receive variables by name and have them automatically expanded to their
-values. The resulting parameters are copies of the values, scoped
-locally to my function. Changing their values doesn't change anything
-anywhere else in the script.
+The resulting parameters are copies of the values, scoped locally to the
+function. Changing their values doesn't change anything anywhere else in
+the script.
 
 Notice that the `passed` function accepts the parameter array by name
 (no expansion of `${_params[@\]}` necessary): `eval "$(passed
