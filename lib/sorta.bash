@@ -170,10 +170,10 @@ _map_arg_type() {
   type=${parameter:0:1}
   parm=${parameter:1}
   case $type in
-    '*' ) _ref_declaration    "$parm" "$argument"    || return  ;;
-    '@' ) _array_declaration  "$parm" "$argument" a  || return  ;;
     '%' ) _array_declaration  "$parm" "$argument" A  || return  ;;
     '&' ) _deref_declaration  "$parm" "$argument"               ;;
+    '*' ) _ref_declaration    "$parm" "$argument"    || return  ;;
+    '@' ) _array_declaration  "$parm" "$argument" a  || return  ;;
     *   ) _scalar_declaration "$parameter" "$argument"          ;;
   esac
 }

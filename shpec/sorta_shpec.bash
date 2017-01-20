@@ -302,6 +302,44 @@ describe '_literal_declaration'
   end
 end
 
+describe '_map_arg_type'
+  it "creates a hash declaration"
+    results=()
+    declare -A sampleh=()
+    _map_arg_type %resulth sampleh
+    printf -v expected 'declare -A resulth=%s()%s' \' \'
+    assert equal "$expected" "${results[0]}"
+  end
+
+  it "creates a deref declaration"
+    results=()
+    sample=''
+    _map_arg_type '&result' sample
+    assert equal 'declare -n result="sample"' "${results[0]}"
+  end
+
+  it "creates a ref declaration"
+    results=()
+    sample=''
+    _map_arg_type *result sample
+    assert equal 'declare -- result="sample"' "${results[0]}"
+  end
+
+  it "creates an array declaration"
+    results=()
+    samples=()
+    _map_arg_type @res samples
+    printf -v expected 'declare -a res=%s()%s' \' \'
+    assert equal "$expected" "${results[0]}"
+  end
+
+  it "creates a scalar declaration"
+    results=()
+    _map_arg_type result sample
+    assert equal 'declare -- result=""' "${results[0]}"
+  end
+end
+
 describe 'pass'
   it "declares a variable"
     sample=var
