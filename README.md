@@ -91,7 +91,10 @@ that name, it just gets the already-expanded value `hello` in
 
 With the addition of the `eval` call at the beginning of `my_function`,
 the function receives variables by name and has them automatically
-expanded to their values.
+expanded to their values.  However, you can still pass literal strings
+as well, such as `my_function "a string"`.  Since the value "a string"
+doesn't point to a variable, it will be received, unexpanded, into
+`greeting`.
 
 The resulting parameters are copies of the values, scoped locally to the
 function. Changing their values doesn't change variables in the global
