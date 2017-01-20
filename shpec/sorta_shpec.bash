@@ -69,10 +69,21 @@ describe 'assigna'
 end
 
 describe '_deref_declaration'
-  it "declares the parameter as dereferencing the argument"
+  it "declares the parameter as dereferencing the argument"; (
+    example=''
+    sample=example
     results=()
-    _deref_declaration sample example
-    assert equal 'declare -n sample="example"' "${results[0]}"
+    _deref_declaration result sample
+    assert equal 'declare -n result="sample"' "${results[0]}"
+    return "$_shpec_failures" )
+  end
+
+  it "errors if the named variable is not a reference"
+    unset -v example
+    sample=example
+    results=()
+    _deref_declaration result sample
+    assert unequal 0 $?
   end
 end
 
@@ -311,11 +322,13 @@ describe '_map_arg_type'
     assert equal "$expected" "${results[0]}"
   end
 
-  it "creates a deref declaration"
+  it "creates a deref declaration"; (
     results=()
-    sample=''
+    example=''
+    sample=example
     _map_arg_type '&result' sample
     assert equal 'declare -n result="sample"' "${results[0]}"
+    return "$_shpec_failures" )
   end
 
   it "creates a ref declaration"
@@ -338,6 +351,27 @@ describe '_map_arg_type'
     _map_arg_type result sample
     assert equal 'declare -- result=""' "${results[0]}"
   end
+
+  it "errors if _array_declaration errors on a hash"
+    samples=( one two )
+    results=()
+    _map_arg_type %hash samples A
+    assert unequal 0 $?
+  end
+
+  it "errors if _ref_declaration errors"
+    unset -v sample
+    results=()
+    _map_arg_type *ref sample
+    assert unequal 0 $?
+  end
+
+  it "errors if _array_declaration errors on an array"
+    declare -A sampleh=( [one]=1 [two]=2 )
+    results=()
+    _map_arg_type @array sampleh a
+    assert unequal 0 $?
+  end
 end
 
 describe 'pass'
@@ -359,9 +393,10 @@ describe 'passed'
     assert equal 'declare -- zero="0"' "$(passed '( zero )' "$@")"
   end
 
-  it "allows a literal for parameters with multiple items"
+  it "allows a multiple items"
     set -- 0 1
-    assert equal 'declare -- zero="0";declare -- one="1"' "$(passed '( zero one )' "$@")"
+    params=( zero one )
+    assert equal 'declare -- zero="0";declare -- one="1"' "$(passed params "$@")"
   end
 
   it "accepts empty values"
@@ -376,241 +411,17 @@ describe 'passed'
     assert equal 'declare -- zero="one two"' "$(passed params "$@")"
   end
 
-  it "allows default values in literals"
-    set --
-    assert equal 'declare -- zero="one two"' "$(passed '( zero="one two" )' "$@")"
-  end
-
   it "overrides default values with empty parameters"
     set -- ""
     params=( zero="one two" )
     assert equal 'declare -- zero=""' "$(passed params "$@")"
   end
 
-  it "creates a scalar declaration from a scalar variable name"
-    sample=0
-    set -- sample
-    params=( zero )
-    assert equal 'declare -- zero="0"' "$(passed params "$@")"
-  end
-
-  it "doesn't create a declaration from a variable name of the wrong type"
-    declare -A sampleh=()
-    set -- sampleh
-    params=( zero )
-    assert equal 'declare -- zero="sampleh"' "$(passed params "$@")"
-  end
-
-  it "creates a scalar declaration from an indexed array reference"
-    samples=( 0 )
-    set -- samples[0]
-    params=( zero )
-    assert equal 'declare -- zero="0"' "$(passed params "$@")"
-  end
-
-  it "ignores an what appears to be an unset array reference"
-    samples=( 0 )
-    set -- samples[1]
-    params=( zero )
-    assert equal 'declare -- zero="samples[1]"' "$(passed params "$@")"
-  end
-
-  it "works for two arguments"
-    set -- 0 1
-    params=( zero one )
-    assert equal 'declare -- zero="0";declare -- one="1"' "$(passed params "$@")"
-  end
-
-  it "accepts strings with quotes"
-    set -- 'string with "quotes"'
-    params=( zero )
-    assert equal 'declare -- zero="string with \"quotes\""' "$(passed params "$@")"
-  end
-
-  it "creates an array declaration from a special syntax"
-    values=( zero one )
-    set -- values
-    params=( @array )
-    printf -v expected 'declare -a array=%s([0]="zero" [1]="one")%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "errors on a non-declared array"; (
-    unset -v values
-    set -- values
-    params=( @array )
-    passed params "$@" >/dev/null 2>&1
-    assert unequal 0 $?
-    return "$_shpec_failures" )
-  end
-
-  it "creates an array declaration with quotes"
-    values=( '"zero one"' two )
-    set -- values
-    params=( @array )
-    printf -v expected 'declare -a array=%s([0]="\\"zero one\\"" [1]="two")%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "creates a hash declaration from a special syntax"
-    declare -A values=( [zero]=0 [one]=1 )
-    set -- values
-    params=( %hash )
-    printf -v expected 'declare -A hash=%s([one]="1" [zero]="0" )%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "creates a dereference declaration from a special syntax"
-    set -- var
-    params=( '&ref' )
-    assert equal 'declare -n ref="var"' "$(passed params "$@")"
-  end
-
-  it "accepts an array literal"
-    set -- '([0]="zero" [1]="one")'
-    params=( @array )
-    printf -v expected 'declare -a array=%s([0]="zero" [1]="one")%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "accepts an array literal without indices"
-    set -- '( "zero" "one" )'
-    params=( @array )
-    printf -v expected 'declare -a array=%s([0]="zero" [1]="one")%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "accepts an empty array literal"
-    set -- '()'
-    params=( @array )
-    printf -v expected 'declare -a array=%s()%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "allows array default values"
-    set --
-    params=( @array='( "zero" "one" )' )
-    printf -v expected 'declare -a array=%s([0]="zero" [1]="one")%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "accepts a hash literal"
-    set -- '( [zero]="0" [one]="1" )'
-    params=( %hash )
-    printf -v expected 'declare -A hash=%s([one]="1" [zero]="0" )%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "accepts an empty hash literal"
-    set -- '()'
-    params=( %hash )
-    printf -v expected 'declare -A hash=%s()%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "allows hash default values"
-    set --
-    params=( %hash='([zero]="0" [one]="1")' )
-    printf -v expected 'declare -A hash=%s([one]="1" [zero]="0" )%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "accepts an empty array default"
-    set --
-    params=( @array='()' )
-    printf -v expected 'declare -a array=%s()%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "accepts an empty array default literal"
-    set --
-    printf -v expected 'declare -a array=%s()%s' \' \'
-    assert equal "$expected" "$(passed '( @array="()" )' "$@")"
-  end
-
-  it "allows arrays with single quoted values"
-    set -- "( '*' )"
-    params=( @samples )
-    printf -v expected 'declare -a samples=%s([0]="*")%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "accepts an empty hash default"
-    set --
-    params=( %hash='()' )
-    printf -v expected 'declare -A hash=%s()%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-  end
-
-  it "accepts an empty hash default literal"
-    set --
-    printf -v expected 'declare -A hash=%s()%s' \' \'
-    assert equal "$expected" "$(passed '( %hash="()" )' "$@")"
-  end
-
-  it "creates a reference to a variable name even when defined"
-    sample=one
-    set -- sample
+  it "errors if _map_arg_type errors"
+    set -- ''
     params=( '*ref' )
-    assert equal 'declare -- ref="sample"' "$(passed params "$@")"
-  end
-
-  it "allows the use of __temp"; (
-    set -- 0
-    params=( __temp )
-    assert equal 'declare -- __temp="0"' "$(passed params "$@")"
-    return "$_shpec_failures" )
-  end
-
-  it "allows the use of __arguments"; (
-    set -- '( one two )'
-    params=( @__arguments )
-    printf -v expected 'declare -a __arguments=%s([0]="one" [1]="two")%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-    return "$_shpec_failures" )
-  end
-
-  it "allows the use of __results"; (
-    set -- '( one two )'
-    params=( @__results )
-    printf -v expected 'declare -a __results=%s([0]="one" [1]="two")%s' \' \'
-    assert equal "$expected" "$(passed params "$@")"
-    return "$_shpec_failures" )
-  end
-
-  it "allows the use of __argument"; (
-    set -- 0
-    params=( __argument )
-    assert equal 'declare -- __argument="0"' "$(passed params "$@")"
-    return "$_shpec_failures" )
-  end
-
-  it "allows the use of __declaration"; (
-    set -- 0
-    params=( __declaration )
-    assert equal 'declare -- __declaration="0"' "$(passed params "$@")"
-    return "$_shpec_failures" )
-  end
-
-  it "allows the use of __i"; (
-    set -- 0
-    params=( __i )
-    assert equal 'declare -- __i="0"' "$(passed params "$@")"
-    return "$_shpec_failures" )
-  end
-
-  it "allows the use of __parameter"; (
-    set -- 0
-    params=( __parameter )
-    assert equal 'declare -- __parameter="0"' "$(passed params "$@")"
-    return "$_shpec_failures" )
-  end
-
-  it "allows the use of __type"; (
-    set -- 0
-    params=( __type )
-    assert equal 'declare -- __type="0"' "$(passed params "$@")"
-    return "$_shpec_failures" )
+    passed params "$@"
+    assert unequal 0 $?
   end
 end
 

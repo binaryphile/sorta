@@ -49,6 +49,7 @@ _deref_declaration() {
   local argument=$2
   local declaration
 
+  _is_ref "$argument" || return
   printf -v declaration 'declare -n %s="%s"' "$parameter" "$argument"
   results+=( "$declaration" )
 }
@@ -170,11 +171,11 @@ _map_arg_type() {
   type=${parameter:0:1}
   parm=${parameter:1}
   case $type in
-    '%' ) _array_declaration  "$parm" "$argument" A  || return  ;;
-    '&' ) _deref_declaration  "$parm" "$argument"               ;;
-    '*' ) _ref_declaration    "$parm" "$argument"    || return  ;;
-    '@' ) _array_declaration  "$parm" "$argument" a  || return  ;;
-    *   ) _scalar_declaration "$parameter" "$argument"          ;;
+    '%' ) _array_declaration  "$parm" "$argument" A     ;;
+    '&' ) _deref_declaration  "$parm" "$argument"       ;;
+    '*' ) _ref_declaration    "$parm" "$argument"       ;;
+    '@' ) _array_declaration  "$parm" "$argument" a     ;;
+    *   ) _scalar_declaration "$parameter" "$argument"  ;;
   esac
 }
 
@@ -183,7 +184,7 @@ pass() { declare -p "$1" ;}
 passed() {
   local temp=$1; shift
   local -a arguments=( "$@" )
-  local -a results
+  local -a results=()
   local argument=''
   local i
   local parameter
@@ -258,7 +259,7 @@ _scalar_declaration() {
   local argument=$2
   local declaration
 
-  declaration=$(declare -p "$argument" 2>/dev/null)
+  declaration=$(declare -p "$argument" 2>/dev/null) ||:
   [[ $declaration == '' || $declaration == 'declare -'[aA]* ]] && {
     [[ $argument == *[* && ${!argument+x} == 'x' ]] && {
       argument=${!argument}
