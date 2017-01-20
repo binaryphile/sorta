@@ -29,14 +29,12 @@ assigna() {
   local -a _results
   local -a _values
   local IFS
-  local _IFS
   local _i
 
-  _IFS=$IFS
   IFS=';'
   set -- $_value
+  IFS=$' \t\n'
   _values=( "$@" )
-  IFS=$_IFS
   for _i in "${!_values[@]}"; do
     _results+=( "$(assign "${_refa[$_i]}" "${_values[$_i]}")" )
   done
