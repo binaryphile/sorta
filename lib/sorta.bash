@@ -205,8 +205,10 @@ passed() {
 _print_joined() {
   local IFS=$1; shift
 
-  printf '%s\n' "$*"
+  _puts "$*"
 }
+
+_puts() { printf '%s\n' "$*" ;}
 
 _ref_declaration() {
   local parameter=$1
