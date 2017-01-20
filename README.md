@@ -71,7 +71,7 @@ myvar=hello
 
 my_function() {
   local _params=( greeting )
-  eval "$(passed params "$@")"
+  eval "$(passed _params "$@")"
 
   echo "$greeting"
 }
