@@ -53,7 +53,9 @@ Examples
 myarray=( hello )
 
 my_function() {
-  echo "$1"
+  greeting=$1
+
+  echo "$greeting"
 }
 
 
