@@ -620,12 +620,6 @@ describe '_print_joined'
   end
 end
 
-describe '_puts'
-  it "prints arguments"
-    assert equal 'one two' "$(_puts one two)"
-  end
-end
-
 describe 'reta'
   it "sets an array of values in a named variable"; (
     my_func() { local values=( one two three ); local "$1"= && reta values "$1" ;}
