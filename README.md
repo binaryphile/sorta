@@ -50,7 +50,12 @@ Examples
 <tbody>
 <tr>
 <td><pre><code>
-my_function() { echo "$1" ;}
+my_function() {
+  echo "$1"
+}
+
+
+
 
 myarray=( hello )
 
