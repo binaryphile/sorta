@@ -49,7 +49,7 @@ Examples
 </thead>
 <tbody>
 <tr valign="top">
-<td><pre><code>
+<td><pre><code lang="shell">
 myarray=( hello )
 
 my_function() {
@@ -63,7 +63,7 @@ my_function "${myarray[0]}"
 
 &gt; hello
 </code></pre></td>
-<td><pre><code>
+<td><pre><code lang="bash">
 myarray=( hello )
 
 my_function() {
