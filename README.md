@@ -59,9 +59,6 @@ my_function() {
   echo "$greeting"
 }
 
-
-
-
 my_function "${myarray[0]}"
 
 &gt; hello
