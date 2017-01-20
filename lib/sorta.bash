@@ -259,14 +259,12 @@ _scalar_declaration() {
   local declaration
 
   declaration=$(declare -p "$argument" 2>/dev/null)
-  if [[ $declaration == '' || $declaration == 'declare -'[aA]* ]]; then
+  [[ $declaration == '' || $declaration == 'declare -'[aA]* ]] && {
     [[ $argument == *[* && ${!argument+x} == 'x' ]] && {
       argument=${!argument}
     }
     declaration=$(declare -p argument)
-  else
-    declaration=$(declare -p "$argument")
-  fi
+  }
   declaration=${declaration#*=}
   printf -v declaration 'declare -- %s=%s' "$parameter" "$declaration"
   results+=( "$declaration" )

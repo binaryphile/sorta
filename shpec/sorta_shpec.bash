@@ -703,6 +703,52 @@ describe 'rets'
   end
 end
 
+describe '_scalar_declaration'
+  it "declares a scalar with a supplied value"
+    unset -v sample
+    results=()
+    _scalar_declaration result sample
+    assert equal 'declare -- result="sample"' "${results[0]}"
+  end
+
+  it "declares a scalar with the value of a supplied variable name"
+    sample=one
+    results=()
+    _scalar_declaration result sample
+    assert equal 'declare -- result="one"' "${results[0]}"
+  end
+
+  it "declares a scalar with a supplied value when the value is also the name of an array"
+    samples=()
+    results=()
+    _scalar_declaration result samples
+    assert equal 'declare -- result="samples"' "${results[0]}"
+  end
+
+  it "declares a scalar with a supplied value when the value is also the name of a hash"
+    declare -A sampleh=()
+    results=()
+    _scalar_declaration result sampleh
+    assert equal 'declare -- result="sampleh"' "${results[0]}"
+  end
+
+  it "declares a scalar with the value of a supplied array item reference"; (
+    samples=( one )
+    results=()
+    _scalar_declaration result samples[0]
+    assert equal 'declare -- result="one"' "${results[0]}"
+    return "$_shpec_failures" )
+  end
+
+  it "declares a scalar with the value of a supplied hash item reference"; (
+    declare -A sampleh=( [one]=1 )
+    results=()
+    _scalar_declaration result sampleh[one]
+    assert equal 'declare -- result="1"' "${results[0]}"
+    return "$_shpec_failures" )
+  end
+end
+
 describe 'values_of'
   it "declares the values of a hash"
     declare -A sampleh=([zero]=0 [one]=1)
