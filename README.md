@@ -160,11 +160,11 @@ Outputs:
 
 Similarly, you can call it with variable names:
 
-    $ myvar1=one
-    $ myvar2=two
+    $ myvar1=1
+    $ myvar2=2
     $ my_function myvar1 myvar2
-    first: one
-    second: two
+    first: 1
+    second: 2
 
 Notice that no expansion was needed for the variable names. Of course,
 that will still work:
