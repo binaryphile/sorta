@@ -230,55 +230,6 @@ describe '_is_name'
   end
 end
 
-describe '_is_name_ref'
-  it "returns true if the named variable holds the name of a scalar variable"; (
-    unset -v example
-    example=one
-    sample=example
-    _is_name_ref sample
-    assert equal 0 $?
-    return "$_shpec_failures" )
-  end
-
-  it "returns true if the named variable holds the name of an array variable"; (
-    unset -v examples
-    examples=( one )
-    sample=examples
-    _is_name_ref sample
-    assert equal 0 $?
-    return "$_shpec_failures" )
-  end
-
-  it "returns true if the named variable holds the name of a hash variable"; (
-    unset -v exampleh
-    declare -A exampleh=( [one]=1 )
-    sample=exampleh
-    _is_name_ref sample
-    assert equal 0 $?
-    return "$_shpec_failures" )
-  end
-
-  it "returns false if the named variable holds an indexed item"; (
-    unset -v examples
-    examples=( one )
-    sample=examples[0]
-    stop_on_error off
-    _is_name_ref sample
-    assert unequal 0 $?
-    stop_on_error
-    return "$_shpec_failures" )
-  end
-
-  it "returns false if the named variable holds a normal string"
-    unset -v example
-    sample=example
-    stop_on_error off
-    _is_name_ref sample
-    assert unequal 0 $?
-    stop_on_error
-  end
-end
-
 describe '_is_ref'
   it "returns true if the named variable holds the name of another variable"; (
     unset -v example
@@ -297,35 +248,19 @@ describe '_is_ref'
     assert unequal 0 $?
     stop_on_error
   end
-end
 
-describe '_is_scalar_ref'
-  it "returns true if the named variable holds the name of a scalar variable"
-    example=one
-    sample=example
-    _is_scalar_ref sample
-    assert equal 0 $?
-  end
-
-  it "returns true if the named variable holds an indexed item of an array variable"
-    examples=( one )
-    sample=examples[0]
-    _is_scalar_ref sample
-    assert equal 0 $?
-  end
-
-  it "returns true if the named variable holds an indexed item of a hash variable"
-    declare -A exampleh=( [one]=1 )
-    sample=exampleh[one]
-    _is_scalar_ref sample
-    assert equal 0 $?
-  end
-
-  it "returns false if the variable name doesn't exist"
-    unset -v examples
-    sample=examples[0]
+  it "returns false if the named variable is an array"
+    samples=( example )
     stop_on_error off
-    _is_scalar_ref sample
+    _is_ref samples
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the named variable is a hash"
+    declare -A sampleh=( [example]=one )
+    stop_on_error off
+    _is_ref sampleh
     assert unequal 0 $?
     stop_on_error
   end
@@ -350,10 +285,18 @@ describe '_is_scalar_set'
     assert equal 0 $?
   end
 
-  it "returns false if the argument is an index that isn't set"
+  it "returns false if the argument is an array index that isn't set"
     samples=( one )
     stop_on_error off
     _is_scalar_set samples[1]
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the argument is a hash index that isn't set"
+    sampleh=( [one]=1 )
+    stop_on_error off
+    _is_scalar_set sampleh[two]
     assert unequal 0 $?
     stop_on_error
   end
@@ -368,78 +311,22 @@ describe '_is_scalar_set'
 end
 
 describe '_is_set'
-  it "returns true if the named scalar has a value"
-    sample='example'
-    _is_set sample
-    assert equal 0 $?
-  end
-
-  it "returns true if the named scalar has a blank value"
+  it "returns true if the named scalar exists"
     sample=''
     _is_set sample
     assert equal 0 $?
   end
 
-  it "returns true if the named array has a value"
-    samples=( one )
-    _is_set samples
-    assert equal 0 $?
-  end
-
-  it "returns true if the named array has a blank value"
-    samples=()
-    _is_set samples
-    assert equal 0 $?
-  end
-
-  it "returns true if the named hash has a value"
-    sampleh=( [one]=1 )
-    _is_set sampleh
-    assert equal 0 $?
-  end
-
-  it "returns true if the named hash has a blank value"
-    sampleh=()
-    _is_set sampleh
-    assert equal 0 $?
-  end
-
-  it "returns true if the named array item has a value"
-    samples=( one )
-    _is_set samples[0]
-    assert equal 0 $?
-  end
-
-  it "returns true if the named array item has a blank value"
+  it "returns true if the named array item is set"
     samples=( '' )
     _is_set samples[0]
     assert equal 0 $?
   end
 
-  it "returns true if the named hash item has a value"
-    sampleh=( [one]=1 )
-    _is_set sampleh[one]
-    assert equal 0 $?
-  end
-
-  it "returns true if the named hash item has a blank value"
-    sampleh=( [one]='' )
-    _is_set sampleh[one]
-    assert equal 0 $?
-  end
-
-  it "returns false if the named array item does not exist"
-    samples=( one )
+  it "returns false if the named scalar doesn't exist"
+    unset -v sample
     stop_on_error off
-    _is_set samples[1]
-    assert unequal 0 $?
-    stop_on_error
-  end
-
-  it "returns false if the named hash item does not exist"
-    sampleh=( [one]=1 )
-    stop_on_error off
-    _is_set sampleh[two]
+    _is_set sample
     assert unequal 0 $?
     stop_on_error
   end
