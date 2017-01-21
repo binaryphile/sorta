@@ -1,6 +1,7 @@
 source sorta.bash
+source shpec-helper.bash
 
-set -o errexit
+stop_on_error=true
 
 describe '_array_declaration'
   it "declares an array from an existing array"
@@ -29,27 +30,27 @@ describe '_array_declaration'
   it "errors on an array with a hash option"
     samples=( one two )
     results=()
-    set +o errexit
+    stop_on_error off
     _array_declaration array samples A
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 
   it "propagates an error from _literal_declaration"
     results=()
-    set +o errexit
+    stop_on_error off
     _array_declaration array '( one two )' A
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 
   it "errors on a hash with an array option"
     declare -A sampleh=( [one]=1 [two]=2 )
     results=()
-    set +o errexit
+    stop_on_error off
     _array_declaration hash sampleh a
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 end
 
@@ -90,10 +91,10 @@ describe '_deref_declaration'
     unset -v example
     sample=example
     results=()
-    set +o errexit
+    stop_on_error off
     _deref_declaration result sample
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 end
 
@@ -222,10 +223,10 @@ describe '_is_name'
 
   it "returns false if argument isn't the name of a variable"
     unset -v sample
-    set +o errexit
+    stop_on_error off
     _is_name sample
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 end
 
@@ -261,20 +262,20 @@ describe '_is_name_ref'
     unset -v examples
     examples=( one )
     sample=examples[0]
-    set +o errexit
+    stop_on_error off
     _is_name_ref sample
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
     return "$_shpec_failures" )
   end
 
   it "returns false if the named variable holds a normal string"
     unset -v example
     sample=example
-    set +o errexit
+    stop_on_error off
     _is_name_ref sample
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 end
 
@@ -291,10 +292,10 @@ describe '_is_ref'
   it "returns false if the named variable just holds a string"
     unset -v example
     sample=example
-    set +o errexit
+    stop_on_error off
     _is_ref sample
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 end
 
@@ -323,10 +324,10 @@ describe '_is_scalar_ref'
   it "returns false if the variable name doesn't exist"
     unset -v examples
     sample=examples[0]
-    set +o errexit
+    stop_on_error off
     _is_scalar_ref sample
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 end
 
@@ -351,18 +352,18 @@ describe '_is_scalar_set'
 
   it "returns false if the argument is an index that isn't set"
     samples=( one )
-    set +o errexit
+    stop_on_error off
     _is_scalar_set samples[1]
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 
   it "returns false if the argument doesn't exist"
     unset -v samples
-    set +o errexit
+    stop_on_error off
     _is_scalar_set samples[0]
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 end
 
@@ -429,18 +430,18 @@ describe '_is_set'
 
   it "returns false if the named array item does not exist"
     samples=( one )
-    set +o errexit
+    stop_on_error off
     _is_set samples[1]
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 
   it "returns false if the named hash item does not exist"
     sampleh=( [one]=1 )
-    set +o errexit
+    stop_on_error off
     _is_set sampleh[two]
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 end
 
@@ -469,10 +470,10 @@ describe '_literal_declaration'
 
   it "errors on an array literal with a hash option"
     results=()
-    set +o errexit
+    stop_on_error off
     _literal_declaration array '( one two )' A
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 end
 
@@ -518,28 +519,28 @@ describe '_map_arg_type'
   it "errors if _array_declaration errors on a hash"
     samples=( one two )
     results=()
-    set +o errexit
+    stop_on_error off
     _map_arg_type %hash samples A
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 
   it "errors if _ref_declaration errors"
     unset -v sample
     results=()
-    set +o errexit
+    stop_on_error off
     _map_arg_type *ref sample
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 
   it "errors if _array_declaration errors on an array"
     declare -A sampleh=( [one]=1 [two]=2 )
     results=()
-    set +o errexit
+    stop_on_error off
     _map_arg_type @array sampleh a
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 end
 
@@ -589,10 +590,10 @@ describe 'passed'
   it "errors if _map_arg_type errors"
     set -- ''
     params=( '*ref' )
-    set +o errexit
+    stop_on_error off
     passed params "$@"
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 end
 
@@ -622,10 +623,10 @@ describe '_ref_declaration'
 
   it "errors on an argument which isn't set"
     unset -v sample
-    set +o errexit
+    stop_on_error off
     _ref_declaration result sample
     assert unequal 0 $?
-    set -o errexit
+    stop_on_error
   end
 end
 
