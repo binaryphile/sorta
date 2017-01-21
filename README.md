@@ -98,16 +98,16 @@ doesn't point to a variable, it will be received, unexpanded, into
 
 The resulting parameters are copies of the values, scoped locally to the
 function. Changing their values doesn't change variables in the global
-nor calling scopes, as it would if they weren't scoped locally.
+nor calling scopes, as it might if they weren't scoped locally.
 
 Notice that the `passed` function accepts the parameter array by name
-(no expansion of `${_params[@]}` necessary): `eval "$(passed _params
+(no `"${_params[@]}"` expansion necessary): `eval "$(passed _params
 "$@")"`.
 
 You could also use a literal to save a line:
 `eval "$(passed '( greeting )' "$@")"`.
 
-So anyway, passing strings like that may be nicer than the syntax for
+So anyway, passing strings like that may be nicer than bash's syntax for
 variable expansion, but it's not anything you can't do with bash as-is.
 
 Instead, how about passing a hash and an array directly by name:
@@ -118,6 +118,9 @@ You can do this with sorta by adding special type designators to the
 `_params` list:
 
     local _params=( %hash @array )
+
+Now your function has copies of `myhash` and `myarray` in the local
+variables `hash` and `array`, respectively.
 
 Note that `hash` and `array` could be any variable names, I'm just using
 those names for clarity.
