@@ -201,8 +201,85 @@ describe 'intos'
   end
 end
 
+describe '_is_name'
+  it "returns true if argument is the name of a scalar"
+    sample=one
+    _is_name sample
+    assert equal 0 $?
+  end
+
+  it "returns true if argument is the name of an array"
+    samples=( one )
+    _is_name samples
+    assert equal 0 $?
+  end
+
+  it "returns true if argument is the name of a hash"
+    declare -A sampleh=( [one]=1 )
+    _is_name sampleh
+    assert equal 0 $?
+  end
+
+  it "returns false if argument isn't the name of a variable"
+    unset -v sample
+    set +o errexit
+    _is_name sample
+    assert unequal 0 $?
+    set -o errexit
+  end
+end
+
+describe '_is_name_ref'
+  it "returns true if the named variable holds the name of a scalar variable"; (
+    unset -v example
+    example=one
+    sample=example
+    _is_name_ref sample
+    assert equal 0 $?
+    return "$_shpec_failures" )
+  end
+
+  it "returns true if the named variable holds the name of an array variable"; (
+    unset -v examples
+    examples=( one )
+    sample=examples
+    _is_name_ref sample
+    assert equal 0 $?
+    return "$_shpec_failures" )
+  end
+
+  it "returns true if the named variable holds the name of a hash variable"; (
+    unset -v exampleh
+    declare -A exampleh=( [one]=1 )
+    sample=exampleh
+    _is_name_ref sample
+    assert equal 0 $?
+    return "$_shpec_failures" )
+  end
+
+  it "returns false if the named variable holds an indexed item"; (
+    unset -v examples
+    examples=( one )
+    sample=examples[0]
+    set +o errexit
+    _is_name_ref sample
+    assert unequal 0 $?
+    set -o errexit
+    return "$_shpec_failures" )
+  end
+
+  it "returns false if the named variable holds a normal string"
+    unset -v example
+    sample=example
+    set +o errexit
+    _is_name_ref sample
+    assert unequal 0 $?
+    set -o errexit
+  end
+end
+
 describe '_is_ref'
-  it "returns true if the named variable holds the name of a variable"; (
+  it "returns true if the named variable holds the name of another variable"; (
     unset -v example
     example=''
     sample=example
@@ -216,6 +293,74 @@ describe '_is_ref'
     sample=example
     set +o errexit
     _is_ref sample
+    assert unequal 0 $?
+    set -o errexit
+  end
+end
+
+describe '_is_scalar_ref'
+  it "returns true if the named variable holds the name of a scalar variable"
+    example=one
+    sample=example
+    _is_scalar_ref sample
+    assert equal 0 $?
+  end
+
+  it "returns true if the named variable holds an indexed item of an array variable"
+    examples=( one )
+    sample=examples[0]
+    _is_scalar_ref sample
+    assert equal 0 $?
+  end
+
+  it "returns true if the named variable holds an indexed item of a hash variable"
+    declare -A exampleh=( [one]=1 )
+    sample=exampleh[one]
+    _is_scalar_ref sample
+    assert equal 0 $?
+  end
+
+  it "returns false if the variable name doesn't exist"
+    unset -v examples
+    sample=examples[0]
+    set +o errexit
+    _is_scalar_ref sample
+    assert unequal 0 $?
+    set -o errexit
+  end
+end
+
+describe '_is_scalar_set'
+  it "returns true if the argument is the name of a scalar variable"
+    sample=one
+    _is_scalar_set sample
+    assert equal 0 $?
+  end
+
+  it "returns true if the argument is an indexed item of an array variable"
+    samples=( one )
+    _is_scalar_set samples[0]
+    assert equal 0 $?
+  end
+
+  it "returns true if the argument is an indexed item of a hash variable"
+    declare -A sampleh=( [one]=1 )
+    _is_scalar_set sampleh[one]
+    assert equal 0 $?
+  end
+
+  it "returns false if the argument is an index that isn't set"
+    samples=( one )
+    set +o errexit
+    _is_scalar_set samples[1]
+    assert unequal 0 $?
+    set -o errexit
+  end
+
+  it "returns false if the argument doesn't exist"
+    unset -v samples
+    set +o errexit
+    _is_scalar_set samples[0]
     assert unequal 0 $?
     set -o errexit
   end
