@@ -133,10 +133,8 @@ intos() {
 }
 
 _is_name()        { declare -p "$1" >/dev/null 2>&1 ;}
-_is_name_ref()    { _is_name "${!1}"        ;}
-_is_ref()         { _is_set "${!1}"         ;}
-_is_scalar_ref()  { _is_scalar_set "${!1}"  ;}
-_is_scalar_set()  { [[ ${!1+x} == 'x' ]]    ;}
+_is_ref()         { _is_set "${!1}"       ;}
+_is_scalar_set()  { [[ ${!1+x} == 'x' ]]  ;}
 _is_set()         { _is_name "$1" || _is_scalar_set "$1" ;}
 
 keys_of() {
