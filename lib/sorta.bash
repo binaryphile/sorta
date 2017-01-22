@@ -167,11 +167,11 @@ _map_arg_type() {
   type=${parameter:0:1}
   parm=${parameter:1}
   case $type in
-    '%' ) _array_declaration  "$parm" "$argument" A     ;;
-    '&' ) _deref_declaration  "$parm" "$argument"       ;;
-    '*' ) _ref_declaration    "$parm" "$argument"       ;;
-    '@' ) _array_declaration  "$parm" "$argument" a     ;;
-    *   ) _scalar_declaration "$parameter" "$argument"  ;;
+    '%' ) _array_declaration  "$parm"       "$argument" A ;;
+    '&' ) _deref_declaration  "$parm"       "$argument"   ;;
+    '*' ) _ref_declaration    "$parm"       "$argument"   ;;
+    '@' ) _array_declaration  "$parm"       "$argument" a ;;
+    *   ) _scalar_declaration "$parameter"  "$argument"   ;;
   esac
 }
 
