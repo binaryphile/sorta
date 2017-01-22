@@ -185,7 +185,7 @@ passed() {
   local i
   local parameter
 
-  if _is_ref temp; then
+  if _is_set "$temp"; then
     local -n parameters="$temp"
   else
     local -a parameters="$temp"
