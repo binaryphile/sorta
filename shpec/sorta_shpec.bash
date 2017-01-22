@@ -87,9 +87,8 @@ describe '_deref_declaration'
     return "$_shpec_failures" )
   end
 
-  it "errors if the named variable is not a reference"
-    unset -v example
-    sample=example
+  it "errors if the named variable is not set"
+    unset -v sample
     results=()
     stop_on_error off
     _deref_declaration result sample

@@ -47,7 +47,7 @@ _deref_declaration() {
   local argument=$2
   local declaration
 
-  _is_ref "$argument" || return
+  _is_set "$argument" || return
   printf -v declaration 'declare -n %s="%s"' "$parameter" "$argument"
   results+=( "$declaration" )
 }
