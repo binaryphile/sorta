@@ -10,7 +10,7 @@ _array_declaration() {
   [[ $argument == '('* ]] && { _literal_declaration "$parameter" "$argument" "$option"; return ;}
   declaration=$(declare -p "$argument")
   [[ $declaration == 'declare -'"$option"* ]] || return
-  results+=( "${declaration/$argument/$parameter}" )
+  _results_+=( "${declaration/$argument/$parameter}" )
 }
 
 assign() {
@@ -49,7 +49,7 @@ _deref_declaration() {
 
   _is_name "$argument" || return
   printf -v declaration 'declare -n %s="%s"' "$parameter" "$argument"
-  results+=( "$declaration" )
+  _results_+=( "$declaration" )
 }
 
 froma() {
@@ -156,7 +156,7 @@ _literal_declaration() {
   message=$(declare -"$option" "$parameter"="$argument" 2>&1)
   [[ -z $message ]] || return
   declare -"$option" "$parameter"="$argument"
-  results+=( "$(declare -p "$parameter")" )
+  _results_+=( "$(declare -p "$parameter")" )
 }
 
 _map_arg_type() {
@@ -179,26 +179,36 @@ _map_arg_type() {
 pass() { declare -p "$1" ;}
 
 passed() {
-  local temp=$1; shift
-  local -a arguments=( "$@" )
-  local -a results=()
-  local argument=''
-  local i
-  local parameter
+  local _temp_=$1; shift
+  local _arguments_=( "$@" )
+  local _argument_=''
+  local _i_
+  local _name_
+  local _parameter_
+  local _results_=()
 
-  _is_array "$temp" || _is_array_literal "$temp" || return
-  if _is_array "$temp"; then
-    local -n parameters="$temp"
-  else
-    local -a parameters="$temp"
-  fi
-  for i in "${!parameters[@]}"; do
-    parameter=${parameters[$i]}
-    [[ $parameter == *=* ]] && { argument=${parameter#*=}; parameter=${parameter%%=*} ;}
-    _is_set arguments[$i] && argument=${arguments[$i]}
-    _map_arg_type "$parameter" "$argument" || return
+  local _names_=(
+    _arguments_
+    _names_
+    _parameters_
+    _results_
+  )
+  for _name_ in "${_names_[@]}"; do
+    [[ $_temp_ != "$_name_" ]] || return
   done
-  _print_joined ';' "${results[@]}"
+  _is_array "$_temp_" || _is_array_literal "$_temp_" || return
+  if _is_array "$_temp_"; then
+    local -n _parameters_="$_temp_"
+  else
+    local -a _parameters_="$_temp_"
+  fi
+  for _i_ in "${!_parameters_[@]}"; do
+    _parameter_=${_parameters_[$_i_]}
+    [[ $_parameter_ == *=* ]] && { _argument_=${_parameter_#*=}; _parameter_=${_parameter_%%=*} ;}
+    _is_set _arguments_[$_i_] && _argument_=${_arguments_[$_i_]}
+    _map_arg_type "$_parameter_" "$_argument_" || return
+  done
+  _print_joined ';' "${_results_[@]}"
 }
 
 _print_joined() {
@@ -220,7 +230,7 @@ _ref_declaration() {
   fi
   declaration=${declaration#*=}
   printf -v declaration 'declare -- %s=%s' "$parameter" "$declaration"
-  results+=( "$declaration" )
+  _results_+=( "$declaration" )
 }
 
 reta() {
@@ -261,7 +271,7 @@ _scalar_declaration() {
   declaration=$(declare -p argument)
   declaration=${declaration#*=}
   printf -v declaration 'declare -- %s=%s' "$parameter" "$declaration"
-  results+=( "$declaration" )
+  _results_+=( "$declaration" )
 }
 
 values_of() {

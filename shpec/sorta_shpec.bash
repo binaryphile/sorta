@@ -6,30 +6,30 @@ stop_on_error=true
 describe '_array_declaration'
   it "declares an array from an existing array"
     samples=( one two )
-    results=()
+    _results_=()
     _array_declaration array samples a
     printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
-    assert equal "$expected" "${results[0]}"
+    assert equal "$expected" "${_results_[0]}"
   end
 
   it "passes a literal declaration to _literal_declaration"
-    results=()
+    _results_=()
     _array_declaration array '( one two )' a
     printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
-    assert equal "$expected" "${results[0]}"
+    assert equal "$expected" "${_results_[0]}"
   end
 
   it "declares a hash from an existing hash"
     declare -A sampleh=( [one]=1 [two]=2 )
-    results=()
+    _results_=()
     _array_declaration hash sampleh A
     printf -v expected 'declare -A hash=%s([one]="1" [two]="2" )%s' \' \'
-    assert equal "$expected" "${results[0]}"
+    assert equal "$expected" "${_results_[0]}"
   end
 
   it "errors on an array with a hash option"
     samples=( one two )
-    results=()
+    _results_=()
     stop_on_error off
     _array_declaration array samples A
     assert unequal 0 $?
@@ -37,7 +37,7 @@ describe '_array_declaration'
   end
 
   it "propagates an error from _literal_declaration"
-    results=()
+    _results_=()
     stop_on_error off
     _array_declaration array '( one two )' A
     assert unequal 0 $?
@@ -46,7 +46,7 @@ describe '_array_declaration'
 
   it "errors on a hash with an array option"
     declare -A sampleh=( [one]=1 [two]=2 )
-    results=()
+    _results_=()
     stop_on_error off
     _array_declaration hash sampleh a
     assert unequal 0 $?
@@ -81,14 +81,14 @@ describe '_deref_declaration'
   it "declares the parameter as dereferencing the argument"
     example=''
     sample=example
-    results=()
+    _results_=()
     _deref_declaration result sample
-    assert equal 'declare -n result="sample"' "${results[0]}"
+    assert equal 'declare -n result="sample"' "${_results_[0]}"
   end
 
   it "errors if the named variable is not set"
     unset -v sample
-    results=()
+    _results_=()
     stop_on_error off
     _deref_declaration result sample
     assert unequal 0 $?
@@ -97,7 +97,7 @@ describe '_deref_declaration'
 
   it "errors if the named variable is an array item reference"
     samples=( one )
-    results=()
+    _results_=()
     stop_on_error off
     _deref_declaration result samples[0]
     assert unequal 0 $?
@@ -363,21 +363,21 @@ end
 
 describe '_literal_declaration'
   it "declares an array from an array literal"
-    results=()
+    _results_=()
     _literal_declaration array '( one two )' a
     printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
-    assert equal "$expected" "${results[0]}"
+    assert equal "$expected" "${_results_[0]}"
   end
 
   it "declares a hash from a hash literal"
-    results=()
+    _results_=()
     _literal_declaration hash '( [one]=1 [two]=2 )' A
     printf -v expected 'declare -A hash=%s([one]="1" [two]="2" )%s' \' \'
-    assert equal "$expected" "${results[0]}"
+    assert equal "$expected" "${_results_[0]}"
   end
 
   it "errors on an array literal with a hash option"
-    results=()
+    _results_=()
     stop_on_error off
     _literal_declaration array '( one two )' A
     assert unequal 0 $?
@@ -387,46 +387,46 @@ end
 
 describe '_map_arg_type'
   it "creates a hash declaration"
-    results=()
+    _results_=()
     declare -A sampleh=()
     _map_arg_type %resulth sampleh
     printf -v expected 'declare -A resulth=%s()%s' \' \'
-    assert equal "$expected" "${results[0]}"
+    assert equal "$expected" "${_results_[0]}"
   end
 
   it "creates a deref declaration"; (
-    results=()
+    _results_=()
     example=''
     sample=example
     _map_arg_type '&result' sample
-    assert equal 'declare -n result="sample"' "${results[0]}"
+    assert equal 'declare -n result="sample"' "${_results_[0]}"
     return "$_shpec_failures" )
   end
 
   it "creates a ref declaration"
-    results=()
+    _results_=()
     sample=''
     _map_arg_type *result sample
-    assert equal 'declare -- result="sample"' "${results[0]}"
+    assert equal 'declare -- result="sample"' "${_results_[0]}"
   end
 
   it "creates an array declaration"
-    results=()
+    _results_=()
     samples=()
     _map_arg_type @res samples
     printf -v expected 'declare -a res=%s()%s' \' \'
-    assert equal "$expected" "${results[0]}"
+    assert equal "$expected" "${_results_[0]}"
   end
 
   it "creates a scalar declaration"
-    results=()
+    _results_=()
     _map_arg_type result sample
-    assert equal 'declare -- result=""' "${results[0]}"
+    assert equal 'declare -- result=""' "${_results_[0]}"
   end
 
   it "errors if _array_declaration errors on a hash"
     samples=( one two )
-    results=()
+    _results_=()
     stop_on_error off
     _map_arg_type %hash samples A
     assert unequal 0 $?
@@ -435,7 +435,7 @@ describe '_map_arg_type'
 
   it "errors if _ref_declaration errors"
     unset -v sample
-    results=()
+    _results_=()
     stop_on_error off
     _map_arg_type *ref sample
     assert unequal 0 $?
@@ -444,7 +444,7 @@ describe '_map_arg_type'
 
   it "errors if _array_declaration errors on an array"
     declare -A sampleh=( [one]=1 [two]=2 )
-    results=()
+    _results_=()
     stop_on_error off
     _map_arg_type @array sampleh a
     assert unequal 0 $?
@@ -490,16 +490,97 @@ describe 'passed'
   end
 
   it "overrides default values with empty parameters"
-    set -- ""
+    set -- ''
     params=( zero="one two" )
     assert equal 'declare -- zero=""' "$(passed params "$@")"
   end
 
-  it "errors if passed an indexed item"
+  it "doesn't work if the params list is named '_argument_'"
     set -- ''
-    params=( '' )
+    _argument_=( sample )
     stop_on_error off
-    passed params[0] "$@"
+    passed _argument_ "$@" >/dev/null
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "doesn't work if the params list is named '_arguments_'"
+    set -- ''
+    _arguments_=( sample )
+    stop_on_error off
+    passed _arguments_ "$@" >/dev/null
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "doesn't work if the params list is named '_i_'"
+    set -- ''
+    _i_=( sample )
+    stop_on_error off
+    passed _i_ "$@" >/dev/null
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "doesn't work if the params list is named '_name_'"
+    set -- ''
+    _name_=( sample )
+    stop_on_error off
+    passed _name_ "$@" >/dev/null
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "doesn't work if the params list is named '_names_'"
+    set -- ''
+    _names_=( sample )
+    stop_on_error off
+    passed _names_ "$@" >/dev/null
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "doesn't work if the params list is named '_parameter_'"
+    set -- ''
+    _parameter_=( sample )
+    stop_on_error off
+    passed _parameter_ "$@" >/dev/null
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "doesn't work if the params list is named '_parameters_'"
+    set -- ''
+    _parameters_=( sample )
+    stop_on_error off
+    passed _parameters_ "$@" >/dev/null
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "doesn't work if the params list is named '_results_'"
+    set -- ''
+    _results_=( sample )
+    stop_on_error off
+    passed _results_ "$@" >/dev/null
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "doesn't work if the params list is named '_temp_'"
+    set -- ''
+    _temp_=( sample )
+    stop_on_error off
+    passed _temp_ "$@" >/dev/null
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "errors if passed an indexed item"
+    sample=''
+    params=( sample )
+    stop_on_error off
+    passed params[0] "$@" >/dev/null
     assert unequal 0 $?
     stop_on_error
   end
@@ -508,7 +589,7 @@ describe 'passed'
     set -- ''
     params=( '*ref' )
     stop_on_error off
-    passed params "$@"
+    passed params "$@" >/dev/null
     assert unequal 0 $?
     stop_on_error
   end
@@ -524,17 +605,17 @@ describe '_ref_declaration'
   it "declares a scalar with the name of a variable with a normal value"
     unset -v one
     sample=one
-    results=()
+    _results_=()
     _ref_declaration result sample
-    assert equal 'declare -- result="sample"' "${results[0]}"
+    assert equal 'declare -- result="sample"' "${_results_[0]}"
   end
 
   it "declares a scalar with the value of a variable which is the name of another variable"; (
     one=1
     sample=one
-    results=()
+    _results_=()
     _ref_declaration result sample
-    assert equal 'declare -- result="one"' "${results[0]}"
+    assert equal 'declare -- result="one"' "${_results_[0]}"
     return "$_shpec_failures" )
   end
 
@@ -608,45 +689,45 @@ end
 describe '_scalar_declaration'
   it "declares a scalar with a supplied value"
     unset -v sample
-    results=()
+    _results_=()
     _scalar_declaration result sample
-    assert equal 'declare -- result="sample"' "${results[0]}"
+    assert equal 'declare -- result="sample"' "${_results_[0]}"
   end
 
   it "declares a scalar with the value of a supplied variable name"
     sample=one
-    results=()
+    _results_=()
     _scalar_declaration result sample
-    assert equal 'declare -- result="one"' "${results[0]}"
+    assert equal 'declare -- result="one"' "${_results_[0]}"
   end
 
   it "declares a scalar with a supplied value when the value is also the name of an array"
     samples=()
-    results=()
+    _results_=()
     _scalar_declaration result samples
-    assert equal 'declare -- result="samples"' "${results[0]}"
+    assert equal 'declare -- result="samples"' "${_results_[0]}"
   end
 
   it "declares a scalar with a supplied value when the value is also the name of a hash"
     declare -A sampleh=()
-    results=()
+    _results_=()
     _scalar_declaration result sampleh
-    assert equal 'declare -- result="sampleh"' "${results[0]}"
+    assert equal 'declare -- result="sampleh"' "${_results_[0]}"
   end
 
   it "declares a scalar with the value of a supplied array item reference"; (
     samples=( one )
-    results=()
+    _results_=()
     _scalar_declaration result samples[0]
-    assert equal 'declare -- result="one"' "${results[0]}"
+    assert equal 'declare -- result="one"' "${_results_[0]}"
     return "$_shpec_failures" )
   end
 
   it "declares a scalar with the value of a supplied hash item reference"; (
     declare -A sampleh=( [one]=1 )
-    results=()
+    _results_=()
     _scalar_declaration result sampleh[one]
-    assert equal 'declare -- result="1"' "${results[0]}"
+    assert equal 'declare -- result="1"' "${_results_[0]}"
     return "$_shpec_failures" )
   end
 end
