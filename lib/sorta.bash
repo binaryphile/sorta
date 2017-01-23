@@ -134,7 +134,8 @@ intos() {
 
 _is_name()        { declare -p "$1" >/dev/null 2>&1 ;}
 _is_ref()         { _is_set "${!1}"       ;}
-_is_scalar_set()  { [[ ${!1+x} == 'x' ]]  ;}
+_is_scalar()      { [[ $(declare -p "$1" 2>/dev/null) == 'declare --'* ]] ;}
+_is_scalar_set()  { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]]  ;}
 _is_set()         { _is_name "$1" || _is_scalar_set "$1" ;}
 
 keys_of() {
@@ -255,13 +256,12 @@ _scalar_declaration() {
   local argument=$2
   local declaration
 
-  declaration=$(declare -p "$argument" 2>/dev/null) ||:
-  [[ $declaration == '' || $declaration == 'declare -'[aA]* ]] && {
-    [[ $argument == *[* && ${!argument+x} == 'x' ]] && {
-      argument=${!argument}
-    }
+  if _is_scalar_set "$argument"; then
+    argument=${!argument}
     declaration=$(declare -p argument)
-  }
+  else
+    declaration=$(declare -p argument)
+  fi
   declaration=${declaration#*=}
   printf -v declaration 'declare -- %s=%s' "$parameter" "$declaration"
   results+=( "$declaration" )

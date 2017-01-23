@@ -272,6 +272,12 @@ describe '_is_scalar_set'
     assert equal 0 $?
   end
 
+  it "returns true if the argument is the name of a scalar variable starting with underscore"
+    _sample=one
+    _is_scalar_set _sample
+    assert equal 0 $?
+  end
+
   it "returns true if the argument is an indexed item of an array variable"
     samples=( one )
     _is_scalar_set samples[0]
