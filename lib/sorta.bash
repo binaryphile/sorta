@@ -1,13 +1,13 @@
 [[ -n ${_sorta:-} ]] && return
 readonly _sorta=loaded
 
-_array_declaration() {
+_array_declaration_() {
   local parameter=$1
   local argument=$2
   local option=$3
   local declaration
 
-  [[ $argument == '('* ]] && { _literal_declaration "$parameter" "$argument" "$option"; return ;}
+  [[ $argument == '('* ]] && { _literal_declaration_ "$parameter" "$argument" "$option"; return ;}
   declaration=$(declare -p "$argument")
   [[ $declaration == 'declare -'"$option"* ]] || return
   _results_+=( "${declaration/$argument/$parameter}" )
@@ -42,12 +42,12 @@ assigna() {
   printf '%s\n' "${_results[*]}"
 }
 
-_deref_declaration() {
+_deref_declaration_() {
   local parameter=$1
   local argument=$2
   local declaration
 
-  _is_name "$argument" || return
+  _is_name_ "$argument" || return
   printf -v declaration 'declare -n %s="%s"' "$parameter" "$argument"
   _results_+=( "$declaration" )
 }
@@ -132,12 +132,12 @@ intos() {
   assign "$1" "$(pass hash)"
 }
 
-_is_array()         { [[ $(declare -p "$1" 2>/dev/null) == 'declare -a'* ]] ;}
-_is_array_literal() { [[ $1 == '('* && $1 == *')' ]] ;}
-_is_name()          { declare -p "$1" >/dev/null 2>&1 ;}
-_is_ref()           { _is_set "${!1}" ;}
-_is_scalar_set()    { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
-_is_set()           { _is_name "$1" || _is_scalar_set "$1" ;}
+_is_array_()         { [[ $(declare -p "$1" 2>/dev/null) == 'declare -a'* ]] ;}
+_is_array_literal_() { [[ $1 == '('* && $1 == *')' ]] ;}
+_is_name_()          { declare -p "$1" >/dev/null 2>&1 ;}
+_is_ref_()           { _is_set_ "${!1}" ;}
+_is_scalar_set_()    { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
+_is_set_()           { _is_name_ "$1" || _is_scalar_set_ "$1" ;}
 
 keys_of() {
   eval "$(passed '( %hash )' "$@")"
@@ -147,7 +147,7 @@ keys_of() {
   pass results
 }
 
-_literal_declaration() {
+_literal_declaration_() {
   local parameter=$1
   local argument=$2
   local option=$3
@@ -159,7 +159,7 @@ _literal_declaration() {
   _results_+=( "$(declare -p "$parameter")" )
 }
 
-_map_arg_type() {
+_map_arg_type_() {
   local parameter=$1
   local argument=$2
   local parm
@@ -168,11 +168,11 @@ _map_arg_type() {
   type=${parameter:0:1}
   parm=${parameter:1}
   case $type in
-    '%' ) _array_declaration  "$parm"       "$argument" A ;;
-    '&' ) _deref_declaration  "$parm"       "$argument"   ;;
-    '*' ) _ref_declaration    "$parm"       "$argument"   ;;
-    '@' ) _array_declaration  "$parm"       "$argument" a ;;
-    *   ) _scalar_declaration "$parameter"  "$argument"   ;;
+    '%' ) _array_declaration_  "$parm"       "$argument" A ;;
+    '&' ) _deref_declaration_  "$parm"       "$argument"   ;;
+    '*' ) _ref_declaration_    "$parm"       "$argument"   ;;
+    '@' ) _array_declaration_  "$parm"       "$argument" a ;;
+    *   ) _scalar_declaration_ "$parameter"  "$argument"   ;;
   esac
 }
 
@@ -196,8 +196,8 @@ passed() {
   for _name_ in "${_names_[@]}"; do
     [[ $_temp_ != "$_name_" ]] || return
   done
-  _is_array "$_temp_" || _is_array_literal "$_temp_" || return
-  if _is_array "$_temp_"; then
+  _is_array_ "$_temp_" || _is_array_literal_ "$_temp_" || return
+  if _is_array_ "$_temp_"; then
     local -n _parameters_="$_temp_"
   else
     local -a _parameters_="$_temp_"
@@ -205,25 +205,25 @@ passed() {
   for _i_ in "${!_parameters_[@]}"; do
     _parameter_=${_parameters_[$_i_]}
     [[ $_parameter_ == *=* ]] && { _argument_=${_parameter_#*=}; _parameter_=${_parameter_%%=*} ;}
-    _is_set _arguments_[$_i_] && _argument_=${_arguments_[$_i_]}
-    _map_arg_type "$_parameter_" "$_argument_" || return
+    _is_set_ _arguments_[$_i_] && _argument_=${_arguments_[$_i_]}
+    _map_arg_type_ "$_parameter_" "$_argument_" || return
   done
-  _print_joined ';' "${_results_[@]}"
+  _print_joined_ ';' "${_results_[@]}"
 }
 
-_print_joined() {
+_print_joined_() {
   local IFS=$1; shift
 
   printf '%s\n' "$*"
 }
 
-_ref_declaration() {
+_ref_declaration_() {
   local parameter=$1
   local argument=$2
   local declaration
 
-  _is_set "$argument" || return
-  if _is_ref "$argument"; then
+  _is_set_ "$argument" || return
+  if _is_ref_ "$argument"; then
     declaration=$(declare -p "$argument")
   else
     declaration=$(declare -p argument)
@@ -262,12 +262,12 @@ rets() {
   printf -v "$_ref" '%s' "$_value"
 }
 
-_scalar_declaration() {
+_scalar_declaration_() {
   local parameter=$1
   local argument=$2
   local declaration
 
-  _is_scalar_set "$argument" && argument=${!argument}
+  _is_scalar_set_ "$argument" && argument=${!argument}
   declaration=$(declare -p argument)
   declaration=${declaration#*=}
   printf -v declaration 'declare -- %s=%s' "$parameter" "$declaration"
