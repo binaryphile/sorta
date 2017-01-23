@@ -132,14 +132,15 @@ intos() {
   assign "$1" "$(pass hash)"
 }
 
-_is_name()        { declare -p "$1" >/dev/null 2>&1 ;}
-_is_ref()         { _is_set "${!1}"       ;}
-_is_scalar_set()  { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]]  ;}
-_is_set()         { _is_name "$1" || _is_scalar_set "$1" ;}
+_is_array()         { [[ $(declare -p "$1" 2>/dev/null) == 'declare -a'* ]] ;}
+_is_array_literal() { [[ $1 == '('* && $1 == *')' ]] ;}
+_is_name()          { declare -p "$1" >/dev/null 2>&1 ;}
+_is_ref()           { _is_set "${!1}" ;}
+_is_scalar_set()    { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
+_is_set()           { _is_name "$1" || _is_scalar_set "$1" ;}
 
 keys_of() {
   eval "$(passed '( %hash )' "$@")"
-
   local -a results
 
   results=( "${!hash[@]}" )
@@ -185,7 +186,8 @@ passed() {
   local i
   local parameter
 
-  if _is_set "$temp"; then
+  _is_array "$temp" || _is_array_literal "$temp" || return
+  if _is_array "$temp"; then
     local -n parameters="$temp"
   else
     local -a parameters="$temp"

@@ -471,7 +471,7 @@ describe 'passed'
     assert equal 'declare -- zero="0"' "$(passed '( zero )' "$@")"
   end
 
-  it "allows a multiple items"
+  it "allows multiple items"
     set -- 0 1
     params=( zero one )
     assert equal 'declare -- zero="0";declare -- one="1"' "$(passed params "$@")"
@@ -493,6 +493,15 @@ describe 'passed'
     set -- ""
     params=( zero="one two" )
     assert equal 'declare -- zero=""' "$(passed params "$@")"
+  end
+
+  it "errors if passed an indexed item"
+    set -- ''
+    params=( '' )
+    stop_on_error off
+    passed params[0] "$@"
+    assert unequal 0 $?
+    stop_on_error
   end
 
   it "errors if _map_arg_type errors"
