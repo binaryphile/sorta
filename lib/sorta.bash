@@ -8,8 +8,8 @@ _array_declaration_() {
   local declaration
 
   _is_array_literal_ "$argument" && { _literal_declaration_ "$parameter" "$argument" "$option"; return ;}
+  _is_type_ "$argument" "$option" || return
   declaration=$(declare -p "$argument")
-  [[ $declaration == 'declare -'"$option"* ]] || return
   _results_+=( "${declaration/$argument/$parameter}" )
 }
 
@@ -138,6 +138,7 @@ _is_name_()          { declare -p "$1" >/dev/null 2>&1 ;}
 _is_ref_()           { _is_set_ "${!1}" ;}
 _is_scalar_set_()    { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
 _is_set_()           { _is_name_ "$1" || _is_scalar_set_ "$1" ;}
+_is_type_()           { [[ $(declare -p "$1" 2>/dev/null) == 'declare -'"$2"* ]] ;}
 
 keys_of() {
   eval "$(passed '( %hash )' "$@")"
