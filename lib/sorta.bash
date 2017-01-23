@@ -7,7 +7,7 @@ _array_declaration_() {
   local option=$3
   local declaration
 
-  [[ $argument == '('* ]] && { _literal_declaration_ "$parameter" "$argument" "$option"; return ;}
+  _is_array_literal_ "$argument" && { _literal_declaration_ "$parameter" "$argument" "$option"; return ;}
   declaration=$(declare -p "$argument")
   [[ $declaration == 'declare -'"$option"* ]] || return
   _results_+=( "${declaration/$argument/$parameter}" )
@@ -106,7 +106,7 @@ intoa() {
   for key in "${keys[@]}"; do
     eval "$(intos hash key)"
   done
-  [[ -z $1 || $1 == '('* ]] && { pass hash; return ;}
+  { [[ -z $1 ]] || _is_array_literal_ "$1" ;} && { pass hash; return ;}
   assign "$1" "$(pass hash)"
 }
 
@@ -120,7 +120,7 @@ intoh() {
   for key in "${keys[@]}"; do
     hash[${keyh[$key]}]=${resulth[$key]}
   done
-  [[ -z $1 || $1 == '('* ]] && { pass hash; return ;}
+  { [[ -z $1 ]] || _is_array_literal_ "$1" ;} && { pass hash; return ;}
   assign "$1" "$(pass hash)"
 }
 
@@ -128,7 +128,7 @@ intos() {
   eval "$(passed '( %hash ref )' "$@")"
 
   hash[$ref]=${!ref}
-  [[ -z $1 || $1 == '('* ]] && { pass hash; return ;}
+  { [[ -z $1 ]] || _is_array_literal_ "$1" ;} && { pass hash; return ;}
   assign "$1" "$(pass hash)"
 }
 
