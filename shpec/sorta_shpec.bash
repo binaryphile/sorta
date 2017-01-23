@@ -313,6 +313,14 @@ describe '_is_scalar_set'
     assert unequal 0 $?
     stop_on_error
   end
+
+  it "returns false if the argument doesn't start with a variable name character"
+    set -- one
+    stop_on_error off
+    _is_scalar_set 1
+    assert unequal 0 $?
+    stop_on_error
+  end
 end
 
 describe '_is_set'
