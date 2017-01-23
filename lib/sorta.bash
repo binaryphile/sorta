@@ -256,12 +256,8 @@ _scalar_declaration() {
   local argument=$2
   local declaration
 
-  if _is_scalar_set "$argument"; then
-    argument=${!argument}
-    declaration=$(declare -p argument)
-  else
-    declaration=$(declare -p argument)
-  fi
+  _is_scalar_set "$argument" && argument=${!argument}
+  declaration=$(declare -p argument)
   declaration=${declaration#*=}
   printf -v declaration 'declare -- %s=%s' "$parameter" "$declaration"
   results+=( "$declaration" )
