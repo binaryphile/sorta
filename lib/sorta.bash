@@ -47,7 +47,7 @@ _deref_declaration() {
   local argument=$2
   local declaration
 
-  _is_set "$argument" || return
+  _is_name "$argument" || return
   printf -v declaration 'declare -n %s="%s"' "$parameter" "$argument"
   results+=( "$declaration" )
 }
@@ -134,7 +134,6 @@ intos() {
 
 _is_name()        { declare -p "$1" >/dev/null 2>&1 ;}
 _is_ref()         { _is_set "${!1}"       ;}
-_is_scalar()      { [[ $(declare -p "$1" 2>/dev/null) == 'declare --'* ]] ;}
 _is_scalar_set()  { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]]  ;}
 _is_set()         { _is_name "$1" || _is_scalar_set "$1" ;}
 

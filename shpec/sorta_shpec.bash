@@ -78,13 +78,12 @@ describe 'assigna'
 end
 
 describe '_deref_declaration'
-  it "declares the parameter as dereferencing the argument"; (
+  it "declares the parameter as dereferencing the argument"
     example=''
     sample=example
     results=()
     _deref_declaration result sample
     assert equal 'declare -n result="sample"' "${results[0]}"
-    return "$_shpec_failures" )
   end
 
   it "errors if the named variable is not set"
@@ -92,6 +91,15 @@ describe '_deref_declaration'
     results=()
     stop_on_error off
     _deref_declaration result sample
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "errors if the named variable is an array item reference"
+    samples=( one )
+    results=()
+    stop_on_error off
+    _deref_declaration result samples[0]
     assert unequal 0 $?
     stop_on_error
   end
