@@ -9,8 +9,7 @@ _array_declaration_() {
 
   _is_array_literal_ "$argument" && { _literal_declaration_ "$parameter" "$argument" "$option"; return ;}
   _is_type_ "$argument" "$option" || return
-  declaration=$(declare -p "$argument")
-  _results_+=( "${declaration/$argument/$parameter}" )
+  _copy_declaration_ "$argument" "$parameter"
 }
 
 assign() {
@@ -40,6 +39,15 @@ assigna() {
   done
   IFS=';'
   printf '%s\n' "${_results[*]}"
+}
+
+_copy_declaration_() {
+  local _argument_=$1
+  local _parameter_=$2
+  local _declaration_
+
+  _declaration_=$(declare -p "$_argument_")
+  _results_+=( "${_declaration_/$_argument_/$_parameter_}")
 }
 
 _deref_declaration_() {
