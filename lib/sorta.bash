@@ -41,6 +41,8 @@ assigna() {
   printf '%s\n' "${_results[*]}"
 }
 
+_contains_() { [[ $2 == *"$1"* ]] ;}
+
 _copy_declaration_() {
   local _argument_=$1
   local _parameter_=$2
@@ -140,7 +142,17 @@ intos() {
   assign "$1" "$(pass hash)"
 }
 
-_is_array_()         { [[ $(declare -p "$1" 2>/dev/null) == 'declare -a'* ]] ;}
+_in_() {
+  local target=$1; shift
+  local item
+
+  for item in "$@"; do
+    [[ $target == "$item" ]] && return
+  done
+  return 1
+}
+
+_is_array_()         { _is_type_ "$1" a ;}
 _is_array_literal_() { [[ $1 == '('* && $1 == *')' ]] ;}
 _is_name_()          { declare -p "$1" >/dev/null 2>&1 ;}
 _is_ref_()           { _is_set_ "${!1}" ;}
@@ -190,33 +202,26 @@ pass() { declare -p "$1" ;}
 passed() {
   local _temp_=$1; shift
   local _arguments_=( "$@" )
-  local _argument_=''
-  local _i_
   local _name_
-  local _parameter_
   local _results_=()
 
   local _names_=(
+    _argument_
     _arguments_
+    _i_
     _names_
+    _parameter_
     _parameters_
     _results_
   )
-  for _name_ in "${_names_[@]}"; do
-    [[ $_temp_ != "$_name_" ]] || return
-  done
+  ! _in_ "$_temp_" "${_names_[@]}" || return
   _is_array_ "$_temp_" || _is_array_literal_ "$_temp_" || return
   if _is_array_ "$_temp_"; then
     local -n _parameters_="$_temp_"
   else
     local -a _parameters_="$_temp_"
   fi
-  for _i_ in "${!_parameters_[@]}"; do
-    _parameter_=${_parameters_[$_i_]}
-    [[ $_parameter_ == *=* ]] && { _argument_=${_parameter_#*=}; _parameter_=${_parameter_%%=*} ;}
-    _is_set_ _arguments_[$_i_] && _argument_=${_arguments_[$_i_]}
-    _map_arg_type_ "$_parameter_" "$_argument_" || return
-  done
+  _process_parameters_ || return
   _print_joined_ ';' "${_results_[@]}"
 }
 
@@ -226,6 +231,19 @@ _print_joined_() {
   printf '%s\n' "$*"
 }
 
+_process_parameters_() {
+  local _argument_=''
+  local _i_
+  local _parameter_
+
+  for _i_ in "${!_parameters_[@]}"; do
+    _parameter_=${_parameters_[$_i_]}
+    _contains_ '=' "$_parameter_" && { _argument_=${_parameter_#*=}; _parameter_=${_parameter_%%=*} ;}
+    _is_set_ _arguments_[$_i_] && _argument_=${_arguments_[$_i_]}
+    _map_arg_type_ "$_parameter_" "$_argument_" || return
+  done
+}
+
 _ref_declaration_() {
   local parameter=$1
   local argument=$2
@@ -233,13 +251,10 @@ _ref_declaration_() {
 
   _is_set_ "$argument" || return
   if _is_ref_ "$argument"; then
-    declaration=$(declare -p "$argument")
+    _copy_declaration_ "$argument" "$parameter"
   else
-    declaration=$(declare -p argument)
+    _copy_declaration_ argument "$parameter"
   fi
-  declaration=${declaration#*=}
-  printf -v declaration 'declare -- %s=%s' "$parameter" "$declaration"
-  _results_+=( "$declaration" )
 }
 
 reta() {

@@ -150,62 +150,56 @@ describe 'froms'
 end
 
 describe 'intoa'
-  it "generates a declaration for a hash with the named keys from the local namespace"; (
+  it "generates a declaration for a hash with the named keys from the local namespace"
     one=1
     two=2
     declare -A hash=()
     printf -v expected 'declare -A hash=%s([one]="1" [two]="2" )%s' \' \'
     assert equal "$expected" "$(intoa hash '( one two )')"
-    return "$_shpec_failures" )
   end
 
-  it "generates a declaration for a hash merging the named keys with the existing key(s)"; (
+  it "generates a declaration for a hash merging the named keys with the existing key(s)"
     one=1
     two=2
     declare -A sampleh=([three]=3)
     printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
     assert equal "$expected" "$(intoa sampleh '( one two )')"
-    return "$_shpec_failures" )
   end
 end
 
 describe 'intoh'
-  it "generates a declaration for a hash with the named keys from the local namespace"; (
+  it "generates a declaration for a hash with the named keys from the local namespace"
     one=1
     two=2
     declare -A hash=()
     printf -v expected 'declare -A hash=%s([dumpty]="2" [humpty]="1" )%s' \' \'
     assert equal "$expected" "$(intoh hash '( [one]=humpty [two]=dumpty )')"
-    return "$_shpec_failures" )
   end
 
-  it "generates a declaration for a hash merging the named keys with the existing key(s)"; (
+  it "generates a declaration for a hash merging the named keys with the existing key(s)"
     one=1
     two=2
     declare -A sampleh=([three]=3)
     printf -v expected 'declare -A sampleh=%s([dumpty]="2" [humpty]="1" [three]="3" )%s' \' \'
     assert equal "$expected" "$(intoh sampleh '( [one]=humpty [two]=dumpty )')"
-    return "$_shpec_failures" )
   end
 end
 
 describe 'intos'
-  it "generates a declaration for a hash with the named key from the local namespace"; (
+  it "generates a declaration for a hash with the named key from the local namespace"
     one=1
     ref=one
     declare -A hash=()
     printf -v expected 'declare -A hash=%s([one]="1" )%s' \' \'
     assert equal "$expected" "$(intos hash ref)"
-    return "$_shpec_failures" )
   end
 
-  it "generates a declaration for a hash merging the named key with the existing key(s)"; (
+  it "generates a declaration for a hash merging the named key with the existing key(s)"
     one=1
     ref=one
     declare -A sampleh=([two]=2)
     printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" )%s' \' \'
     assert equal "$expected" "$(intos sampleh ref)"
-    return "$_shpec_failures" )
   end
 end
 
@@ -238,13 +232,12 @@ describe '_is_name_'
 end
 
 describe '_is_ref_'
-  it "returns true if the named variable holds the name of another variable"; (
+  it "returns true if the named variable holds the name of another variable"
     unset -v example
     example=''
     sample=example
     _is_ref_ sample
     assert equal 0 $?
-    return "$_shpec_failures" )
   end
 
   it "returns false if the named variable just holds a string"
@@ -394,13 +387,12 @@ describe '_map_arg_type_'
     assert equal "$expected" "${_results_[0]}"
   end
 
-  it "creates a deref declaration"; (
+  it "creates a deref declaration"
     _results_=()
     example=''
     sample=example
     _map_arg_type_ '&result' sample
     assert equal 'declare -n result="sample"' "${_results_[0]}"
-    return "$_shpec_failures" )
   end
 
   it "creates a ref declaration"
@@ -437,7 +429,7 @@ describe '_map_arg_type_'
     unset -v sample
     _results_=()
     stop_on_error off
-    _map_arg_type_ *ref sample
+    _map_arg_type_ '*ref' sample
     assert unequal 0 $?
     stop_on_error
   end
@@ -610,13 +602,12 @@ describe '_ref_declaration_'
     assert equal 'declare -- result="sample"' "${_results_[0]}"
   end
 
-  it "declares a scalar with the value of a variable which is the name of another variable"; (
+  it "declares a scalar with the value of a variable which is the name of another variable"
     one=1
     sample=one
     _results_=()
     _ref_declaration_ result sample
     assert equal 'declare -- result="one"' "${_results_[0]}"
-    return "$_shpec_failures" )
   end
 
   it "errors on an argument which isn't set"
@@ -629,60 +620,54 @@ describe '_ref_declaration_'
 end
 
 describe 'reta'
-  it "sets an array of values in a named variable"; (
+  it "sets an array of values in a named variable"
     my_func() { local values=( one two three ); local "$1"= && reta values "$1" ;}
     samples=()
     my_func samples
     printf -v expected 'declare -a samples=%s([0]="one" [1]="two" [2]="three")%s' \' \'
     assert equal "$expected" "$(declare -p samples)"
-    return $_shpec_failures )
   end
 
-  it "sets an array of values in a named variable with a literal"; (
+  it "sets an array of values in a named variable with a literal"
     my_func() { local -a "$1"= && reta '( one two three )' "$1" ;}
     samples=()
     my_func samples
     printf -v expected 'declare -a samples=%s([0]="one" [1]="two" [2]="three")%s' \' \'
     assert equal "$expected" "$(declare -p samples)"
-    return $_shpec_failures )
   end
 end
 
 describe 'reth'
-  it "sets an hash of values in a named variable"; (
+  it "sets an hash of values in a named variable"
     my_func() { local -A valueh=( [one]=1 [two]=2 [three]=3 ); local "$1"= && reth valueh "$1" ;}
     declare -A sampleh=()
     my_func sampleh
     printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
     assert equal "$expected" "$(declare -p sampleh)"
-    return $_shpec_failures )
   end
 
-  it "sets an hash of values in a named variable with a literal"; (
+  it "sets an hash of values in a named variable with a literal"
     my_func() { local "$1"= && reth '( [one]=1 [two]=2 [three]=3 )' "$1" ;}
     declare -A sampleh=()
     my_func sampleh
     printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
     assert equal "$expected" "$(declare -p sampleh)"
-    return $_shpec_failures )
   end
 end
 
 describe 'rets'
-  it "sets a string value in a named variable"; (
+  it "sets a string value in a named variable"
     my_func() { local value=0; local "$1"= && rets value "$1" ;}
     sample=''
     my_func sample
     assert equal '0' "$sample"
-    return $_shpec_failures )
   end
 
-  it "sets a string value in a named variable with a literal"; (
+  it "sets a string value in a named variable with a literal"
     my_func() { local "$1"= && rets 0 "$1" ;}
     sample=''
     my_func sample
     assert equal '0' "$sample"
-    return $_shpec_failures )
   end
 end
 
@@ -715,20 +700,18 @@ describe '_scalar_declaration_'
     assert equal 'declare -- result="sampleh"' "${_results_[0]}"
   end
 
-  it "declares a scalar with the value of a supplied array item reference"; (
+  it "declares a scalar with the value of a supplied array item reference"
     samples=( one )
     _results_=()
     _scalar_declaration_ result samples[0]
     assert equal 'declare -- result="one"' "${_results_[0]}"
-    return "$_shpec_failures" )
   end
 
-  it "declares a scalar with the value of a supplied hash item reference"; (
+  it "declares a scalar with the value of a supplied hash item reference"
     declare -A sampleh=( [one]=1 )
     _results_=()
     _scalar_declaration_ result sampleh[one]
     assert equal 'declare -- result="1"' "${_results_[0]}"
-    return "$_shpec_failures" )
   end
 end
 
