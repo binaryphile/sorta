@@ -286,7 +286,7 @@ describe '_is_name_'
     stop_on_error
   end
 
-  it "returns false if argument isn't the name of a variable"
+  it "returns false if argument is unset"
     unset -v sample
     stop_on_error off
     _is_name_ sample
