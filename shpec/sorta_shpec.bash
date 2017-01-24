@@ -181,6 +181,22 @@ describe 'froms'
   end
 end
 
+describe '_in_'
+  it "returns true if it finds an item in an array"
+    samples=( one two )
+    _in_ one "${samples[@]}"
+    assert equal 0 $?
+  end
+
+  it "returns false if it doesn't find an item in an array"
+    samples=( one two )
+    stop_on_error off
+    _in_ zero "${samples[@]}"
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
 describe 'intoa'
   it "generates a declaration for a hash with the named keys from the local namespace"
     one=1

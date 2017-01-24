@@ -110,6 +110,16 @@ froms() {
   assign "$key" "$(declare -p value)"
 }
 
+_in_() {
+  local target=$1; shift
+  local item
+
+  for item in "$@"; do
+    [[ $target == "$item" ]] && return
+  done
+  return 1
+}
+
 intoa() {
   eval "$(passed '( %hash @keys )' "$@")"
   local key
@@ -141,16 +151,6 @@ intos() {
   hash[$ref]=${!ref}
   { [[ -z $1 ]] || _is_array_literal_ "$1" ;} && { pass hash; return ;}
   assign "$1" "$(pass hash)"
-}
-
-_in_() {
-  local target=$1; shift
-  local item
-
-  for item in "$@"; do
-    [[ $target == "$item" ]] && return
-  done
-  return 1
 }
 
 _is_array_()         { _is_type_ "$1" a ;}
