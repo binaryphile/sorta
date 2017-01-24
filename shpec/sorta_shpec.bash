@@ -270,6 +270,22 @@ describe '_is_name_'
     assert equal 0 $?
   end
 
+  it "returns false if argument is an indexed array reference"
+    samples=( one )
+    stop_on_error off
+    _is_name_ samples[0]
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if argument is an indexed hash reference"
+    sampleh=( [one]=1 )
+    stop_on_error off
+    _is_name_ samples[one]
+    assert unequal 0 $?
+    stop_on_error
+  end
+
   it "returns false if argument isn't the name of a variable"
     unset -v sample
     stop_on_error off
