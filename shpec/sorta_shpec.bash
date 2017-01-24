@@ -91,6 +91,24 @@ describe '_contains_'
   end
 end
 
+describe '_copy_declaration_'
+  it "creates a declaration from an existing scalar variable with the supplied variable name"
+    _results_=()
+    sample=one
+    _copy_declaration_ sample result
+    assert equal 'declare -- result="one"' "${_results_[0]}"
+  end
+
+  it "errors if the name doesn't exist"
+    _results_=()
+    unset -v sample
+    stop_on_error off
+    _copy_declaration_ sample result
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
 describe '_deref_declaration_'
   it "declares the parameter as dereferencing the argument"
     example=''

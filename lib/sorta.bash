@@ -48,6 +48,7 @@ _copy_declaration_() {
   local _parameter_=$2
   local _declaration_
 
+  _is_name_ "$_argument_" || return
   _declaration_=$(declare -p "$_argument_")
   _results_+=( "${_declaration_/$_argument_/$_parameter_}")
 }
