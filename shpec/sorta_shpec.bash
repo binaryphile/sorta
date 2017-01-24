@@ -251,6 +251,46 @@ describe 'intos'
   end
 end
 
+describe '_is_array_'
+  it "returns true if the argument is the name of an array"
+    samples=( one )
+    _is_array_ samples
+    assert equal 0 $?
+  end
+
+  it "returns false if the argument is an indexed array reference"
+    samples=( one )
+    stop_on_error off
+    _is_array_ samples[0]
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the argument is the name of a scalar"
+    sample=one
+    stop_on_error off
+    _is_array_ sample
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the argument is the name of a hash"
+    declare -A sampleh=( [one]=1 )
+    stop_on_error off
+    _is_array_ sampleh
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the argument is unset"
+    unset -v sample
+    stop_on_error off
+    _is_array_ sample
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
 describe '_is_name_'
   it "returns true if argument is the name of a scalar"
     sample=one
@@ -279,7 +319,7 @@ describe '_is_name_'
   end
 
   it "returns false if argument is an indexed hash reference"
-    sampleh=( [one]=1 )
+    declare -A sampleh=( [one]=1 )
     stop_on_error off
     _is_name_ samples[one]
     assert unequal 0 $?
@@ -364,7 +404,7 @@ describe '_is_scalar_set_'
   end
 
   it "returns false if the argument is a hash index that isn't set"
-    sampleh=( [one]=1 )
+    declare -A sampleh=( [one]=1 )
     stop_on_error off
     _is_scalar_set_ sampleh[two]
     assert unequal 0 $?
