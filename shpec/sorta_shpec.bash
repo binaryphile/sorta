@@ -77,6 +77,20 @@ describe 'assigna'
   end
 end
 
+describe '_contains_'
+  it "returns true if it finds a string in another string"
+    _contains_ "one" "stones"
+    assert equal 0 $?
+  end
+
+  it "returns false if it doesn't find a string in another string"
+    stop_on_error off
+    _contains_ "xor" "stones"
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
 describe '_deref_declaration_'
   it "declares the parameter as dereferencing the argument"
     example=''
