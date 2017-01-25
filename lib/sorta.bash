@@ -37,8 +37,7 @@ assigna() {
   for _i in "${!_values[@]}"; do
     _results+=( "$(assign "${_refa[$_i]}" "${_values[$_i]}")" )
   done
-  IFS=';'
-  printf '%s\n' "${_results[*]}"
+  _print_joined_ ';' "${_results[@]}"
 }
 
 _contains_() { [[ $2 == *"$1"* ]] ;}
