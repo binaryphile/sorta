@@ -693,24 +693,6 @@ describe 'passed'
     assert equal 'declare -- zero="0";declare -- one="1"' "$(passed params "$@")"
   end
 
-  it "accepts empty values"
-    set --
-    params=( zero )
-    assert equal 'declare -- zero=""' "$(passed params "$@")"
-  end
-
-  it "allows default values"
-    set --
-    params=( zero="one two" )
-    assert equal 'declare -- zero="one two"' "$(passed params "$@")"
-  end
-
-  it "overrides default values with empty parameters"
-    set -- ''
-    params=( zero="one two" )
-    assert equal 'declare -- zero=""' "$(passed params "$@")"
-  end
-
   it "doesn't work if the params list is named '_argument_'"
     set -- ''
     _argument_=( sample )
@@ -792,16 +774,7 @@ describe 'passed'
     stop_on_error
   end
 
-  it "errors if passed an indexed item"
-    sample=''
-    params=( sample )
-    stop_on_error off
-    passed params[0] "$@" >/dev/null
-    assert unequal 0 $?
-    stop_on_error
-  end
-
-  it "errors if _map_arg_type_ errors"
+  it "errors if _process_parameters_ errors"
     set -- ''
     params=( '*ref' )
     stop_on_error off
@@ -814,6 +787,58 @@ end
 describe '_print_joined_'
   it "prints arguments joined by a delimiter"
     assert equal 'one;two' "$(_print_joined_ ';' one two)"
+  end
+end
+
+describe '_process_parameters_'
+  it "creates a scalar declaration from an array naming a single parameter with the value passed after"
+    _results_=()
+    _arguments_=( 0 )
+    _parameters_=( zero )
+    _process_parameters_
+    assert equal 'declare -- zero="0"' "${_results_[0]}"
+  end
+
+  it "allows multiple items"
+    _results_=()
+    _arguments_=( 0 1 )
+    _parameters_=( zero one )
+    _process_parameters_
+    assert equal 'declare -- zero="0" declare -- one="1"' "${_results_[*]}"
+  end
+
+  it "accepts empty values"
+    _results_=()
+    _arguments_=()
+    _parameters_=( zero )
+    _process_parameters_
+    assert equal 'declare -- zero=""' "${_results_[0]}"
+  end
+
+  it "allows default values"
+    _results_=()
+    _arguments_=()
+    _parameters_=( zero="one two" )
+    _process_parameters_
+    assert equal 'declare -- zero="one two"' "${_results_[0]}"
+  end
+
+  it "overrides default values with empty parameters"
+    _results_=()
+    _arguments_=( '' )
+    _parameters_=( zero="one two" )
+    _process_parameters_
+    assert equal 'declare -- zero=""' "${_results_[0]}"
+  end
+
+  it "errors if _map_arg_type_ errors"
+    _results_=()
+    _arguments_=( '' )
+    _parameters_=( '*ref' )
+    stop_on_error off
+    _process_parameters_
+    assert unequal 0 $?
+    stop_on_error
   end
 end
 
