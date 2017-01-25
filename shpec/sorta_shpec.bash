@@ -478,6 +478,98 @@ describe '_is_set_'
   end
 end
 
+describe '_is_type_'
+  it "returns true if the arguments are a scalar and a dash"
+    sample=one
+    _is_type_ sample -
+    assert equal 0 $?
+  end
+
+  it "returns false if the arguments are a scalar and an a"
+    sample=one
+    stop_on_error off
+    _is_type_ sample a
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the arguments are a scalar and an A"
+    sample=one
+    stop_on_error off
+    _is_type_ sample A
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns true if the arguments are an array and an a"
+    samples=( one )
+    _is_type_ samples a
+    assert equal 0 $?
+  end
+
+  it "returns false if the arguments are an array and a dash"
+    samples=( one )
+    stop_on_error off
+    _is_type_ samples -
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the arguments are an array and an A"
+    samples=( one )
+    stop_on_error off
+    _is_type_ samples -
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns true if the arguments are a hash and an A"
+    declare -A sampleh=( [one]=1 )
+    _is_type_ sampleh A
+    assert equal 0 $?
+  end
+
+  it "returns false if the arguments are a hash and a dash"
+    declare -A sampleh=( [one]=1 )
+    stop_on_error off
+    _is_type_ sampleh -
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the arguments are a hash and an a"
+    declare -A sampleh=( [one]=1 )
+    stop_on_error off
+    _is_type_ sampleh a
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the argument doesn't exist and has a dash"
+    unset -v sample
+    stop_on_error off
+    _is_type_ sample -
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the argument doesn't exist and has an a"
+    unset -v sample
+    stop_on_error off
+    _is_type_ sample a
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the argument doesn't exist and has an A"
+    unset -v sample
+    stop_on_error off
+    _is_type_ sample A
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
 describe 'keys_of'
   it "declares the keys of a hash"
     declare -A sampleh=([zero]=0 [one]=1)
