@@ -291,6 +291,34 @@ describe '_is_array_'
   end
 end
 
+describe '_is_array_literal_'
+  it "returns true if the argument is a string starting and ending with parentheses"
+    _is_array_literal_ '()'
+    assert equal 0 $?
+  end
+
+  it "returns false if the argument doesn't end with a parenthesis"
+    stop_on_error off
+    _is_array_literal_ '('
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the argument doesn't start with a parenthesis"
+    stop_on_error off
+    _is_array_literal_ ')'
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the argument is blank"
+    stop_on_error off
+    _is_array_literal_ ''
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
 describe '_is_name_'
   it "returns true if argument is the name of a scalar"
     sample=one
