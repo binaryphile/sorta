@@ -153,12 +153,11 @@ intos() {
   assign "$1" "$(pass hash)"
 }
 
-_is_array_()         { _is_type_ "$1" a ;}
-_is_array_literal_() { [[ $1 == '('* && $1 == *')' ]] ;}
-_is_name_()          { declare -p "$1" >/dev/null 2>&1 ;}
-_is_ref_()           { _is_set_ "${!1}" ;}
-_is_scalar_set_()    { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
-_is_set_()           { _is_name_ "$1" || _is_scalar_set_ "$1" ;}
+_is_array_()          { _is_type_ "$1" a ;}
+_is_array_literal_()  { [[ $1 == '('* && $1 == *')' ]] ;}
+_is_name_()           { declare -p "$1" >/dev/null 2>&1 ;}
+_is_ref_()            { _is_name_ "${!1}" ;}
+_is_set_()            { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
 _is_type_()           { [[ $(declare -p "$1" 2>/dev/null) == 'declare -'"$2"* ]] ;}
 
 keys_of() {
@@ -292,7 +291,7 @@ _scalar_declaration_() {
   local argument=$2
   local declaration
 
-  _is_scalar_set_ "$argument" && argument=${!argument}
+  _is_set_ "$argument" && argument=${!argument}
   declaration=$(declare -p argument)
   declaration=${declaration#*=}
   printf -v declaration 'declare -- %s=%s' "$parameter" "$declaration"

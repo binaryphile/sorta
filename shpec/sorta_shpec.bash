@@ -398,35 +398,35 @@ describe '_is_ref_'
   end
 end
 
-describe '_is_scalar_set_'
+describe '_is_set_'
   it "returns true if the argument is the name of a scalar variable"
     sample=one
-    _is_scalar_set_ sample
+    _is_set_ sample
     assert equal 0 $?
   end
 
   it "returns true if the argument is the name of a scalar variable starting with underscore"
     _sample=one
-    _is_scalar_set_ _sample
+    _is_set_ _sample
     assert equal 0 $?
   end
 
   it "returns true if the argument is an indexed item of an array variable"
     samples=( one )
-    _is_scalar_set_ samples[0]
+    _is_set_ samples[0]
     assert equal 0 $?
   end
 
   it "returns true if the argument is an indexed item of a hash variable"
     declare -A sampleh=( [one]=1 )
-    _is_scalar_set_ sampleh[one]
+    _is_set_ sampleh[one]
     assert equal 0 $?
   end
 
   it "returns false if the argument is an array index that isn't set"
     samples=( one )
     stop_on_error off
-    _is_scalar_set_ samples[1]
+    _is_set_ samples[1]
     assert unequal 0 $?
     stop_on_error
   end
@@ -434,7 +434,7 @@ describe '_is_scalar_set_'
   it "returns false if the argument is a hash index that isn't set"
     declare -A sampleh=( [one]=1 )
     stop_on_error off
-    _is_scalar_set_ sampleh[two]
+    _is_set_ sampleh[two]
     assert unequal 0 $?
     stop_on_error
   end
@@ -442,7 +442,7 @@ describe '_is_scalar_set_'
   it "returns false if the argument doesn't exist"
     unset -v samples
     stop_on_error off
-    _is_scalar_set_ samples[0]
+    _is_set_ samples[0]
     assert unequal 0 $?
     stop_on_error
   end
@@ -450,29 +450,7 @@ describe '_is_scalar_set_'
   it "returns false if the argument doesn't start with a variable name character"
     set -- one
     stop_on_error off
-    _is_scalar_set_ 1
-    assert unequal 0 $?
-    stop_on_error
-  end
-end
-
-describe '_is_set_'
-  it "returns true if the named scalar exists"
-    sample=''
-    _is_set_ sample
-    assert equal 0 $?
-  end
-
-  it "returns true if the named array item is set"
-    samples=( '' )
-    _is_set_ samples[0]
-    assert equal 0 $?
-  end
-
-  it "returns false if the named scalar doesn't exist"
-    unset -v sample
-    stop_on_error off
-    _is_set_ sample
+    _is_set_ 1
     assert unequal 0 $?
     stop_on_error
   end
