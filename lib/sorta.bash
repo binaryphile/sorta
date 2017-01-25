@@ -292,10 +292,7 @@ _scalar_declaration_() {
   local declaration
 
   _is_set_ "$argument" && argument=${!argument}
-  declaration=$(declare -p argument)
-  declaration=${declaration#*=}
-  printf -v declaration 'declare -- %s=%s' "$parameter" "$declaration"
-  _results_+=( "$declaration" )
+  _copy_declaration_ argument "$parameter"
 }
 
 values_of() {
