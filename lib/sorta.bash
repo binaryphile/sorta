@@ -250,7 +250,7 @@ _ref_declaration_() {
   local argument=$2
   local declaration
 
-  _is_set_ "$argument" || return
+  _is_name_ "$argument" || return
   if _is_ref_ "$argument"; then
     _copy_declaration_ "$argument" "$parameter"
   else
