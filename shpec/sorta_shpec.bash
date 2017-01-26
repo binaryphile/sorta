@@ -319,6 +319,25 @@ describe '_is_array_literal_'
   end
 end
 
+describe '_is_hash_literal_'
+  it "returns true for a parenthetical list of indices"
+    _is_hash_literal_ '([one]=1)'
+    assert equal 0 $?
+  end
+
+  it "returns true for a parenthetical list of indices with a leading space"
+    _is_hash_literal_ '( [one]=1)'
+    assert equal 0 $?
+  end
+
+  it "returns false for a parenthetical list without an initial bracket"
+    stop_on_error off
+    _is_hash_literal_ '({one]=1 )'
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
 describe '_is_name_'
   it "returns true if argument is the name of a scalar"
     sample=one

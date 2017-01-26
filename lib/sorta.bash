@@ -2,14 +2,13 @@
 readonly _sorta=loaded
 
 _array_declaration_() {
-  local parameter=$1
-  local argument=$2
-  local option=$3
-  local declaration
+  local _parameter_=$1
+  local _argument_=$2
+  local _option_=$3
 
-  _is_array_literal_ "$argument" && { _literal_declaration_ "$parameter" "$argument" "$option"; return ;}
-  _is_type_ "$argument" "$option" || return
-  _copy_declaration_ "$argument" "$parameter"
+  _is_array_literal_ "$_argument_" && { _literal_declaration_ "$_parameter_" "$_argument_" "$_option_"; return ;}
+  _is_type_ "$_argument_" "$_option_" || return
+  _copy_declaration_ "$_argument_" "$_parameter_"
 }
 
 assign() {
@@ -43,13 +42,13 @@ assigna() {
 _contains_() { [[ $2 == *"$1"* ]] ;}
 
 _copy_declaration_() {
-  local _argument_=$1
-  local _parameter_=$2
-  local _declaration_
+  local __argument__=$1
+  local __parameter__=$2
+  local __declaration__
 
-  _is_name_ "$_argument_" || return
-  _declaration_=$(declare -p "$_argument_")
-  _results_+=( "${_declaration_/$_argument_/$_parameter_}")
+  _is_name_ "$__argument__" || return
+  __declaration__=$(declare -p "$__argument__")
+  _results_+=( "${__declaration__/$__argument__/$__parameter__}")
 }
 
 _deref_declaration_() {
@@ -153,7 +152,8 @@ intos() {
 }
 
 _is_array_()          { _is_type_ "$1" a ;}
-_is_array_literal_()  { [[ $1 == '('* && $1 == *')' ]] ;}
+_is_array_literal_()  { [[ $1 == '('* && $1 == *')'  ]] ;}
+_is_hash_literal_()   { _is_array_literal_ "$1" && [[ ${1// /} == '(['* ]] ;}
 _is_name_()           { declare -p "$1" >/dev/null 2>&1 ;}
 _is_ref_()            { _is_name_ "${!1}" ;}
 _is_set_()            { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
@@ -173,8 +173,10 @@ _literal_declaration_() {
   local option=$3
   local message
 
-  message=$(declare -"$option" "$parameter"="$argument" 2>&1)
-  [[ -z $message ]] || return
+  case $option in
+    a ) _is_array_literal_  "$argument" || return;;
+    A ) _is_hash_literal_   "$argument" || return;;
+  esac
   declare -"$option" "$parameter"="$argument"
   _results_+=( "$(declare -p "$parameter")" )
 }
@@ -244,15 +246,15 @@ _process_parameters_() {
 }
 
 _ref_declaration_() {
-  local parameter=$1
-  local argument=$2
-  local declaration
+  local _parameter_=$1
+  local _argument_=$2
+  local _declaration_
 
-  _is_name_ "$argument" || return
-  if _is_ref_ "$argument"; then
-    _copy_declaration_ "$argument" "$parameter"
+  _is_name_ "$_argument_" || return
+  if _is_ref_ "$_argument_"; then
+    _copy_declaration_ "$_argument_" "$_parameter_"
   else
-    _copy_declaration_ argument "$parameter"
+    _copy_declaration_ _argument_ "$_parameter_"
   fi
 }
 
@@ -286,12 +288,12 @@ rets() {
 }
 
 _scalar_declaration_() {
-  local parameter=$1
-  local argument=$2
-  local declaration
+  local _parameter_=$1
+  local _argument_=$2
+  local _declaration_
 
-  _is_set_ "$argument" && argument=${!argument}
-  _copy_declaration_ argument "$parameter"
+  _is_set_ "$_argument_" && _argument_=${!_argument_}
+  _copy_declaration_ _argument_ "$_parameter_"
 }
 
 values_of() {
