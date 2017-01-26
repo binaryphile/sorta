@@ -42,13 +42,9 @@ assigna() {
 _contains_() { [[ $2 == *"$1"* ]] ;}
 
 _copy_declaration_() {
-  local __argument__=$1
-  local __parameter__=$2
-  local __declaration__
-
-  _is_name_ "$__argument__" || return
-  __declaration__=$(declare -p "$__argument__")
-  _results_+=( "${__declaration__/$__argument__/$__parameter__}")
+  _is_name_ "$1" || return
+  set -- "$1" "$2" "$(declare -p "$1")"
+  _results_+=( "${3/$1/$2}" )
 }
 
 _deref_declaration_() {
