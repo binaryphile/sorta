@@ -52,6 +52,73 @@ describe '_array_declaration_'
     assert unequal 0 $?
     stop_on_error
   end
+
+  it "doesn't work if the argument is named _argument_"
+    _argument_=( one two )
+    _results_=()
+    stop_on_error off
+    _array_declaration_ array _argument_ a
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  # it "works if the argument is named _argument_"
+  #   _argument_=( one two )
+  #   _results_=()
+  #   _array_declaration_ array _arguments_ a
+  #   printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+  #   assert equal "$expected" "${_results_[0]}"
+  # end
+
+  it "works if the argument is named _arguments_"
+    _arguments_=( one two )
+    _results_=()
+    _array_declaration_ array _arguments_ a
+    printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+    assert equal "$expected" "${_results_[0]}"
+  end
+
+  it "doesn't work if the argument is named _parameter_"
+    _parameter_=( one two )
+    _results_=()
+    stop_on_error off
+    _array_declaration_ array _parameter_ a
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  # it "works if the argument is named _parameter_"
+  #   _parameter_=( one two )
+  #   _results_=()
+  #   _array_declaration_ array _parameter_ a
+  #   printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+  #   assert equal "$expected" "${_results_[0]}"
+  # end
+
+  it "works if the argument is named _parameters_"
+    _parameters_=( one two )
+    _results_=()
+    _array_declaration_ array _parameters_ a
+    printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+    assert equal "$expected" "${_results_[0]}"
+  end
+
+  it "doesn't work if the argument is named _option_"
+    _option_=( one two )
+    _results_=()
+    stop_on_error off
+    _array_declaration_ array _option_ a
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  # it "works if the argument is named _option_"
+  #   _option_=( one two )
+  #   _results_=()
+  #   _array_declaration_ array _option_ a
+  #   printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+  #   assert equal "$expected" "${_results_[0]}"
+  # end
 end
 
 describe 'assign'
@@ -178,22 +245,6 @@ describe 'froms'
     unset -v zero
     declare -A sampleh=( [zero]="0 1" )
     assert equal 'declare -- zero="0 1"' "$(froms sampleh zero)"
-  end
-end
-
-describe '_in_'
-  it "returns true if it finds an item in an array"
-    samples=( one two )
-    _in_ one "${samples[@]}"
-    assert equal 0 $?
-  end
-
-  it "returns false if it doesn't find an item in an array"
-    samples=( one two )
-    stop_on_error off
-    _in_ zero "${samples[@]}"
-    assert unequal 0 $?
-    stop_on_error
   end
 end
 
@@ -690,86 +741,94 @@ describe 'passed'
     assert equal 'declare -- zero="0";declare -- one="1"' "$(passed params "$@")"
   end
 
-  it "doesn't work if the params list is named '_argument_'"
-    set -- ''
+  it "works if the params list is named '_argument_'"
+    unset -v one
+    set -- one
     _argument_=( sample )
-    stop_on_error off
-    passed _argument_ "$@" >/dev/null
-    assert unequal 0 $?
-    stop_on_error
+    assert equal 'declare -- sample="one"' "$(passed _argument_ "$@")"
   end
 
-  it "doesn't work if the params list is named '_arguments_'"
-    set -- ''
+  it "works if the params list is named '_arguments_'"
+    unset -v one
+    set -- one
     _arguments_=( sample )
-    stop_on_error off
-    passed _arguments_ "$@" >/dev/null
-    assert unequal 0 $?
-    stop_on_error
+    assert equal 'declare -- sample="one"' "$(passed _arguments_ "$@")"
   end
 
-  it "doesn't work if the params list is named '_i_'"
-    set -- ''
-    _i_=( sample )
-    stop_on_error off
-    passed _i_ "$@" >/dev/null
-    assert unequal 0 $?
-    stop_on_error
-  end
-
-  it "doesn't work if the params list is named '_name_'"
-    set -- ''
-    _name_=( sample )
-    stop_on_error off
-    passed _name_ "$@" >/dev/null
-    assert unequal 0 $?
-    stop_on_error
-  end
-
-  it "doesn't work if the params list is named '_names_'"
-    set -- ''
-    _names_=( sample )
-    stop_on_error off
-    passed _names_ "$@" >/dev/null
-    assert unequal 0 $?
-    stop_on_error
-  end
-
-  it "doesn't work if the params list is named '_parameter_'"
-    set -- ''
-    _parameter_=( sample )
-    stop_on_error off
-    passed _parameter_ "$@" >/dev/null
-    assert unequal 0 $?
-    stop_on_error
-  end
-
-  it "doesn't work if the params list is named '_parameters_'"
-    set -- ''
+  it "works if the params list is named '_parameters_'"
+    unset -v one
+    set -- one
     _parameters_=( sample )
-    stop_on_error off
-    passed _parameters_ "$@" >/dev/null
-    assert unequal 0 $?
-    stop_on_error
+    assert equal 'declare -- sample="one"' "$(passed _parameters_ "$@")"
   end
 
-  it "doesn't work if the params list is named '_results_'"
-    set -- ''
+  it "works if the params list is named '_results_'"
+    unset -v one
+    set -- one
     _results_=( sample )
-    stop_on_error off
-    passed _results_ "$@" >/dev/null
-    assert unequal 0 $?
-    stop_on_error
+    assert equal 'declare -- sample="one"' "$(passed _results_ "$@")"
   end
 
-  it "doesn't work if the params list is named '_temp_'"
-    set -- ''
-    _temp_=( sample )
-    stop_on_error off
-    passed _temp_ "$@" >/dev/null
-    assert unequal 0 $?
-    stop_on_error
+  it "works if the params list is named '_option_'"
+    unset -v one
+    set -- one
+    _option_=( sample )
+    assert equal 'declare -- sample="one"' "$(passed _option_ "$@")"
   end
+
+  # it "doesn't work if the params list is named '_argument_'"
+  #   set -- ''
+  #   _argument_=( sample )
+  #   stop_on_error off
+  #   passed _argument_ "$@" >/dev/null
+  #   assert unequal 0 $?
+  #   stop_on_error
+  # end
+  #
+  # it "doesn't work if the params list is named '_arguments_'"
+  #   set -- ''
+  #   _arguments_=( sample )
+  #   stop_on_error off
+  #   passed _arguments_ "$@" >/dev/null
+  #   assert unequal 0 $?
+  #   stop_on_error
+  # end
+  #
+  # it "doesn't work if the params list is named '_i_'"
+  #   set -- ''
+  #   _i_=( sample )
+  #   stop_on_error off
+  #   passed _i_ "$@" >/dev/null
+  #   assert unequal 0 $?
+  #   stop_on_error
+  # end
+  #
+  # it "doesn't work if the params list is named '_parameter_'"
+  #   set -- ''
+  #   _parameter_=( sample )
+  #   stop_on_error off
+  #   passed _parameter_ "$@" >/dev/null
+  #   assert unequal 0 $?
+  #   stop_on_error
+  # end
+  #
+  # it "doesn't work if the params list is named '_parameters_'"
+  #   set -- ''
+  #   _parameters_=( sample )
+  #   stop_on_error off
+  #   passed _parameters_ "$@" >/dev/null
+  #   assert unequal 0 $?
+  #   stop_on_error
+  # end
+  #
+  # it "doesn't work if the params list is named '_results_'"
+  #   set -- ''
+  #   _results_=( sample )
+  #   stop_on_error off
+  #   passed _results_ "$@" >/dev/null
+  #   assert unequal 0 $?
+  #   stop_on_error
+  # end
 
   it "errors if _process_parameters_ errors"
     set -- ''

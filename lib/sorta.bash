@@ -1,5 +1,5 @@
-[[ -n ${_sorta:-} ]] && return
-readonly _sorta=loaded
+[[ -n ${_sorta_:-} ]] && return
+readonly _sorta_=loaded
 
 _array_declaration_() {
   local _parameter_=$1
@@ -12,31 +12,31 @@ _array_declaration_() {
 }
 
 assign() {
-  local _ref=$1
-  local _value=$2
-  local _name
+  local _ref_=$1
+  local _value_=$2
+  local _name_
 
-  _name=${_value%%=*}
-  _name=${_name##* }
-  printf '%s\n' "${_value/$_name/$_ref}"
+  _name_=${_value_%%=*}
+  _name_=${_name_##* }
+  printf '%s\n' "${_value_/$_name_/$_ref_}"
 }
 
 assigna() {
-  local -n _refa=$1
-  local _value=$2
-  local -a _results
-  local -a _values
+  local -n _refa_=$1
+  local _value_=$2
+  local -a _results_
+  local -a _values_
   local IFS
-  local _i
+  local _i_
 
   IFS=';'
-  set -- $_value
+  set -- $_value_
   IFS=$' \t\n'
-  _values=( "$@" )
-  for _i in "${!_values[@]}"; do
-    _results+=( "$(assign "${_refa[$_i]}" "${_values[$_i]}")" )
+  _values_=( "$@" )
+  for _i_ in "${!_values_[@]}"; do
+    _results_+=( "$(assign "${_refa_[$_i_]}" "${_values_[$_i_]}")" )
   done
-  _print_joined_ ';' "${_results[@]}"
+  _print_joined_ ';' "${_results_[@]}"
 }
 
 _contains_() { [[ $2 == *"$1"* ]] ;}
@@ -48,13 +48,11 @@ _copy_declaration_() {
 }
 
 _deref_declaration_() {
-  local parameter=$1
-  local argument=$2
-  local declaration
+  local _parameter_=$1
+  local _argument_=$2
 
-  _is_name_ "$argument" || return
-  printf -v declaration 'declare -n %s="%s"' "$parameter" "$argument"
-  _results_+=( "$declaration" )
+  _is_name_ "$_argument_" || return
+  _results_+=( "$(printf 'declare -n %s="%s"' "$_parameter_" "$_argument_")" )
 }
 
 froma() {
@@ -102,16 +100,6 @@ froms() {
   }
   value=${hash[$key]}
   assign "$key" "$(declare -p value)"
-}
-
-_in_() {
-  local target=$1; shift
-  local item
-
-  for item in "$@"; do
-    [[ $target == "$item" ]] && return
-  done
-  return 1
 }
 
 intoa() {
@@ -164,60 +152,41 @@ keys_of() {
 }
 
 _literal_declaration_() {
-  local parameter=$1
-  local argument=$2
-  local option=$3
-  local message
-
-  case $option in
-    a ) _is_array_literal_  "$argument" || return;;
-    A ) _is_hash_literal_   "$argument" || return;;
+  case $3 in
+    a ) _is_array_literal_  "$2" || return;;
+    A ) _is_hash_literal_   "$2" || return;;
   esac
-  declare -"$option" "$parameter"="$argument"
-  _results_+=( "$(declare -p "$parameter")" )
+  declare -"$3" "$1"="$2"
+  _results_+=( "$(declare -p "$1")" )
 }
 
 _map_arg_type_() {
-  local parameter=$1
-  local argument=$2
-  local parm
-  local type
+  local _parameter_=$1
+  local _argument_=$2
 
-  type=${parameter:0:1}
-  parm=${parameter:1}
-  case $type in
-    '%' ) _array_declaration_  "$parm"       "$argument" A ;;
-    '&' ) _deref_declaration_  "$parm"       "$argument"   ;;
-    '*' ) _ref_declaration_    "$parm"       "$argument"   ;;
-    '@' ) _array_declaration_  "$parm"       "$argument" a ;;
-    *   ) _scalar_declaration_ "$parameter"  "$argument"   ;;
+  case ${_parameter_:0:1} in
+    '%' ) _array_declaration_  "${_parameter_:1}" "$_argument_" A ;;
+    '&' ) _deref_declaration_  "${_parameter_:1}" "$_argument_"   ;;
+    '*' ) _ref_declaration_    "${_parameter_:1}" "$_argument_"   ;;
+    '@' ) _array_declaration_  "${_parameter_:1}" "$_argument_" a ;;
+    *   ) _scalar_declaration_ "$_parameter_"     "$_argument_"   ;;
   esac
 }
 
 pass() { declare -p "$1" ;}
 
 passed() {
-  local _temp_=$1; shift
-  local _arguments_=( "$@" )
-  local _name_
-  local _results_=()
-
-  local _names_=(
-    _argument_
-    _arguments_
-    _i_
-    _names_
-    _parameter_
-    _parameters_
-    _results_
-  )
-  ! _in_ "$_temp_" "${_names_[@]}" || return
-  _is_array_ "$_temp_" || _is_array_literal_ "$_temp_" || return
-  if _is_array_ "$_temp_"; then
-    local -n _parameters_="$_temp_"
+  _is_array_ "$1" || _is_array_literal_ "$1" || return
+  if _is_array_ "$1"; then
+    set -- "$(declare -p "$1")" "$@"
+    eval "${1/$2/_parameters_}"
+    shift
   else
-    local -a _parameters_="$_temp_"
+    local -a _parameters_="$1"
   fi
+  shift
+  local _results_=()
+  local _arguments_=( "$@" )
   _process_parameters_ || return
   _print_joined_ ';' "${_results_[@]}"
 }
@@ -244,7 +213,6 @@ _process_parameters_() {
 _ref_declaration_() {
   local _parameter_=$1
   local _argument_=$2
-  local _declaration_
 
   _is_name_ "$_argument_" || return
   if _is_ref_ "$_argument_"; then
@@ -286,7 +254,6 @@ rets() {
 _scalar_declaration_() {
   local _parameter_=$1
   local _argument_=$2
-  local _declaration_
 
   _is_set_ "$_argument_" && _argument_=${!_argument_}
   _copy_declaration_ _argument_ "$_parameter_"
