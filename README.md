@@ -425,9 +425,9 @@ FAQ
 <dd>
 
 <p>The command line is the fundamental tool for system management, and
-Bash is the de facto interface for that.  For many such uses, it's the
-lowest impedance tool for the job, beating out other scripting tools by
-virtue of staying out of your way.  Bash has the added virtue of being
+Bash is its de facto interface.  For many such uses, it's the lowest
+impedance tool for the job, beating out other scripting tools by virtue
+of staying out of your way.  Bash has the added virtue of being
 preinstalled on almost every Unix distribution.</p>
 
 <p>When trying to do anything that requires manipulation of variables,
