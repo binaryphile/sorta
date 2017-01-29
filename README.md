@@ -428,15 +428,13 @@ FAQ
 Bash is its de facto interface.  For many such uses, it's the lowest
 impedance tool for the job, beating out other scripting tools by virtue
 of staying out of your way.  Bash has the added virtue of being
-preinstalled on almost every Unix distribution.</p>
+preinstalled on almost every major Unix distribution.</p>
 
-<p>When trying to do anything that requires manipulation of variables,
-however, Bash quickly falls on its face due to its lack of support for
-effective use of scoping and packaging.  Sorta attempts to polish Bash's
-parameter handling just a bit, so you can more effectively scope your
-data.</p>
-</dd>
-</dl>
+<p>When trying to do anything somewhat sophisticated however, Bash
+quickly falls on its face due to its lack of support for effective use
+of scoping and packaging.  Sorta is aimed at the first, scoping, by
+improving parameter passing just a bit, so you can more effectively
+use the tools which Bash does provide..</p> </dd> </dl>
 
 Sorta API
 ---------
