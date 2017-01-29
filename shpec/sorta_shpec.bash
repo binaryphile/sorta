@@ -934,7 +934,7 @@ describe 'reta'
   end
 
   it "sets an array of values in a named variable with a literal"
-    my_func() { local -a "$1"= && reta '( one two three )' "$1" ;}
+    my_func() { local "$1"= && reta '( one two three )' "$1" ;}
     samples=()
     my_func samples
     printf -v expected 'declare -a samples=%s([0]="one" [1]="two" [2]="three")%s' \' \'
