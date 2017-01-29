@@ -420,19 +420,21 @@ FAQ
 ---
 
 <dl>
-<dt>**Q**: Why?</dt>
+<dt>Why?</dt>
 
-<dd>**A**: The command line is the fundamental tool for system
-management, and Bash is the de facto interface for that.  For many such
-uses, it's the lowest impedance tool for the job, beating out other
-scripting tools by virtue of staying out of your way.  Bash has the
-added virtue of being preinstalled on almost every Unix distribution.
+<dd>
+The command line is the fundamental tool for system management, and
+Bash is the de facto interface for that.  For many such uses, it's the
+lowest impedance tool for the job, beating out other scripting tools by
+virtue of staying out of your way.  Bash has the added virtue of being
+preinstalled on almost every Unix distribution.
 
 When trying to do anything that requires manipulation of variables,
 however, Bash quickly falls on its face due to its lack of support for
 effective use of scoping and packaging.  Sorta attempts to polish Bash's
 parameter handling just a bit, so you can more effectively scope your
-data.</dd>
+data.
+</dd>
 </dl>
 
 Sorta API
