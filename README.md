@@ -563,15 +563,17 @@ statement on stdout</p>
 the named variable with the value taken from the corresponding key in
 <code>hash</code>.</p>
 
-  When supplied with the pattern '*', creates a compound declaration
-  statement for variables with *all* of the keys and values of `hash`.
+<p>When supplied with the pattern '*', creates a compound declaration
+statement for variables with *all* of the keys and values of
+<code>hash</code>.</p>
 
-  When supplied with a prefixed asterisk, such as 'myvars_*', creates a
-  compound declaration as above but with the prefix on the resulting
-  variable names.
+<p>When supplied with a prefixed asterisk, such as 'myvars_*', creates a
+compound declaration as above but with the prefix on the resulting
+variable names.</p>
 
-  You must `eval` the output of `froms` to instantiate the variable(s)
-  locally.
+<p>You must <code>eval</code> the output of <code>froms</code> to
+instantiate the variable(s) locally.</p>
+</dd>
 
 - **`intoa <hash> <keys>`** - create a declaration statement for the
   named hash which includes the variables named in `keys` as new keys
