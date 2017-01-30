@@ -492,9 +492,9 @@ variable name of a declaration statement to `variable_name`</dt>
 <dd>
 <p><em>Returns</em>: the substituted declaration statement on stdout</p>
 
-<p>Allows you to assign the output of `pass` to a variable name in the
-local scope.  You must `eval` the output of `assign` to do so.</p>
-</dd>
+<p>Allows you to assign the output of <code>pass</code> to a variable
+name in the local scope.  You must `eval` the output of `assign` to do
+so.</p> </dd>
 
 <dt>`assigna <variable_name_array> <declaration_statement>` - change the
 names in a compound declaration statement</dt>
@@ -510,16 +510,19 @@ the number of names and available statements match.  You must `eval` the
 output of `assigna` to instantiate the variables locally.</p>
 </dd>
 
-- **`froma <hash> <keys>`** - create declaration statements for a set of
-  variables named in the array `keys`, values taken from the named hash
+<dt>`froma <hash> <keys>` - create declaration statements for a set of
+variables named in the array `keys`, values taken from the named
+hash</dt>
 
-  Accepts literals or variable names.
+<dd>
 
-  *Returns*: a compound declaration statement on stdout
+<p>Accepts literals or variable names.</p>
 
-  For the named hash, returns a set of declaration statements, joined by
-  semicolons, for variables named in `keys`.  The values are taken from
-  the corresponding keys of `hash`.
+<p><em>Returns</em>: a compound declaration statement on stdout</p>
+
+<p>For the named hash, returns a set of declaration statements, joined
+by semicolons, for variables named in `keys`.  The values are taken from
+the corresponding keys of `hash`.</p>
 
   You must `eval` the output of `froma` to instantiate the variables
   locally.
