@@ -29,11 +29,12 @@ Since it has to pass things to commands, which only take strings, it has
 to expand every variable reference to a string prior to handing it to a
 command/function. It doesn't have a concept of passing anything other
 than a string, even though it has structured data types such as arrays
-and hashes (or los associative arrayerinos, if you're, like, not into
-the whole brevity thing).
+and hashes (a.k.a. associative arrays).
 
-Sorta helps you pass arguments like more like other languages do, by
-variable name.
+Sorta helps you pass arguments more like other languages do, by variable
+name.
+
+Of course this trickery has some consequences, so caveat emptor.
 
 Examples
 ========
@@ -99,8 +100,8 @@ Notice that the `passed` function accepts the parameter array by name
 (no `"${_params[@]}"` expansion necessary): `eval "$(passed _params
 "$@")"`.
 
-You could also use a literal to save a line:
-`eval "$(passed '( greeting )' "$@")"`.
+You could also use a literal to save a line: `eval "$(passed '( greeting
+)' "$@")"`.
 
 So anyway, passing strings like that may be nicer than bash's syntax for
 variable expansion, but it's not anything you can't do with bash as-is.
@@ -430,10 +431,12 @@ of staying out of your way.  Bash has the added virtue of being
 preinstalled on almost every major Unix distribution.</p>
 
 <p>When trying to do anything somewhat sophisticated however, Bash
-quickly falls on its face due to its lack of support for effective use
-of scoping and packaging.  Sorta is aimed at the first, scoping, by
-improving parameter passing just a bit, so you can more effectively
-use the tools which Bash does provide.</p>
+quickly falls on its face due to its weak support for passing
+parameters, its use of [dynamic scoping] and its lack of support for
+reasonable packaging of libraries.
+
+Sorta is aimed at improving parameter passing just a bit, so you can
+more effectively use the tools which Bash does provide.</p>
 </dd>
 
 <dt>Why "_params"?</dt>
@@ -806,3 +809,5 @@ your choice.</p>
 instantiate the array.</p>
 </dd>
 </dl>
+
+[dynamic scoping]: https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping_vs._dynamic_scoping
