@@ -493,8 +493,9 @@ variable name of a declaration statement to `variable_name`</dt>
 <p><em>Returns</em>: the substituted declaration statement on stdout</p>
 
 <p>Allows you to assign the output of <code>pass</code> to a variable
-name in the local scope.  You must `eval` the output of `assign` to do
-so.</p> </dd>
+name in the local scope.  You must <code>eval</code> the output of
+<code>assign</code> to do so.</p>
+</dd>
 
 <dt>`assigna <variable_name_array> <declaration_statement>` - change the
 names in a compound declaration statement</dt>
@@ -506,8 +507,10 @@ names in a compound declaration statement</dt>
 statements to the names in the array.  A compound declaration is a
 series of individual declaration statements, usually separated with
 semicolons, joined into a single string.  It is up to you to ensure that
-the number of names and available statements match.  You must `eval` the
-output of `assigna` to instantiate the variables locally.</p>
+the number of names and available statements match.  You must
+<code>eval</code> the output of <code>assigna</code> to instantiate the
+variables locally.</p>
+
 </dd>
 
 <dt>`froma <hash> <keys>` - create declaration statements for a set of
@@ -515,43 +518,50 @@ variables named in the array `keys`, values taken from the named
 hash</dt>
 
 <dd>
-
 <p>Accepts literals or variable names.</p>
 
 <p><em>Returns</em>: a compound declaration statement on stdout</p>
 
 <p>For the named hash, returns a set of declaration statements, joined
-by semicolons, for variables named in `keys`.  The values are taken from
-the corresponding keys of `hash`.</p>
+by semicolons, for variables named in <code>keys</code>.  The values are
+taken from the corresponding keys of <code>hash</code>.</p>
 
-  You must `eval` the output of `froma` to instantiate the variables
-  locally.
+<p>You must <code>eval</code> the output of <code>froma</code> to
+instantiate the variables locally.</p>
+</dd>
 
-- **`fromh <hash> <keyhash>`** - create declaration statements for a set
-  of variables named in the keys of `keyhash`, values taken from `hash`
+<dt>`fromh <hash> <keyhash>` - create declaration statements for a set
+of variables named in the keys of `keyhash`, values taken from
+`hash`</dt>
 
-  Accepts literals or variable names.
+<dd>
+<p>Accepts literals or variable names.</p>
 
-  *Returns*: a compound declaration statement on stdout
+<p><em>Returns</em>: a compound declaration statement on stdout</p>
 
-  For the named hash, returns a set of declaration statements, joined by
-  semicolons, for the keys of `hash` corresponding to the keys of
-  `keyhash`, mapped to variables named by the values of `keyhash`.
+<p>For the named hash, returns a set of declaration statements, joined
+by semicolons, for the keys of <code>hash</code> corresponding to the
+keys of <code>keyhash</code>, mapped to variables named by the values of
+<code>keyhash</code>.</p>
 
-  You must `eval` the output of `froma` to instantiate the variables
-  locally.
+<p>You must <code>eval</code> the output of <code>froma</code> to
+instantiate the variables locally.</p>
+</dd>
 
-- **`froms <hash> <name_or_pattern>`** - create declaration statement(s)
-  for named variable or set of variables, values taken from from `hash`
+<dt>`froms <hash> <name_or_pattern>` - create declaration statement(s)
+for named variable or set of variables, values taken from from
+`hash`</dt>
 
-  Accepts literals or variable names.
+<dd>
 
-  *Returns*: a declaration statement or compound declaration statement
-  on stdout
+<p>Accepts literals or variable names.</p>
 
-  When supplied with a single name, creates a declaration statement for
-  the named variable with the value taken from the corresponding key in
-  `hash`.
+<p><em>Returns</em>: a declaration statement or compound declaration
+statement on stdout</p>
+
+<p>When supplied with a single name, creates a declaration statement for
+the named variable with the value taken from the corresponding key in
+<code>hash</code>.</p>
 
   When supplied with the pattern '*', creates a compound declaration
   statement for variables with *all* of the keys and values of `hash`.
