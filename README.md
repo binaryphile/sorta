@@ -613,7 +613,7 @@ the hash are left alone.  This is basically a merge operation.</p>
 (or localize) the hash with the new values.</p>
 </dd>
 
-<dt>`intos <hash> <key>`** - create a declaration statement for the
+<dt>`intos <hash> <key>` - create a declaration statement for the
   named hash which includes the variable named in `key`</dt>
 
 <dd>
@@ -643,7 +643,7 @@ key names from `hash`</dt>
 from the named <code>hash</code>.</p>
 </dd>
 
-<dt>`pass <variable_name>`** - create a declaration statement for an the
+<dt>`pass <variable_name>` - create a declaration statement for an the
 named variable</dt>
 
 <dd>
@@ -656,110 +656,129 @@ variable in a scope, usually as a return value from a function.</p>
 2>/dev/null</code>.</p>
 </dd>
 
-- **`passed <parameter_array> <arg1> [<arg2>...]`** - create a compound
-  declaration statement for the named variable parameters with the
-  supplied argument values
+<dt>`passed <parameter_array> <arg1> [<arg2>...]` - create a compound
+declaration statement for the named variable parameters with the
+supplied argument values</dt>
 
-  Accepts literals or variable names.
+<dd>
+<p>Accepts literals or variable names.</p>
 
-  *Returns*: a declaration statement on stdout
+<p><em>Returns</em>: a declaration statement on stdout</p>
 
-  Returns and `eval`able statement to instantiate the given variables in
-  a scope, usually as the first task in your function
+<p>Returns and `eval`able statement to instantiate the given variables
+in a scope, usually as the first task in your function</p>
 
-  Named parameters are presumed to be scalars unless prefixed with the
-  following qualifiers:
+<p>Named parameters are presumed to be scalars unless prefixed with the
+following qualifiers:</p>
 
-    - `@` - argument is an array name or literal
-    - `%` - argument is a hash name or literal
-    - `&` - parameter is aliased to the variable name given by argument with `declare -n`
-    - `*` - argument is a reference to another variable name
+<ul>
+  <li><code>@</code> - argument is an array name or literal</li>
+  <li><code>%</code> - argument is a hash name or literal</li>
+  <li><code>&</code> - parameter is aliased to the variable name given by argument with <code>declare -n</code></li>
+  <li><code>*</code> - argument is a reference to another variable name</li>
+</ul>
 
-  Note that `&` and `*` require the quoting since bash treats them as
-  special characters.
+<p>Note that <code>&amp;</code> and <code>*</code> require the quoting
+since bash treats them as special characters.</p>
 
-  Scalar arguments are tested to see if they refer to variables.  If so,
-  they are dereferenced so the resulting declaration holds the value of
-  the referenced variable.
+<p>Scalar arguments are tested to see if they refer to variables.  If
+so, they are dereferenced so the resulting declaration holds the value
+of the referenced variable.</p>
 
-  Array and hash parameters are presumed to hold references to an
-  array or hash in the outer scope, or to hold an array/hash literal.  A
-  literal, in this case, is any string which qualifies as the
-  right-hand side of an assignment statement, i.e. that which follows
-  the equals sign.  See the format of any `declare -p` output for
-  examples.
+<p>Array and hash parameters are presumed to hold references to an array
+or hash in the outer scope, or to hold an array/hash literal.  A
+literal, in this case, is any string which qualifies as the right-hand
+side of an assignment statement, i.e. that which follows the equals
+sign.  See the format of any <code>declare -p</code> output for
+examples.</p>
 
-  The `*` reference type tells `passed` to expect the result to be a
-  variable name.  It still dereferences an argument if the dereferenced
-  argument's value is the name of another variable, but will prevent
-  dereferencing if the argument is simply a variable reference and
-  nothing more.
+<p>The <code>*</code> reference type tells <code>passed</code> to expect
+the result to be a variable name.  It still dereferences an argument if
+the dereferenced argument's value is the name of another variable, but
+will prevent dereferencing if the argument is simply a variable
+reference and nothing more.</p>
 
-  The `&` dereference type sets the parameter to point to the variable
-  named by the argument directly, effectively making it call by
-  reference.  Changes to the parameter variable in the function body
-  will affect the original variable directly in the outer scope.  This
-  is not call by value.
+<p>The <code>&</code> dereference type sets the parameter to point to
+the variable named by the argument directly, effectively making it call
+by reference.  Changes to the parameter variable in the function body
+will affect the original variable directly in the outer scope.  This is
+not call by value.</p>
 
-  All parameters in the list may have a default value specified by
-  appending `=<value>` to the parameter name.  Parameters with default
-  values must, however, be contiguous at the end of the list.
+<p>All parameters in the list may have a default value specified by
+appending <code>=<value></code> to the parameter name.  Parameters with
+default values must, however, be contiguous at the end of the list.</p>
 
-  You must `eval` the output of `passed` to instantiate the variables.
+<p>You must <code>eval</code> the output of <code>passed</code> to
+instantiate the variables.</p>
+</dd>
 
-- **`reta <values_array> <return_variable>`** - directly set an array
-  variable in an outer scope, by name, "returning" the value
+<dt>`reta <values_array> <return_variable>` - directly set an array
+variable in an outer scope, by name, "returning" the value</dt>
 
-  Accepts an array literal or variable name.
+<dd>
+<p>Accepts an array literal or variable name.</p>
 
-  *Returns*: the values in `values_array`, directly setting
-  `return_variable`
+<p><em>Returns</em>: the values in <code>values_array</code>, directly setting
+<code>return_variable</code></p>
 
-  Allows you to return a value into a named variable in an outer scope.
-  Usually used to receive a return variable name as an argument to a
-  function, then set that variable using `reta`.
+<p>Allows you to return a value into a named variable in an outer scope.
+Usually used to receive a return variable name as an argument to a
+function, then set that variable using <code>reta</code>.</p>
 
-  Note that the variable name must also be explicitly locally set before
-  calling `reta`.  For example, if the variable name has been passed in
-  as `$1`, the following will return the values "one" and "two" into
-  that array:
+<p>Note that the variable name must also be explicitly locally set
+before calling <code>reta</code>.  For example, if the variable name has
+been passed in as <code>$1</code>, the following will return the values
+"one" and "two" into that array:</p>
 
-        local "$1"= && reta '( one two )' "$1"
+<pre><code>
+local "$1"= && reta '( one two )' "$1"
+</code></pre>
 
-  The assignment requires a value (even blank), which is why there is an
-  equals sign as part of the declaration.
+<p>The assignment requires a value (even blank), which is why there is
+an equals sign as part of the declaration.</p>
 
-  `reta` prevents name collisions between the outer variable name and
-  the variable names in your function scope.
+<p><code>reta</code> prevents name collisions between the outer variable
+name and the variable names in your function scope.</p>
+</dd>
 
-- **`reth <values_hash> <return_variable_name>`** - directly set a hash
-  variable in an outer scope, by name, "returning" the value
+<dt>`reth <values_hash> <return_variable_name>` - directly set a hash
+variable in an outer scope, by name, "returning" the value</dt>
 
-  Accepts a hash literal or variable name.
+<dd>
+<p>Accepts a hash literal or variable name.</p>
 
-  *Returns*: the values in `values_hash`, directly setting
-  `return_variable`
+<p><em>Returns</em>: the values in <code>values_hash</code>, directly
+setting <code>return_variable</code></p>
 
-  Same usage as `reta` above.
+<p>Same usage as <code>reta</code> above.</p>
+</dd>
 
-- **`rets <value> <return_variable_name>`** - directly set a scalar
-  variable in an outer scope, by name, "returning" the value
+<dt>`rets <value> <return_variable_name>` - directly set a scalar
+variable in an outer scope, by name, "returning" the value</dt>
 
-  Accepts a literal or variable name.
+<dd>
+<p>Accepts a literal or variable name.</p>
 
-  *Returns*: the values in `value`, directly setting `return_variable`
+<p><em>Returns</em>: the values in <code>value</code>, directly setting
+<code>return_variable</code></p>
 
-  Same usage as `reta` above.
+<p>Same usage as <code>reta</code> above.</p>
+</dd>
 
-- **`values_of <hash>`** - create a declaration statement for an array
-  of the values in `hash`
+<dt>`values_of <hash>` - create a declaration statement for an array of
+the values in `hash`</dt>
 
-  Accepts a hash literal or variable name.
+<dd>
+<p>Accepts a hash literal or variable name.</p>
 
-  *Returns*: a declaration statement on stdout
+<p><em>Returns</em>: a declaration statement on stdout</p>
 
-  Iterates through the keys of `hash`, putting the associated values
-  into a declaration for an array.  Usually the output is used as input
-  to `assign` to give it the array name of your choice.
+<p>Iterates through the keys of <code>hash</code>, putting the
+associated values into a declaration for an array.  Usually the output
+is used as input to <code>assign</code> to give it the array name of
+your choice.</p>
 
-  You must `eval` the output of `assign` to instantiate the array.
+<p>You must <code>eval</code> the output of <code>assign</code> to
+instantiate the array.</p>
+</dd>
+</dl>
