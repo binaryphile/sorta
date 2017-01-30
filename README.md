@@ -486,23 +486,20 @@ case, such as `'( [one]=1 [two]=2 )'` (remember to use single- or
 double-quotes).
 
 <dl>
-<dt>`assign <variable_name> <declaration_statement>`</dt>
+<dt>`assign <variable_name> <declaration_statement>` - change the
+variable name of a declaration statement to `variable_name`</dt>
 
 <dd>
-<p>change the variable name of a declaration statement to
-`variable_name`</p>
-
 <p>*Returns*: the substituted declaration statement on stdout</p>
 
 <p>Allows you to assign the output of `pass` to a variable name in the
 local scope.  You must `eval` the output of `assign` to do so.</p>
 </dd>
 
-<dt>`assigna <variable_name_array> <declaration_statement>`</dt>
+<dt>`assigna <variable_name_array> <declaration_statement>` - change the
+names in a compound declaration statement</dt>
 
 <dd>
-<p>change the names in a compound declaration statement</p>
-
 <p>*Returns*: the substituted declarations on stdout</p>
 
 <p>Allows you to reassign the names of a compound series of declaration
