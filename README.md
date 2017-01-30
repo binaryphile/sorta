@@ -490,7 +490,7 @@ double-quotes).
 variable name of a declaration statement to `variable_name`</dt>
 
 <dd>
-<p>*Returns*: the substituted declaration statement on stdout</p>
+<p><em>Returns</em>: the substituted declaration statement on stdout</p>
 
 <p>Allows you to assign the output of `pass` to a variable name in the
 local scope.  You must `eval` the output of `assign` to do so.</p>
@@ -500,7 +500,7 @@ local scope.  You must `eval` the output of `assign` to do so.</p>
 names in a compound declaration statement</dt>
 
 <dd>
-<p>*Returns*: the substituted declarations on stdout</p>
+<p><em>Returns</em>: the substituted declarations on stdout</p>
 
 <p>Allows you to reassign the names of a compound series of declaration
 statements to the names in the array.  A compound declaration is a
