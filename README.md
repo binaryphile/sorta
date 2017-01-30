@@ -485,25 +485,33 @@ work for the right-hand-side of an assignment statement works in that
 case, such as `'( [one]=1 [two]=2 )'` (remember to use single- or
 double-quotes).
 
-- **`assign <variable_name> <declaration_statement>`** - change the
-  variable name of a declaration statement to `variable_name`
+<dl>
+<dt>`assign <variable_name> <declaration_statement>`</dt>
 
-  *Returns*: the substituted declaration statement on stdout
+<dd>
+<p>change the variable name of a declaration statement to
+`variable_name`</p>
 
-  Allows you to assign the output of `pass` to a variable name in the
-  local scope.  You must `eval` the output of `assign` to do so.
+<p>*Returns*: the substituted declaration statement on stdout</p>
 
-- **`assigna <variable_name_array> <declaration_statement>`** - change the
-  names in a compound declaration statement
+<p>Allows you to assign the output of `pass` to a variable name in the
+local scope.  You must `eval` the output of `assign` to do so.</p>
+</dd>
 
-  *Returns*: the substituted declarations on stdout
+<dt>`assigna <variable_name_array> <declaration_statement>`</dt>
 
-  Allows you to reassign the names of a compound series of declaration
-  statements to the names in the array.  A compound declaration is a
-  series of individual declaration statements, usually separated with
-  semicolons, joined into a single string.  It is up to you to ensure
-  that the number of names and available statements match.  You must
-  `eval` the output of `assigna` to instantiate the variables locally.
+<dd>
+<p>change the names in a compound declaration statement</p>
+
+<p>*Returns*: the substituted declarations on stdout</p>
+
+<p>Allows you to reassign the names of a compound series of declaration
+statements to the names in the array.  A compound declaration is a
+series of individual declaration statements, usually separated with
+semicolons, joined into a single string.  It is up to you to ensure that
+the number of names and available statements match.  You must `eval` the
+output of `assigna` to instantiate the variables locally.</p>
+</dd>
 
 - **`froma <hash> <keys>`** - create declaration statements for a set of
   variables named in the array `keys`, values taken from the named hash
