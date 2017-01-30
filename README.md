@@ -470,6 +470,26 @@ expanded, there are two things you can do:</p>
 </ol>
 </dd>
 
+<dt>Should I use sorta's <code>passed</code> function to pass user input
+to functions?</dt>
+
+<dd>
+<p>As scalars, no, you generally shouldn't use <code>passed</code> for
+any data which might inadvertently contain a string which matches a
+variable name.</p>
+
+<p>However you <em>can</em> pass such data through arrays, which are
+not expanded, as described above.</p>
+</dd>
+
+<dt>What about the positional arguments, $1, $2, etc.?</dt>
+
+<dd>
+The positional arguments are left intact and may be used in addition to
+the arguments created by <code>passed</code>.
+</dd>
+</dl>
+
 Sorta API
 =========
 
@@ -664,6 +684,10 @@ supplied argument values</dt>
 <p>Accepts literals or variable names.</p>
 
 <p><em>Returns</em>: a declaration statement on stdout</p>
+
+<p>Reserves for internal use any variable names starting and ending with
+underscores, so such names are not allowed in parameter lists.
+<code>passed</code> does not support such parameter names.</p>
 
 <p>Returns and `eval`able statement to instantiate the given variables
 in a scope, usually as the first task in your function</p>
