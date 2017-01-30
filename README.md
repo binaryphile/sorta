@@ -417,13 +417,12 @@ Outputs:
     rain: 3
 
 FAQ
----
+===
 
 <dl>
 <dt>Why?</dt>
 
 <dd>
-
 <p>The command line is the fundamental tool for system management, and
 Bash is its de facto interface.  For many such uses, it's the lowest
 impedance tool for the job, beating out other scripting tools by virtue
@@ -434,10 +433,45 @@ preinstalled on almost every major Unix distribution.</p>
 quickly falls on its face due to its lack of support for effective use
 of scoping and packaging.  Sorta is aimed at the first, scoping, by
 improving parameter passing just a bit, so you can more effectively
-use the tools which Bash does provide..</p> </dd> </dl>
+use the tools which Bash does provide.</p>
+</dd>
+
+<dt>Why "_params"?</dt>
+
+<dd>
+<p>In order for the "passed" function to determine whether an argument
+needs to be expanded, it has to check the outside scope for the
+existence of variable names.  If it finds one, it reads in that value.
+Therefore you don't want to declare any local variables before calling
+"passed", since those might mask an outside variable name it was passed
+as an argument.</p>
+
+<p>If the parameter list is declared as a variable (as opposed to a
+literal), then it may also mask an argument.  Prefixing it with an
+underscore prevents most possibilities for a name collision.</p>
+</dd>
+
+<dt>What if I want to pass a string that happens to be a variable name
+as well?  Won't it be expanded when I don't want it to be?</dt>
+
+<dd>
+<p>Short answer, yes, the string will be expanded if "passed" detects
+that it is a reference to a variable name.  If you don't want it
+expanded, there are two things you can do:</p>
+
+<ol>
+<li> Make the parameter an array instead and pass the argument as an
+    entry in the array.  Array items are not expanded.</li>
+
+<li> Make the parameter a reference type, by qualifying it with a "*" in
+    the parameter list.  If the variable name held by the argument is
+    not itself a reference, no expansion will be done.  Since this is
+    less reliable, option (1) is recommended instead.</li>
+</ol>
+</dd>
 
 Sorta API
----------
+=========
 
 "Accepts literals or variable names" means that the arguments may be
 specified normally, using string literals or expansions for example, or
