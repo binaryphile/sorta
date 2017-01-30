@@ -553,7 +553,6 @@ for named variable or set of variables, values taken from from
 `hash`</dt>
 
 <dd>
-
 <p>Accepts literals or variable names.</p>
 
 <p><em>Returns</em>: a declaration statement or compound declaration
@@ -564,7 +563,7 @@ the named variable with the value taken from the corresponding key in
 <code>hash</code>.</p>
 
 <p>When supplied with the pattern '*', creates a compound declaration
-statement for variables with *all* of the keys and values of
+statement for variables with <em>all</em> of the keys and values of
 <code>hash</code>.</p>
 
 <p>When supplied with a prefixed asterisk, such as 'myvars_*', creates a
@@ -575,74 +574,87 @@ variable names.</p>
 instantiate the variable(s) locally.</p>
 </dd>
 
-- **`intoa <hash> <keys>`** - create a declaration statement for the
-  named hash which includes the variables named in `keys` as new keys
+<dt>`intoa <hash> <keys>` - create a declaration statement for the named
+hash which includes the variables named in `keys` as new keys</dt>
 
-  Accepts literals or variable names.
+<dd>
+<p>Accepts literals or variable names.</p>
 
-  *Returns*: a declaration statement on stdout
+<p><em>Returns</em>: a declaration statement on stdout</p>
 
-  Adds the variables named in `keys`, and their values, to the named
-  hash.
+<p>Adds the variables named in <code>keys</code>, and their values, to
+the named hash.</p>
 
-  Existing keys of the same name are overwritten.  Other
-  key/values in the hash are left alone.  This is basically a merge
-  operation.
+<p>Existing keys of the same name are overwritten.  Other key/values in
+the hash are left alone.  This is basically a merge operation.</p>
 
-  You must `eval` the output of `intoa` to update (or localize) the hash
-  with the new values.
+<p>You must <code>eval</code> the output of <code>intoa</code> to update
+(or localize) the hash with the new values.</p>
+</dd>
 
-- **`intoh <hash> <keyhash>`** - create a declaration statement for the
-  named hash which includes the variables named in `keyhash` as new keys
+<dt>`intoh <hash> <keyhash>` - create a declaration statement for the
+named hash which includes the variables named in `keyhash` as new
+keys</dt>
 
-  Accepts literals or variable names.
+<dd>
+<p>Accepts literals or variable names.</p>
 
-  *Returns*: a declaration statement on stdout
+<p><em>Returns</em>: a declaration statement on stdout</p>
 
-  Adds the variables named in `keyhash`, and their values, to the named
-  hash.  `keyhash` is a mapping of the variables names to the keynames
-  under which their values will be inserted into `hash`.
+<p>Adds the variables named in <code>keyhash</code>, and their values,
+to the named hash.  <code>keyhash</code> is a mapping of the variables
+names to the keynames under which their values will be inserted into
+<code>hash</code>.</p>
 
-  Existing keys of the same name are overwritten.  Other key/values in
-  the hash are left alone.  This is basically a merge operation.
+<p>Existing keys of the same name are overwritten.  Other key/values in
+the hash are left alone.  This is basically a merge operation.</p>
 
-  You must `eval` the output of `intoh` to update (or localize) the hash
-  with the new values.
+<p>You must <code>eval</code> the output of <code>intoh</code> to update
+(or localize) the hash with the new values.</p>
+</dd>
 
-- **`intos <hash> <key>`** - create a declaration statement for the
-  named hash which includes the variable named in `key`
+<dt>`intos <hash> <key>`** - create a declaration statement for the
+  named hash which includes the variable named in `key`</dt>
 
-  Accepts literals or variable names.
+<dd>
+<p>Accepts literals or variable names.</p>
 
-  *Returns*: a declaration statement on stdout
+<p><em>Returns</em>: a declaration statement on stdout</p>
 
-  Adds the variable named by `key`, and its value, to the named hash.
+<p>Adds the variable named by <code>key</code>, and its value, to the
+named hash.</p>
 
-  An existing key of the same name is overwritten.  Other key/values in
-  the hash are left alone.  This is basically a merge operation.
+<p>An existing key of the same name is overwritten.  Other key/values in
+the hash are left alone.  This is basically a merge operation.</p>
 
-  You must `eval` the output of `intos` to update (or localize) the hash
-  with the new values.
+<p>You must <code>eval</code> the output of <code>intos</code> to update
+(or localize) the hash with the new values.</p>
+</dd>
 
-- **`keys_of <hash>`** - create a declaration statement for an array
-  of the key names from `hash`
+<dt>`keys_of <hash>` - create a declaration statement for an array of the
+key names from `hash`</dt>
 
-  Accepts a literal or variable name.
+<dd>
+<p>Accepts a literal or variable name.</p>
 
-  *Returns*: a declaration statement on stdout
+<p><em>Returns</em>: a declaration statement on stdout</p>
 
-  Finds and returns an `eval`able array of the key names from the named
-  `hash`.
+<p>Finds and returns an <code>eval</code>able array of the key names
+from the named <code>hash</code>.</p>
+</dd>
 
-- **`pass <variable_name>`** - create a declaration statement for an
-  the named variable
+<dt>`pass <variable_name>`** - create a declaration statement for an the
+named variable</dt>
 
-  *Returns*: a declaration statement on stdout
+<dd>
+<p><em>Returns</em>: a declaration statement on stdout</p>
 
-  Returns an `eval`able statement to instantiate the given variable in a
-  scope, usually as a return value from a function.
+<p>Returns an <code>eval</code>able statement to instantiate the given
+variable in a scope, usually as a return value from a function.</p>
 
-  Equivalent to `declare -p <variable_name> 2>/dev/null`.
+<p>Equivalent to <code>declare -p <variable_name>
+2>/dev/null</code>.</p>
+</dd>
 
 - **`passed <parameter_array> <arg1> [<arg2>...]`** - create a compound
   declaration statement for the named variable parameters with the
