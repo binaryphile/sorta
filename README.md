@@ -22,7 +22,7 @@ Sorta lets you write Bash functions which:
 Basically, Sorta is about controlling your variable namespace as much as
 possible. These features are designed to help you do that.
 
-Requires Bash 4.2 or higher.
+Requires Bash 4.2 or higher.  Use of the `deref` type requires Bash 4.3.
 
 So Bash (hereafter, "bash") has an interesting way of passing variables.
 Since it has to pass things to commands, which only take strings, it has
@@ -509,8 +509,9 @@ case, such as `'( [one]=1 [two]=2 )'` (remember to use single- or
 double-quotes).
 
 <dl>
-<dt>`assign <variable_name> <declaration_statement>` - change the
-variable name of a declaration statement to `variable_name`</dt>
+<dt><code>assign &lt;variable_name&gt;
+&lt;declaration_statement&gt;<code> - change the variable name of a
+declaration statement to <code>variable_name</code></dt>
 
 <dd>
 <p><em>Returns</em>: the substituted declaration statement on stdout</p>
@@ -520,8 +521,9 @@ name in the local scope.  You must <code>eval</code> the output of
 <code>assign</code> to do so.</p>
 </dd>
 
-<dt>`assigna <variable_name_array> <declaration_statement>` - change the
-names in a compound declaration statement</dt>
+<dt><code>assigna &lt;variable_name_array&gt;
+&lt;declaration_statement&gt;</code> - change the names in a compound
+declaration statement</dt>
 
 <dd>
 <p><em>Returns</em>: the substituted declarations on stdout</p>
@@ -536,9 +538,9 @@ variables locally.</p>
 
 </dd>
 
-<dt>`froma <hash> <keys>` - create declaration statements for a set of
-variables named in the array `keys`, values taken from the named
-hash</dt>
+<dt><code>froma &lt;hash&gt; &lt;keys&gt;</code> - create declaration
+statements for a set of variables named in the array <code>keys</code>,
+values taken from the named hash</dt>
 
 <dd>
 <p>Accepts literals or variable names.</p>
@@ -553,9 +555,9 @@ taken from the corresponding keys of <code>hash</code>.</p>
 instantiate the variables locally.</p>
 </dd>
 
-<dt>`fromh <hash> <keyhash>` - create declaration statements for a set
-of variables named in the keys of `keyhash`, values taken from
-`hash`</dt>
+<dt><code>fromh &lt;hash&gt; &lt;keyhash&gt;</code> - create declaration
+statements for a set of variables named in the keys of
+<code>keyhash</code>, values taken from <code>hash</code></dt>
 
 <dd>
 <p>Accepts literals or variable names.</p>
@@ -571,9 +573,9 @@ keys of <code>keyhash</code>, mapped to variables named by the values of
 instantiate the variables locally.</p>
 </dd>
 
-<dt>`froms <hash> <name_or_pattern>` - create declaration statement(s)
-for named variable or set of variables, values taken from from
-`hash`</dt>
+<dt><code>froms &lt;hash&gt; &lt;name_or_pattern&gt;</code> - create
+declaration statement(s) for named variable or set of variables, values
+taken from from <code>hash</code></dt>
 
 <dd>
 <p>Accepts literals or variable names.</p>
@@ -597,8 +599,9 @@ variable names.</p>
 instantiate the variable(s) locally.</p>
 </dd>
 
-<dt>`intoa <hash> <keys>` - create a declaration statement for the named
-hash which includes the variables named in `keys` as new keys</dt>
+<dt><code>intoa &lt;hash&gt; &lt;keys&gt;</code> - create a declaration
+statement for the named hash which includes the variables named in
+<code>keys</code> as new keys</dt>
 
 <dd>
 <p>Accepts literals or variable names.</p>
@@ -615,9 +618,9 @@ the hash are left alone.  This is basically a merge operation.</p>
 (or localize) the hash with the new values.</p>
 </dd>
 
-<dt>`intoh <hash> <keyhash>` - create a declaration statement for the
-named hash which includes the variables named in `keyhash` as new
-keys</dt>
+<dt><code>intoh &lt;hash&gt; &lt;keyhash&gt;</code> - create a
+declaration statement for the named hash which includes the variables
+named in <code>keyhash</code> as new keys</dt>
 
 <dd>
 <p>Accepts literals or variable names.</p>
@@ -636,8 +639,9 @@ the hash are left alone.  This is basically a merge operation.</p>
 (or localize) the hash with the new values.</p>
 </dd>
 
-<dt>`intos <hash> <key>` - create a declaration statement for the
-  named hash which includes the variable named in `key`</dt>
+<dt><code>intos &lt;hash&gt; &lt;key&gt;</code> - create a declaration
+statement for the named hash which includes the variable named in
+<code>key</code></dt>
 
 <dd>
 <p>Accepts literals or variable names.</p>
@@ -654,8 +658,8 @@ the hash are left alone.  This is basically a merge operation.</p>
 (or localize) the hash with the new values.</p>
 </dd>
 
-<dt>`keys_of <hash>` - create a declaration statement for an array of the
-key names from `hash`</dt>
+<dt><code>keys_of &lt;hash&gt;</code> - create a declaration statement
+for an array of the key names from <code>hash</code></dt>
 
 <dd>
 <p>Accepts a literal or variable name.</p>
@@ -666,8 +670,8 @@ key names from `hash`</dt>
 from the named <code>hash</code>.</p>
 </dd>
 
-<dt>`pass <variable_name>` - create a declaration statement for an the
-named variable</dt>
+<dt><code>pass &lt;variable_name&gt;</code> - create a declaration
+statement for an the named variable</dt>
 
 <dd>
 <p><em>Returns</em>: a declaration statement on stdout</p>
@@ -679,9 +683,9 @@ variable in a scope, usually as a return value from a function.</p>
 2>/dev/null</code>.</p>
 </dd>
 
-<dt>`passed <parameter_array> <arg1> [<arg2>...]` - create a compound
-declaration statement for the named variable parameters with the
-supplied argument values</dt>
+<dt><code>passed &lt;parameter_array&gt; &lt;arg1&gt;
+[&lt;arg2&gt;...]</code> - create a compound declaration statement for
+the named variable parameters with the supplied argument values</dt>
 
 <dd>
 <p>Accepts literals or variable names.</p>
@@ -692,8 +696,8 @@ supplied argument values</dt>
 underscores, so such names are not allowed in parameter lists.
 <code>passed</code> does not support such parameter names.</p>
 
-<p>Returns and `eval`able statement to instantiate the given variables
-in a scope, usually as the first task in your function</p>
+<p>Returns and <code>eval</code>able statement to instantiate the given
+variables in a scope, usually as the first task in your function</p>
 
 <p>Named parameters are presumed to be scalars unless prefixed with the
 following qualifiers:</p>
@@ -739,8 +743,9 @@ default values must, however, be contiguous at the end of the list.</p>
 instantiate the variables.</p>
 </dd>
 
-<dt>`reta <values_array> <return_variable>` - directly set an array
-variable in an outer scope, by name, "returning" the value</dt>
+<dt><code>reta &lt;values_array&gt; &lt;return_variable&gt;</code> -
+directly set an array variable in an outer scope, by name, "returning"
+the value</dt>
 
 <dd>
 <p>Accepts an array literal or variable name.</p>
@@ -768,8 +773,9 @@ an equals sign as part of the declaration.</p>
 name and the variable names in your function scope.</p>
 </dd>
 
-<dt>`reth <values_hash> <return_variable_name>` - directly set a hash
-variable in an outer scope, by name, "returning" the value</dt>
+<dt><code>reth &lt;values_hash&gt; &lt;return_variable_name&gt;</code> -
+directly set a hash variable in an outer scope, by name, "returning" the
+value</dt>
 
 <dd>
 <p>Accepts a hash literal or variable name.</p>
@@ -780,8 +786,9 @@ setting <code>return_variable</code></p>
 <p>Same usage as <code>reta</code> above.</p>
 </dd>
 
-<dt>`rets <value> <return_variable_name>` - directly set a scalar
-variable in an outer scope, by name, "returning" the value</dt>
+<dt><code>rets &lt;value&gt; &lt;return_variable_name&gt;</code> -
+directly set a scalar variable in an outer scope, by name, "returning"
+the value</dt>
 
 <dd>
 <p>Accepts a literal or variable name.</p>
@@ -792,8 +799,8 @@ variable in an outer scope, by name, "returning" the value</dt>
 <p>Same usage as <code>reta</code> above.</p>
 </dd>
 
-<dt>`values_of <hash>` - create a declaration statement for an array of
-the values in `hash`</dt>
+<dt><code>values_of &lt;hash&gt;</code> - create a declaration statement
+for an array of the values in <code>hash</code></dt>
 
 <dd>
 <p>Accepts a hash literal or variable name.</p>
