@@ -510,7 +510,7 @@ double-quotes).
 
 <dl>
 <dt><code>assign &lt;variable_name&gt;
-&lt;declaration_statement&gt;<code> - change the variable name of a
+&lt;declaration_statement&gt;</code> - change the variable name of a
 declaration statement to <code>variable_name</code></dt>
 
 <dd>
