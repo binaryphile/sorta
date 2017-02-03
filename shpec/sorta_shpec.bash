@@ -459,8 +459,26 @@ describe '_is_ref_'
     stop_on_error
   end
 
+  it "returns false if the named variable is an array whose first element is a 'ref'"
+    example=one
+    samples=( example )
+    stop_on_error off
+    _is_ref_ samples
+    assert unequal 0 $?
+    stop_on_error
+  end
+
   it "returns false if the named variable is a hash"
     declare -A sampleh=( [example]=one )
+    stop_on_error off
+    _is_ref_ sampleh
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the named variable is a hash whose first element in a 'ref'"
+    example=one
+    declare -A sampleh=( [0]=example )
     stop_on_error off
     _is_ref_ sampleh
     assert unequal 0 $?
@@ -926,7 +944,7 @@ end
 
 describe 'reta'
   it "sets an array of values in a named variable"
-    my_func() { local values=( one two three ); local "$1"= && reta values "$1" ;}
+    my_func() { local samples=( one two three ); local "$1" && reta samples "$1" ;}
     samples=()
     my_func samples
     printf -v expected 'declare -a samples=%s([0]="one" [1]="two" [2]="three")%s' \' \'
@@ -934,7 +952,7 @@ describe 'reta'
   end
 
   it "sets an array of values in a named variable with a literal"
-    my_func() { local "$1"= && reta '( one two three )' "$1" ;}
+    my_func() { local "$1" && reta '( one two three )' "$1" ;}
     samples=()
     my_func samples
     printf -v expected 'declare -a samples=%s([0]="one" [1]="two" [2]="three")%s' \' \'
@@ -944,7 +962,7 @@ end
 
 describe 'reth'
   it "sets an hash of values in a named variable"
-    my_func() { local -A valueh=( [one]=1 [two]=2 [three]=3 ); local "$1"= && reth valueh "$1" ;}
+    my_func() { local -A sampleh=( [one]=1 [two]=2 [three]=3 ); local "$1" && reth sampleh "$1" ;}
     declare -A sampleh=()
     my_func sampleh
     printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
@@ -952,7 +970,7 @@ describe 'reth'
   end
 
   it "sets an hash of values in a named variable with a literal"
-    my_func() { local "$1"= && reth '( [one]=1 [two]=2 [three]=3 )' "$1" ;}
+    my_func() { local "$1" && reth '( [one]=1 [two]=2 [three]=3 )' "$1" ;}
     declare -A sampleh=()
     my_func sampleh
     printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
@@ -962,14 +980,14 @@ end
 
 describe 'rets'
   it "sets a string value in a named variable"
-    my_func() { local value=0; local "$1"= && rets value "$1" ;}
+    my_func() { local sample=0; local "$1" && rets sample "$1" ;}
     sample=''
     my_func sample
     assert equal '0' "$sample"
   end
 
   it "sets a string value in a named variable with a literal"
-    my_func() { local "$1"= && rets 0 "$1" ;}
+    my_func() { local "$1" && rets 0 "$1" ;}
     sample=''
     my_func sample
     assert equal '0' "$sample"

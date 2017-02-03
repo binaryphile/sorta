@@ -1,5 +1,5 @@
-[[ -n ${_sorta_:-} ]] && return
-readonly _sorta_=loaded
+[[ -n ${_sorta:-} ]] && return
+readonly _sorta=loaded
 
 _array_declaration_() {
   local _parameter_=$1
@@ -139,7 +139,8 @@ _is_array_()          { _is_type_ "$1" a ;}
 _is_array_literal_()  { [[ $1 == '('* && $1 == *')'  ]] ;}
 _is_hash_literal_()   { _is_array_literal_ "$1" && [[ ${1// /} == '(['* ]] ;}
 _is_name_()           { declare -p "$1" >/dev/null 2>&1 ;}
-_is_ref_()            { _is_name_ "${!1}" ;}
+_is_ref_()            { _is_scalar_ "$1" && _is_name_ "${!1}" ;}
+_is_scalar_()         { _is_type_ "$1" - ;}
 _is_set_()            { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
 _is_type_()           { [[ $(declare -p "$1" 2>/dev/null) == 'declare -'"$2"* ]] ;}
 
@@ -223,14 +224,14 @@ _ref_declaration_() {
 }
 
 reta() {
-  eval "$(passed '( @_values "*_ref" )' "$@")"
+  eval "$(passed '( @_values "*_refa" )' "$@")"
   local _declaration
 
-  unset -v "$_ref"
+  unset -v "$_refa"
   _declaration=$(declare -p _values)
   _declaration=${_declaration#*=}
   _declaration=${_declaration:1:-1}
-  eval "$(printf '%s=%s' "$_ref" "$_declaration")"
+  eval "$(printf '%s=%s' "$_refa" "$_declaration")"
 }
 
 reth() {
