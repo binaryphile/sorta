@@ -715,15 +715,6 @@ describe '_map_arg_type_'
     stop_on_error
   end
 
-  it "errors if _ref_declaration_ errors"
-    unset -v sample
-    _results_=()
-    stop_on_error off
-    _map_arg_type_ '*ref' sample
-    assert unequal 0 $?
-    stop_on_error
-  end
-
   it "errors if _array_declaration_ errors on an array"
     declare -A sampleh=( [one]=1 [two]=2 )
     _results_=()
@@ -847,15 +838,6 @@ describe 'passed'
   #   assert unequal 0 $?
   #   stop_on_error
   # end
-
-  it "errors if _process_parameters_ errors"
-    set -- ''
-    params=( '*ref' )
-    stop_on_error off
-    passed params "$@" >/dev/null
-    assert unequal 0 $?
-    stop_on_error
-  end
 end
 
 describe '_print_joined_'
@@ -904,16 +886,6 @@ describe '_process_parameters_'
     _process_parameters_
     assert equal 'declare -- zero=""' "${_results_[0]}"
   end
-
-  it "errors if _map_arg_type_ errors"
-    _results_=()
-    _arguments_=( '' )
-    _parameters_=( '*ref' )
-    stop_on_error off
-    _process_parameters_
-    assert unequal 0 $?
-    stop_on_error
-  end
 end
 
 describe '_ref_declaration_'
@@ -932,18 +904,18 @@ describe '_ref_declaration_'
     _ref_declaration_ result sample
     assert equal 'declare -- result="one"' "${_results_[0]}"
   end
-
-  it "errors on an argument which isn't set"
-    unset -v sample
-    stop_on_error off
-    _ref_declaration_ result sample
-    assert unequal 0 $?
-    stop_on_error
-  end
 end
 
 describe 'reta'
   it "sets an array of values in a named variable"
+    my_func() { local examples=( one two three ); local "$1" && reta examples "$1" ;}
+    samples=()
+    my_func samples
+    printf -v expected 'declare -a samples=%s([0]="one" [1]="two" [2]="three")%s' \' \'
+    assert equal "$expected" "$(declare -p samples)"
+  end
+
+  it "sets an array of values in a named variable of the same name as a local"
     my_func() { local samples=( one two three ); local "$1" && reta samples "$1" ;}
     samples=()
     my_func samples

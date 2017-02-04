@@ -215,7 +215,6 @@ _ref_declaration_() {
   local _parameter_=$1
   local _argument_=$2
 
-  _is_name_ "$_argument_" || return
   if _is_ref_ "$_argument_"; then
     _copy_declaration_ "$_argument_" "$_parameter_"
   else
