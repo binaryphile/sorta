@@ -248,6 +248,38 @@ describe 'froms'
   end
 end
 
+describe '_includes_'
+  it "returns true if a string is in an array"
+    unset -v one
+    samples=( one two three )
+    _includes_ one samples
+    assert equal 0 $?
+  end
+
+  it "returns true if a string is in an array more than once"
+    unset -v one
+    samples=( one two three one )
+    _includes_ one samples
+    assert equal 0 $?
+  end
+
+  it "returns false if a string isn't in an array"
+    samples=( one two three )
+    stop_on_error off
+    _includes_ four samples
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if only a substring is in an array"
+    samples=( one two three )
+    stop_on_error off
+    _includes_ on samples
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
 describe 'intoa'
   it "generates a declaration for a hash with the named keys from the local namespace"
     one=1

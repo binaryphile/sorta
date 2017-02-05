@@ -102,6 +102,21 @@ froms() {
   assign "$key" "$(declare -p value)"
 }
 
+_includes_() {
+  eval "$(passed '( item @items )' "$@")"
+  local expression
+  local status
+  local retval
+
+  printf -v expression '+(%s)' "$(_print_joined_ '|' "${items[@]}")"
+  status=$(set -- $(shopt extglob); echo "$2")
+  shopt -s extglob
+  [[ $1 == $expression ]]
+  retval=$?
+  [[ $status == 'off' ]] && shopt -u extglob
+  return "$retval"
+}
+
 intoa() {
   eval "$(passed '( %hash @keys )' "$@")"
   local key
