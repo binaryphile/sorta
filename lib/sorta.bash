@@ -189,6 +189,22 @@ _map_arg_type_() {
   esac
 }
 
+_name_from_declaration_() {
+  local name
+
+  [[ $1 == 'declare -'*[[:alpha:]_]=* ]] || return
+  name=${1%%=*}
+  printf '%s\n' ${name##* }
+}
+
+_names_from_declarations_() {
+  local declaration
+
+  for declaration in "${declarations[@]}"; do
+    names+=( "$(_name_from_declaration_ "$declaration")" )
+  done
+}
+
 pass() { declare -p "$1" ;}
 
 passed() {

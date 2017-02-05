@@ -757,6 +757,30 @@ describe '_map_arg_type_'
   end
 end
 
+describe '_name_from_declaration_'
+  it "returns the name of a simple declaration"
+    result=$(_name_from_declaration_ 'declare -- sample="one"')
+    assert equal sample "$result"
+  end
+
+  it "errors if the format doesn't have an equals sign"
+    stop_on_error off
+    _name_from_declaration_ 'declare -- sample"one"'
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
+describe '_names_from_declarations_'
+  it "returns the name of a single declaration in 'names'"
+    declarations=( 'declare -- sample="one"' )
+    names=()
+    _names_from_declarations_
+    printf -v expected 'declare -a names=%s([0]="sample")%s' \' \'
+    assert equal "$expected" "$(declare -p names)"
+  end
+end
+
 describe 'pass'
   it "declares a variable"
     sample=var
