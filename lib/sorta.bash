@@ -152,6 +152,17 @@ intos() {
 
 _is_array_()          { _is_type_ "$1" a ;}
 _is_array_literal_()  { [[ $1 == '('* && $1 == *')'  ]] ;}
+
+_is_declared_array_() {
+  local ref=$1
+  local declarations=()
+  local names=()
+
+  IFS=$'\n' read -rd '' -a declarations <<<"$(declare -a)" ||:
+  _names_from_declarations_
+  _includes_ "$1" names
+}
+
 _is_hash_literal_()   { _is_array_literal_ "$1" && [[ ${1// /} == '(['* ]] ;}
 _is_name_()           { declare -p "$1" >/dev/null 2>&1 ;}
 _is_ref_()            { _is_scalar_ "$1" && _is_name_ "${!1}" ;}

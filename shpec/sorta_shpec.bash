@@ -402,6 +402,23 @@ describe '_is_array_literal_'
   end
 end
 
+describe '_is_declared_array_'
+  it "returns true for a declared array"
+    unset -v samples
+    declare -a samples
+    _is_declared_array_ samples
+    assert equal 0 $?
+  end
+
+  it "returns false for not declared array"
+    unset -v samples
+    stop_on_error off
+    _is_declared_array_ samples
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
 describe '_is_hash_literal_'
   it "returns true for a parenthetical list of indices"
     _is_hash_literal_ '([one]=1)'
@@ -778,6 +795,15 @@ describe '_names_from_declarations_'
     _names_from_declarations_
     printf -v expected 'declare -a names=%s([0]="sample")%s' \' \'
     assert equal "$expected" "$(declare -p names)"
+  end
+
+  it "errors on a declaration missing an equals sign"
+    declarations=( 'declare -- sample"one"' )
+    names=()
+    stop_on_error off
+    _names_from_declarations_
+    assert unequal 0 $?
+    stop_on_error
   end
 end
 
