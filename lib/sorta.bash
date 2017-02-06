@@ -153,14 +153,18 @@ intos() {
 _is_array_()          { _is_type_ "$1" a ;}
 _is_array_literal_()  { [[ $1 == '('* && $1 == *')'  ]] ;}
 
-_is_declared_array_() {
-  local ref=$1
+_is_declared_array_() { _is_declared_type_ a "$@" ;}
+_is_declared_hash_() { _is_declared_type_ A "$@" ;}
+
+_is_declared_type_() {
+  local option=$1
+  local ref=$2
   local declarations=()
   local names=()
 
-  IFS=$'\n' read -rd '' -a declarations <<<"$(declare -a)" ||:
+  IFS=$'\n' read -rd '' -a declarations <<<"$(declare -"$option")" ||:
   _names_from_declarations_
-  _includes_ "$1" names
+  _includes_ "$ref" names
 }
 
 _is_hash_literal_()   { _is_array_literal_ "$1" && [[ ${1// /} == '(['* ]] ;}

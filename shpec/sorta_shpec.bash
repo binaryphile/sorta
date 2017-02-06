@@ -419,6 +419,41 @@ describe '_is_declared_array_'
   end
 end
 
+describe '_is_declared_hash_'
+  it "returns true for a declared array"
+    unset -v sampleh
+    declare -A sampleh
+    _is_declared_hash_ sampleh
+    assert equal 0 $?
+  end
+
+  it "returns false for not declared array"
+    unset -v sampleh
+    stop_on_error off
+    _is_declared_hash_ sampleh
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
+describe '_is_declared_type_'
+  it "returns true for a declared array"
+    unset -v samples
+    declare -a samples
+    _is_declared_type_ a samples
+    assert equal 0 $?
+  end
+
+  it "returns false for not declared array"
+    unset -v samples
+    stop_on_error off
+    _is_declared_type_ a samples
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
+
 describe '_is_hash_literal_'
   it "returns true for a parenthetical list of indices"
     _is_hash_literal_ '([one]=1)'
