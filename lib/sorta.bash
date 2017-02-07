@@ -273,11 +273,10 @@ _ref_declaration_() {
   local _parameter_=$1
   local _argument_=$2
 
-  if _is_ref_ "$_argument_"; then
-    _copy_declaration_ "$_argument_" "$_parameter_"
-  else
-    _copy_declaration_ _argument_ "$_parameter_"
-  fi
+  [[ -n $_argument_ ]] || return
+  _is_name_ "$_argument_" || _is_declared_array_ "$_argument_" || _is_declared_hash_ "$_argument_" || _is_declared_scalar_ "$_argument_" || return
+  _is_ref_ "$_argument_" && { _copy_declaration_ "$_argument_" "$_parameter_"; return ;}
+  _copy_declaration_ _argument_ "$_parameter_"
 }
 
 reta() {
@@ -299,7 +298,8 @@ reth() {
   _declaration=$(declare -p _valueh)
   _declaration=${_declaration#*=}
   _declaration=${_declaration:1:-1}
-  eval "$(printf '%s=%s' "$_ref" "$_declaration")"
+  printf -v _declaration '%s=%s' "$_ref" "$_declaration"
+  eval "$_declaration"
 }
 
 rets() {

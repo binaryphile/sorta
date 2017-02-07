@@ -980,6 +980,15 @@ describe 'passed'
   #   assert unequal 0 $?
   #   stop_on_error
   # end
+
+  it "errors if _process_parameters_ errors"
+    set -- ''
+    params=( '*ref' )
+    stop_on_error off
+    passed params "$@" >/dev/null
+    assert unequal 0 $?
+    stop_on_error
+  end
 end
 
 describe '_print_joined_'
@@ -1028,6 +1037,16 @@ describe '_process_parameters_'
     _process_parameters_
     assert equal 'declare -- zero=""' "${_results_[0]}"
   end
+
+  it "errors if _map_arg_type_ errors"
+    _results_=()
+    _arguments_=( '' )
+    _parameters_=( '*ref' )
+    stop_on_error off
+    _process_parameters_
+    assert unequal 0 $?
+    stop_on_error
+  end
 end
 
 describe '_ref_declaration_'
@@ -1045,6 +1064,21 @@ describe '_ref_declaration_'
     _results_=()
     _ref_declaration_ result sample
     assert equal 'declare -- result="one"' "${_results_[0]}"
+  end
+
+  it "errors on an argument which isn't set"
+    unset -v sample
+    stop_on_error off
+    _ref_declaration_ result sample
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "errors on a blank argument"
+    stop_on_error off
+    _ref_declaration_ result ''
+    assert unequal 0 $?
+    stop_on_error
   end
 end
 
