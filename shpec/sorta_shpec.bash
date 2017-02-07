@@ -436,6 +436,31 @@ describe '_is_declared_hash_'
   end
 end
 
+describe '_is_declared_scalar_'
+  it "returns true for a declared scalar"
+    unset -v sample
+    samplef() { local sample; _is_declared_scalar_ sample ;}
+    samplef
+    assert equal 0 $?
+  end
+
+  it "returns false for not declared scalar"
+    unset -v sample
+    samplef() { _is_declared_scalar_ sample ;}
+    stop_on_error off
+    samplef
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "doesn't alter a global variable's contents"
+    sample=one
+    samplef() { local sample; _is_declared_scalar_ sample ;}
+    samplef
+    assert equal one "$sample"
+  end
+end
+
 describe '_is_declared_type_'
   it "returns true for a declared array"
     unset -v samples

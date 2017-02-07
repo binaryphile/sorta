@@ -156,15 +156,27 @@ _is_array_literal_()  { [[ $1 == '('* && $1 == *')'  ]] ;}
 _is_declared_array_() { _is_declared_type_ a "$@" ;}
 _is_declared_hash_() { _is_declared_type_ A "$@" ;}
 
+_is_declared_scalar_() {
+  local name=$1
+  local names=()
+
+  _is_name_ "$name" && return
+  IFS=$'\n' read -rd '' -a names <<<"$(compgen -v)" ||:
+  _includes_ "$name" names && return
+  declare -g "$1"=''
+  ! _is_name_ "$1"
+}
+
 _is_declared_type_() {
   local option=$1
-  local ref=$2
+  local name=$2
   local declarations=()
   local names=()
 
+  _is_name_ "$2" && return
   IFS=$'\n' read -rd '' -a declarations <<<"$(declare -"$option")" ||:
   _names_from_declarations_
-  _includes_ "$ref" names
+  _includes_ "$name" names
 }
 
 _is_hash_literal_()   { _is_array_literal_ "$1" && [[ ${1// /} == '(['* ]] ;}
