@@ -22,11 +22,11 @@ Sorta lets you write Bash functions which:
 Basically, Sorta is about controlling your variable namespace as much as
 possible. These features are designed to help you do that.
 
-Requires Bash 4.2 or higher.  Use of the `deref` type requires Bash 4.3.
+Requires Bash 4.3 or higher.
 
-So Bash (hereafter, "bash") has an interesting way of passing variables.
-Since it has to pass things to commands, which only take strings, it has
-to expand every variable reference to a string prior to handing it to a
+So bash has an interesting way of passing variables.  Since it has to
+pass things to commands, which only take strings, it has to expand every
+variable reference to a string prior to handing it to a
 command/function. It doesn't have a concept of passing anything other
 than a string, even though it has structured data types such as arrays
 and hashes (a.k.a. associative arrays).
@@ -42,27 +42,13 @@ Examples
 <table>
 <thead>
 <tr>
-<th>Regular Bash</th>
 <th>With Sorta</th>
+<th>Regular Bash</th>
 </tr>
 </thead>
 <tbody>
 <tr valign="top">
 <td><pre><code lang="shell">
-myvar=hello
-
-my_function () {
-  greeting=$1
-
-
-  echo "$greeting"
-}
-
-my_function "$myvar"
-
-&gt; hello
-</code></pre></td>
-<td><pre><code lang="bash">
 myvar=hello
 
 my_function () {
@@ -73,6 +59,20 @@ my_function () {
 }
 
 my_function myvar
+
+&gt; hello
+</code></pre></td>
+<td><pre><code lang="bash">
+myvar=hello
+
+my_function () {
+  greeting=$1
+
+
+  echo "$greeting"
+}
+
+my_function "$myvar"
 
 &gt; hello
 </code></pre></td>
