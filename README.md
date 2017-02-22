@@ -731,9 +731,12 @@ double-quotes).
     following qualifiers:
 
     - `@` - argument is an array name or literal
+
     - `%` - argument is a hash name or literal
+
     - `&` - parameter is aliased to the variable name given by
       argument with `declare -n`
+
     - `*` - argument is a reference to another variable name
 
     Note that `&` and `*` require the quoting since bash treats them as
