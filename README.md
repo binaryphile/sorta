@@ -73,7 +73,7 @@ my_function myvar
 myvar=hello
 
 my_function () {
-  greeting=$1
+  local greeting=$1
 
 
   echo "$greeting"
