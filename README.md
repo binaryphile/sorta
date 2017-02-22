@@ -180,7 +180,7 @@ in as a reference gives the potential for naming conflicts with your
 local variables if you aren't careful.
 
 Additionally, with sorta you don't have to use curly brace expansion of
-the array, or worry about separating other arguments from the array
+the array, nor worry about separating other arguments from the array
 elements with `shift` at the receiving side.
 
 Installation
