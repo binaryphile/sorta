@@ -1,5 +1,8 @@
-source sorta.bash
-source shpec-helper.bash
+library=./shpec-helper.bash
+source "${BASH_SOURCE%/*}/$library" 2>/dev/null || source "$library"
+unset -v library
+
+shpec_source lib/sorta.bash
 
 stop_on_error=true
 

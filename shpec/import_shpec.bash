@@ -1,6 +1,6 @@
-source ./shpec-helper.bash
-
-initialize_shpec_helper
+library=./shpec-helper.bash
+source "${BASH_SOURCE%/*}/$library" 2>/dev/null || source "$library"
+unset -v library
 
 shpec_source lib/import.bash
 

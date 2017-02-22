@@ -7,9 +7,9 @@ _required_imports=(
   _imp_test
 )
 
-_imp_test() { :;}
+_imp_test () { :;}
 
-importa() {(
+importa () {(
   eval "$(passed '( _sourcefile @_functions )' "$@")"
   local _function
 
@@ -20,13 +20,13 @@ importa() {(
   done
 )}
 
-imports() (
+imports () (
   eval "$(passed '( sourcefile function )' "$@")"
 
   importa sourcefile '( '"$function"' )'
 )
 
-_print_function() {(
+_print_function () {(
   eval "$(passed '( function )' "$@")"
 
   IFS=$'\n'
@@ -35,7 +35,7 @@ _print_function() {(
   printf '%s\n' "$*"
 )}
 
-_source_file() {
+_source_file () {
   eval "$(passed '( sourcefile )' "$@")"
 
   source ./"$sourcefile".bash 2>/dev/null ||
