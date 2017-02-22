@@ -51,7 +51,7 @@ Examples
 <td><pre><code lang="shell">
 myvar=hello
 
-my_function() {
+my_function () {
   greeting=$1
 
 
@@ -65,7 +65,7 @@ my_function "$myvar"
 <td><pre><code lang="bash">
 myvar=hello
 
-my_function() {
+my_function () {
   local _params=( greeting )
   eval "$(passed _params "$@")"
 
@@ -121,7 +121,7 @@ Instead, how about passing a hash and an array directly by name:
 myarray=( zero one )
 declare -A myhash=( [zero]=0 [one]=1 )
 
-my_function() {
+my_function () {
   local _params=( %hash @array )
   eval "$(passed _params "$@")"
 
@@ -141,7 +141,7 @@ my_function myhash myarray
 myarray=( zero one )
 declare -A myhash=( [zero]=0 [one]=1 )
 
-my_function() {
+my_function () {
   local hash_name=$1; shift
   local array=( "$@" )
   local -A to_hash
@@ -203,7 +203,7 @@ the `passed` function:
 
     source sorta.bash
 
-    my_function() {
+    my_function () {
       local _params=( first second )
       eval "$(passed _params "$@")"
 
@@ -260,7 +260,7 @@ end of the definition:
 
     source sorta.bash
 
-    my_function2() {
+    my_function2 () {
       local _params=( first=1 )
       eval "$(passed _params "$@")"
 
@@ -296,7 +296,7 @@ with an "@" which symbolizes the expected type:
 
     source sorta.bash
 
-    my_function3() {
+    my_function3 () {
       local _params=( @first )
       eval "$(passed _params "$@")"
 
@@ -327,7 +327,7 @@ specified with a "%" (thanks, Perl) rather than an "@":
 
     source sorta.bash
 
-    my_function4() {
+    my_function4 () {
       local _params=( %first )
       eval "$(passed _params "$@")"
 
@@ -359,7 +359,7 @@ With sorta, you can write your functions to return a special form:
 
     source sorta.bash
 
-    my_function5() {
+    my_function5 () {
       local array=( 1 2 )
       pass array
     }
@@ -402,7 +402,7 @@ namespace on the receiving side. `froms` imports a single key name:
 
     source sorta.bash
 
-    my_function6() {
+    my_function6 () {
       local _params=( %myhash )
       eval "$(passed _params "$@")"
 
@@ -434,7 +434,7 @@ array variable):
 
     source sorta.bash
 
-    my_function7() {
+    my_function7 () {
       local _params=( %myhash )
       eval "$(passed _params "$@")"
 
@@ -458,7 +458,7 @@ names of the variables to import the keys to:
 
     source sorta.bash
 
-    my_function8() {
+    my_function8 () {
       local _params=( %myhash )
       eval "$(passed _params "$@")"
 
