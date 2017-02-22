@@ -108,7 +108,56 @@ variable expansion, but it's not anything you can't do with bash as-is.
 
 Instead, how about passing a hash and an array directly by name:
 
-    my_function myhash myarray
+<table>
+<thead>
+<tr>
+<th>Regular Bash</th>
+<th>With Sorta</th>
+</tr>
+</thead>
+<tbody>
+<tr valign="top">
+<td><pre><code lang="shell">
+myarray=( zero one )
+declare -A myhash=( [zero]=0 [one]=1 )
+
+my_function() {
+  local hash_name=$1; shift
+  local array=( "$@" )
+  local -A to_hash
+
+  somehow_copy_the_hash_values_from "$hash_name" "to_hash" # since you can't pass a hash in bash
+  declare -p hash
+  declare -p array
+}
+
+my_function myhash "${myarray[@]}"
+
+&gt; declare -A hash='([zero]="0" [one]="1" )'
+&gt; declare -a array='([0]="zero" [1]="one")'
+</code></pre></td>
+<td><pre><code lang="bash">
+myarray=( zero one )
+declare -A myhash=( [zero]=0 [one]=1 )
+
+my_function() {
+  local _params=( %hash @array )
+  eval "$(passed _params "$@")"
+
+
+
+  declare -p hash
+  declare -p array
+}
+
+my_function myhash myarray
+
+&gt; declare -A hash='([zero]="0" [one]="1" )'
+&gt; declare -a array='([0]="zero" [1]="one")'
+</code></pre></td>
+</tr>
+</tbody>
+</table>
 
 You can do this with sorta by adding special type designators to the
 `_params` list:
@@ -121,7 +170,16 @@ variables `hash` and `array`, respectively.
 Note that `hash` and `array` could be any variable names, I'm just using
 those names for clarity.
 
-Your dad's bash can't do that easily.
+Your dad's bash can't do that easily.  As you can see on the left side,
+there's no way to pass the hash.  You could simply work on it directly
+in the calling scope without passing it as an argument, but then your
+namespaces are bound together.  In fact, even passing its name in as a
+reference gives the potential for naming conflicts with your local
+variables if you aren't careful.
+
+Additionally, with sorta you don't have to use curly brace expansion of
+the array, or worry about separating other arguments from the array
+elements with `shift` at the receiving side.
 
 Installation
 ============
@@ -420,8 +478,7 @@ Outputs:
 FAQ
 ===
 
-<dl>
-<dt>Why?</dt>
+**Why?**
 
 <dd>
 <p>The command line is the fundamental tool for system management, and
