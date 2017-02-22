@@ -483,18 +483,18 @@ FAQ
 - *Why?*
 
     The command line is the fundamental tool for system management, and
-    Bash is its de facto interface.  For many such uses, it's the lowest
+    bash is its de facto interface.  For many such uses, it's the lowest
     impedance tool for the job, beating out other scripting tools by
     virtue of staying out of your way.  Bash has the added virtue of
     being preinstalled on almost every major Unix distribution.
 
-    When trying to do anything somewhat sophisticated however, Bash
+    When trying to do anything somewhat sophisticated however, bash
     quickly falls on its face due to its weak support for passing
     parameters, its use of [dynamic scoping] and its lack of support for
     reasonable packaging of libraries.
 
     Sorta is aimed at improving parameter passing just a bit, so you can
-    more effectively use the tools which Bash does provide.
+    more effectively use the tools which bash does provide.
 
 - *Why "_params"?*
 
@@ -514,7 +514,8 @@ as well?  Won't it be expanded when I don't want it to be?*
 
     Short answer, yes, the string will be expanded if `passed` detects
     that it is a reference to a variable name.  If you don't want it
-    expanded, there are two things you can do:
+    expanded, there are two things you can do (other than not use
+    `passed`):
 
     - Make the parameter an array instead and pass the argument as an
       entry in the array.  Array items are not expanded.
