@@ -538,7 +538,8 @@ as well?  Won't it be expanded when I don't want it to be?*
 - *What about the positional arguments, $1, $2, etc.?*
 
     The positional arguments are left intact and may be used in addition
-    to the arguments created by `passed`.
+    to the arguments created by `passed`.  You may even use them to tell
+    when an expansion has occurred.
 
 Sorta API
 =========
