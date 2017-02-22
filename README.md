@@ -572,7 +572,7 @@ work for the right-hand-side of an assignment statement works in that
 case, such as `'( [one]=1 [two]=2 )'` (remember to use single- or
 double-quotes).
 
-- *`assign <variable_name> <declaration_statement>`* - change the
+- **`assign`** *`<variable_name> <declaration_statement>`* - change the
   variable name of a declaration statement to `variable_name`
 
     *Returns*: the substituted declaration statement on stdout
