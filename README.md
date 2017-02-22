@@ -712,7 +712,7 @@ double-quotes).
 
     Equivalent to `declare -p <variable_name> 2>/dev/null`.
 
-- **`passed`** *`parameter_array arg1 \[arg2...\]`* - create a compound
+- **`passed`** *`parameter_array arg1 [arg2...]`* - create a compound
   declaration statement for the named variable parameters with the
   supplied argument values
 
@@ -730,14 +730,14 @@ double-quotes).
     Named parameters are presumed to be scalars unless prefixed with the
     following qualifiers:
 
-    - `@` - argument is an array name or literal
+      - `@` - argument is an array name or literal
 
-    - `%` - argument is a hash name or literal
+      - `%` - argument is a hash name or literal
 
-    - `&` - parameter is aliased to the variable name given by argument
-      with `declare -n`
+      - `&` - parameter is aliased to the variable name given by
+        argument with `declare -n`
 
-    - `*` - argument is a reference to another variable name
+      - `*` - argument is a reference to another variable name
 
     Note that `&` and `*` require the quoting since bash treats them as
     special characters.
@@ -783,13 +783,16 @@ double-quotes).
     scope.  Usually used to receive a return variable name as an
     argument to a function, then set that variable using `reta`.
 
-    Note that the variable name must also be explicitly locally set
-    before calling `reta`. For example, if the variable name has been
-    passed in as `$1`, the following will return the values "one" and
-    "two" into that array:
+    Note that the variable name must also be declared `local` before
+    calling `reta`. For example, if the variable name has been passed in
+    as `$1`, the following will return the values "one" and "two" into
+    that array:
 
         local "$1" || return
         reta '( one two )' "$1"
+
+    Since `$1`'s value may be malformed for an identifier, there is a
+    return clause to indicate the error to the caller.
 
     `reta` prevents name collisions between the outer variable name and
     the variable names in your function scope.
