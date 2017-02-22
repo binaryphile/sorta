@@ -572,12 +572,8 @@ work for the right-hand-side of an assignment statement works in that
 case, such as `'( [one]=1 [two]=2 )'` (remember to use single- or
 double-quotes).
 
-<dl>
-<dt>
-<code>assign &lt;variable\_name&gt;
-&lt;declaration\_statement&gt;</code> - change the variable name of a
-declaration statement to <code>variable\_name</code>
-</dt>
+- *`assign <variable\_name> <declaration\_statement>`* - change the variable name of a
+declaration statement to `variable\_name`
 <dd>
 <p>
 <em>Returns</em>: the substituted declaration statement on stdout
