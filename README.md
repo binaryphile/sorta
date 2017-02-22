@@ -111,13 +111,33 @@ Instead, how about passing a hash and an array directly by name:
 <table>
 <thead>
 <tr>
-<th>Regular Bash</th>
 <th>With Sorta</th>
+<th>Regular Bash</th>
 </tr>
 </thead>
 <tbody>
 <tr valign="top">
 <td><pre><code lang="shell">
+myarray=( zero one )
+declare -A myhash=( [zero]=0 [one]=1 )
+
+my_function() {
+  local _params=( %hash @array )
+  eval "$(passed _params "$@")"
+
+
+
+
+  declare -p hash
+  declare -p array
+}
+
+my_function myhash myarray
+
+&gt; declare -A hash='([zero]="0" [one]="1" )'
+&gt; declare -a array='([0]="zero" [1]="one")'
+</code></pre></td>
+<td><pre><code lang="bash">
 myarray=( zero one )
 declare -A myhash=( [zero]=0 [one]=1 )
 
@@ -133,25 +153,6 @@ my_function() {
 }
 
 my_function myhash "${myarray[@]}"
-
-&gt; declare -A hash='([zero]="0" [one]="1" )'
-&gt; declare -a array='([0]="zero" [1]="one")'
-</code></pre></td>
-<td><pre><code lang="bash">
-myarray=( zero one )
-declare -A myhash=( [zero]=0 [one]=1 )
-
-my_function() {
-  local _params=( %hash @array )
-  eval "$(passed _params "$@")"
-
-
-
-  declare -p hash
-  declare -p array
-}
-
-my_function myhash myarray
 
 &gt; declare -A hash='([zero]="0" [one]="1" )'
 &gt; declare -a array='([0]="zero" [1]="one")'
