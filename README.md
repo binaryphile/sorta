@@ -633,8 +633,9 @@ double-quotes).
     for the named variable with the value taken from the corresponding
     key in `hash`.
 
-    When supplied with the pattern '\*', creates a compound declaration
-    statement for variables with *all* of the keys and values of `hash`.
+    When supplied with the pattern '\*' (include quotes to prevent
+    globbing), creates a compound declaration statement for variables
+    with *all* of the keys and values of `hash`.
 
     When supplied with a prefixed asterisk, such as 'myvars\_\*',
     creates a compound declaration as above but with the prefix on the
