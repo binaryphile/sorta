@@ -572,17 +572,16 @@ work for the right-hand-side of an assignment statement works in that
 case, such as `'( [one]=1 [two]=2 )'` (remember to use single- or
 double-quotes).
 
-- **`assign`** *`variable_name declaration_statement`* - change the
-  variable name of a declaration statement to `variable_name`
+-   **`assign`** *`variable_name declaration_statement`* - change the
+    variable name of a declaration statement to `variable_name`
 
     *Returns*: the substituted declaration statement on stdout
 
-    Allows you to assign the output of `pass` to a variable
-    name in the local scope. You must `eval` the output of
-    `assign` to do so.
+    Allows you to assign the output of `pass` to a variable name in the
+    local scope. You must `eval` the output of `assign` to do so.
 
-- **`assigna`** *`variable_name_array declaration_statement`* - change
-  the names in a compound declaration statement
+-   **`assigna`** *`variable_name_array declaration_statement`* - change
+    the names in a compound declaration statement
 
     *Returns*: the substituted declarations on stdout
 
@@ -593,8 +592,9 @@ double-quotes).
     that the number of names and available statements match. You must
     `eval` the output of `assigna` to instantiate the variables locally.
 
-- **`froma`** *`hash keys`* - create declaration statements for a set of
-  variables named in the array `keys`, values taken from the named hash
+-   **`froma`** *`hash keys`* - create declaration statements for a set
+    of variables named in the array `keys`, values taken from the named
+    hash
 
     Accepts literals or variable names.
 
@@ -604,11 +604,12 @@ double-quotes).
     by semicolons, for variables named in `keys`. The values are taken
     from the corresponding keys of `hash`.
 
-    You must `eval` the output of `froma` to instantiate the variables
-    locally.
+    You must `eval` the output of `froma` to instantiate the
+    variables locally.
 
-- **`fromh`** *`hash keyhash`* - create declaration statements for a set
-  of variables named in the keys of `keyhash`, values taken from `hash`
+-   **`fromh`** *`hash keyhash`* - create declaration statements for a
+    set of variables named in the keys of `keyhash`, values taken from
+    `hash`
 
     Accepts literals or variable names.
 
@@ -618,11 +619,12 @@ double-quotes).
     by semicolons, for the keys of `hash` corresponding to the keys of
     `keyhash`, mapped to variables named by the values of `keyhash`.
 
-    You must `eval` the output of `froma` to instantiate the variables
-    locally.
+    You must `eval` the output of `froma` to instantiate the
+    variables locally.
 
-- **`froms`** *`hash name_or_pattern`* - create declaration statement(s)
-  for named variable or set of variables, values taken from from `hash`
+-   **`froms`** *`hash name_or_pattern`* - create declaration
+    statement(s) for named variable or set of variables, values taken
+    from from `hash`
 
     Accepts literals or variable names.
 
@@ -641,18 +643,18 @@ double-quotes).
     creates a compound declaration as above but with the prefix on the
     resulting variable names.
 
-    You must `eval` the output of `froms` to instantiate the variable(s)
-    locally.
+    You must `eval` the output of `froms` to instantiate the
+    variable(s) locally.
 
-- **`intoa`** *`hash keys`* - create a declaration statement for the
-  named hash which includes the variables named in `keys` as new keys
+-   **`intoa`** *`hash keys`* - create a declaration statement for the
+    named hash which includes the variables named in `keys` as new keys
 
     Accepts literals or variable names.
 
     *Returns*: a declaration statement on stdout
 
-    Adds the variables named in `keys`, and their values, to the named
-    hash.
+    Adds the variables named in `keys`, and their values, to the
+    named hash.
 
     Existing keys of the same name are overwritten. Other key-values in
     the hash are left alone. This is basically a merge operation.
@@ -660,8 +662,9 @@ double-quotes).
     You must `eval` the output of `intoa` to update the hash with the
     new values.
 
-- **`intoh`** *`hash keyhash`* - create a declaration statement for the
-  named hash which includes the variables named in `keyhash` as new keys
+-   **`intoh`** *`hash keyhash`* - create a declaration statement for
+    the named hash which includes the variables named in `keyhash` as
+    new keys
 
     Accepts literals or variable names.
 
@@ -677,8 +680,8 @@ double-quotes).
     You must `eval` the output of `intoh` to update the hash with the
     new values.
 
-- **`intos`** *`hash key`* - create a declaration statement for the
-  named hash which includes the variable named in `key`
+-   **`intos`** *`hash key`* - create a declaration statement for the
+    named hash which includes the variable named in `key`
 
     Accepts literals or variable names.
 
@@ -692,8 +695,8 @@ double-quotes).
     You must `eval` the output of `intos` to update the hash with the
     new values.
 
-- **`keys_of`** *`hash`* - create a declaration statement for an array
-  of the key names from `hash`
+-   **`keys_of`** *`hash`* - create a declaration statement for an array
+    of the key names from `hash`
 
     Accepts a literal or variable name.
 
@@ -702,8 +705,8 @@ double-quotes).
     Finds and returns an `eval`able array of the key names from the
     named `hash`.
 
-- **`pass`** *`variable_name`* - create a declaration statement for an
-  the named variable
+-   **`pass`** *`variable_name`* - create a declaration statement for an
+    the named variable
 
     *Returns*: a declaration statement on stdout
 
@@ -712,9 +715,9 @@ double-quotes).
 
     Equivalent to `declare -p <variable_name> 2>/dev/null`.
 
-- **`passed`** *`parameter_array arg1 [arg2...]`* - create a compound
-  declaration statement for the named variable parameters with the
-  supplied argument values
+-   **`passed`** *`parameter_array arg1 [arg2...]`* - create a compound
+    declaration statement for the named variable parameters with the
+    supplied argument values
 
     Accepts literals or variable names.
 
@@ -730,14 +733,14 @@ double-quotes).
     Named parameters are presumed to be scalars unless prefixed with the
     following qualifiers:
 
-    - `@` - argument is an array name or literal
+    -   `@` - argument is an array name or literal
 
-    - `%` - argument is a hash name or literal
+    -   `%` - argument is a hash name or literal
 
-    - `&` - parameter is aliased to the variable name given by
-      argument with `declare -n`
+    -   `&` - parameter is aliased to the variable name given by
+        argument with `declare -n`
 
-    - `*` - argument is a reference to another variable name
+    -   `*` - argument is a reference to another variable name
 
     Note that `&` and `*` require the quoting since bash treats them as
     special characters.
@@ -750,8 +753,8 @@ double-quotes).
     array or hash in the outer scope, or to hold an array/hash literal.
     A literal, in this case, is any string which qualifies as the
     right-hand side of an assignment statement, i.e. that which follows
-    the equals sign. See the format of any `declare -p` output for
-    examples.
+    the equals sign. See the format of any `declare -p` output
+    for examples.
 
     The `*` reference type tells `passed` to expect the result to be a
     variable name. It still dereferences an argument if the dereferenced
@@ -760,8 +763,8 @@ double-quotes).
     nothing more.
 
     The `&` dereference type sets the parameter to point to the variable
-    named by the argument directly, effectively making it call by
-    reference. Changes to the parameter variable in the function body
+    named by the argument directly, effectively making it call
+    by reference. Changes to the parameter variable in the function body
     will affect the original variable directly in the outer scope. This
     is not call by value.
 
@@ -771,16 +774,16 @@ double-quotes).
 
     You must `eval` the output of `passed` to instantiate the variables.
 
-- **`reta`** *`values_array return_variable`* - directly set an array
-  variable in an outer scope, by name, "returning" the value
+-   **`reta`** *`values_array return_variable`* - directly set an array
+    variable in an outer scope, by name, "returning" the value
 
     Accepts an array literal or variable name.
 
     *Returns*: the values in `values_array`, directly setting
     `return_variable`
 
-    Allows you to return a value into a named variable in an outer
-    scope.  Usually used to receive a return variable name as an
+    Allows you to return a value into a named variable in an
+    outer scope. Usually used to receive a return variable name as an
     argument to a function, then set that variable using `reta`.
 
     Note that the variable name must also be declared `local` before
@@ -797,8 +800,8 @@ double-quotes).
     `reta` prevents name collisions between the outer variable name and
     the variable names in your function scope.
 
-- **`reth`** *`values_hash return_variable_name`* - directly set a hash
-  variable in an outer scope, by name, "returning" the value
+-   **`reth`** *`values_hash return_variable_name`* - directly set a
+    hash variable in an outer scope, by name, "returning" the value
 
     Accepts a hash literal or variable name.
 
@@ -807,8 +810,8 @@ double-quotes).
 
     Same usage as `reta` above.
 
-- **`rets`** *`value return_variable_name` - directly set a scalar
-  variable in an outer scope, by name, "returning" the value
+-   **`rets`** *`value return_variable_name`* - directly set a scalar
+    variable in an outer scope, by name, "returning" the value
 
     Accepts a literal or variable name.
 
@@ -816,8 +819,8 @@ double-quotes).
 
     Same usage as `reta` above.
 
-- **`values_of`** *`hash`* - create a declaration statement for an array
-  of the values in `hash`
+-   **`values_of`** *`hash`* - create a declaration statement for an
+    array of the values in `hash`
 
     Accepts a hash literal or variable name.
 
