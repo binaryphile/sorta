@@ -24,7 +24,7 @@ possible. These features are designed to help you do that.
 
 Requires Bash 4.3 or higher.
 
-So bash has an interesting way of passing variables.  Since it has to
+So bash has an interesting way of passing variables. Since it has to
 pass things to commands, which only take strings, it has to expand every
 variable reference to a string prior to handing it to a
 command/function. It doesn't have a concept of passing anything other
@@ -42,13 +42,18 @@ Examples
 <table>
 <thead>
 <tr>
-<th>With Sorta</th>
-<th>Regular Bash</th>
+<th>
+With Sorta
+</th>
+<th>
+Regular Bash
+</th>
 </tr>
 </thead>
 <tbody>
 <tr valign="top">
-<td><pre><code lang="shell">
+<td>
+<pre><code lang="shell">
 myvar=hello
 
 my_function () {
@@ -61,8 +66,10 @@ my_function () {
 my_function myvar
 
 &gt; hello
-</code></pre></td>
-<td><pre><code lang="bash">
+</code></pre>
+</td>
+<td>
+<pre><code lang="bash">
 myvar=hello
 
 my_function () {
@@ -75,20 +82,21 @@ my_function () {
 my_function "$myvar"
 
 &gt; hello
-</code></pre></td>
+</code></pre>
+</td>
 </tr>
 </tbody>
 </table>
 
 Notice the call to `my_function` with the name of the variable, `myvar`,
-rather than the shell expansion.  `my_function`, however, doesn't see
+rather than the shell expansion. `my_function`, however, doesn't see
 that name, it just gets the already-expanded value `hello` in
 `greeting`.
 
 With the addition of the `eval` call at the beginning of `my_function`,
 the function receives variables by name and has them automatically
-expanded to their values.  However, you can still pass literal strings
-as well, such as `my_function "a string"`.  Since the value "a string"
+expanded to their values. However, you can still pass literal strings as
+well, such as `my_function "a string"`. Since the value "a string"
 doesn't point to a variable, it will be received, unexpanded, into
 `greeting`.
 
@@ -97,11 +105,11 @@ function. Changing their values doesn't change variables in the global
 nor calling scopes, as it might if they weren't scoped locally.
 
 Notice that the `passed` function accepts the parameter array by name
-(no `"${_params[@]}"` expansion necessary): `eval "$(passed _params
-"$@")"`.
+(no `"${_params[@]}"` expansion necessary):
+`eval "$(passed _params "$@")"`.
 
-You could also use a literal to save a line: `eval "$(passed '( greeting
-)' "$@")"`.
+You could also use a literal to save a line:
+`eval "$(passed '( greeting )' "$@")"`.
 
 So anyway, passing strings like that may be nicer than bash's syntax for
 variable expansion, but it's not anything you can't do with bash as-is.
@@ -111,13 +119,18 @@ Instead, how about passing a hash and an array directly by name:
 <table>
 <thead>
 <tr>
-<th>With Sorta</th>
-<th>Regular Bash</th>
+<th>
+With Sorta
+</th>
+<th>
+Regular Bash
+</th>
 </tr>
 </thead>
 <tbody>
 <tr valign="top">
-<td><pre><code lang="shell">
+<td>
+<pre><code lang="shell">
 myarray=( zero one )
 declare -A myhash=( [zero]=0 [one]=1 )
 
@@ -136,8 +149,10 @@ my_function myhash myarray
 
 &gt; declare -A hash='([zero]="0" [one]="1" )'
 &gt; declare -a array='([0]="zero" [1]="one")'
-</code></pre></td>
-<td><pre><code lang="bash">
+</code></pre>
+</td>
+<td>
+<pre><code lang="bash">
 myarray=( zero one )
 declare -A myhash=( [zero]=0 [one]=1 )
 
@@ -156,7 +171,8 @@ my_function myhash "${myarray[@]}"
 
 &gt; declare -A hash='([zero]="0" [one]="1" )'
 &gt; declare -a array='([0]="zero" [1]="one")'
-</code></pre></td>
+</code></pre>
+</td>
 </tr>
 </tbody>
 </table>
@@ -172,10 +188,10 @@ variables `hash` and `array`, respectively.
 Note that `hash` and `array` could be any variable names, I'm just using
 those names for clarity.
 
-Your dad's bash can't do that easily.  As you can see on the right side,
-there's no way to pass the hash.  You could simply work on the hash
+Your Dad's bash can't do that easily. As you can see on the right side,
+there's no way to pass the hash. You could simply work on the hash
 directly in the calling scope without passing it as an argument, but
-then your namespaces are bound together.  In fact, even passing its name
+then your namespaces are bound together. In fact, even passing its name
 in as a reference gives the potential for naming conflicts with your
 local variables if you aren't careful.
 
@@ -416,8 +432,8 @@ Outputs:
     $ my_function6 hash
     one: 1
 
-`froms` can also import *all* keys from the named hash by passing
-`*` for the name:
+`froms` can also import *all* keys from the named hash by passing `*`
+for the name:
 
     eval "$(froms myhash '*')"
 
@@ -480,12 +496,12 @@ Outputs:
 FAQ
 ===
 
-- *Why?*
+-   *Why?*
 
     The command line is the fundamental tool for system management, and
-    bash is its de facto interface.  For many such uses, it's the lowest
+    bash is its de facto interface. For many such uses, it's the lowest
     impedance tool for the job, beating out other scripting tools by
-    virtue of staying out of your way.  Bash has the added virtue of
+    virtue of staying out of your way. Bash has the added virtue of
     being preinstalled on almost every major Unix distribution.
 
     When trying to do anything somewhat sophisticated however, bash
@@ -496,37 +512,37 @@ FAQ
     Sorta is aimed at improving parameter passing just a bit, so you can
     more effectively use the tools which bash does provide.
 
-- *Why "_params"?*
+-   *Why "\_params"?*
 
     In order for the `passed` function to determine whether an argument
     needs to be expanded, it has to check the outside scope for the
-    existence of variable names.  If it finds one, it reads in that
-    value.  Therefore you don't want to declare any local variables
+    existence of variable names. If it finds one, it reads in
+    that value. Therefore you don't want to declare any local variables
     before calling `passed`, since those might mask an outside variable
     name that was passed as an argument.
 
     If the parameter list is declared as a variable (as opposed to a
-    literal), then it may also mask an argument.  Prefixing it with an
+    literal), then it may also mask an argument. Prefixing it with an
     underscore prevents most possibilities for a name collision.
 
-- *What if I want to pass a string that happens to be a variable name
-as well?  Won't it be expanded when I don't want it to be?*
+-   *What if I want to pass a string that happens to be a variable name
+    as well? Won't it be expanded when I don't want it to be?*
 
     Short answer, yes, the string will be expanded if `passed` detects
-    that it is a reference to a variable name.  If you don't want it
+    that it is a reference to a variable name. If you don't want it
     expanded, there are two things you can do (other than not use
     `passed`):
 
-    - Make the parameter an array instead and pass the argument as an
-      entry in the array.  Array items are not expanded.
+    -   Make the parameter an array instead and pass the argument as an
+        entry in the array. Array items are not expanded.
 
-    - Make the parameter a reference type, by qualifying it with a "*"
-      in the parameter list.  If the variable name held by the argument
-      is not itself a reference, no expansion will be done.  Since this
-      is less reliable, option (1) is recommended instead.
+    -   Make the parameter a reference type, by qualifying it with a
+        "\*" in the parameter list. If the variable name held by the
+        argument is not itself a reference, no expansion will be done.
+        Since this is less reliable, option (1) is recommended instead.
 
-- *Should I use sorta's `passed` function to pass user input to
-  functions?*
+-   *Should I use sorta's `passed` function to pass user input to
+    functions?*
 
     As scalars, no, you generally shouldn't use `passed` for any data
     which might inadvertently contain just a variable name, which would
@@ -535,334 +551,419 @@ as well?  Won't it be expanded when I don't want it to be?*
     However you *can* pass such data through arrays, which are not
     expanded, as described above.
 
-- *What about the positional arguments, $1, $2, etc.?*
+-   *What about the positional arguments, $1, $2, etc.?*
 
     The positional arguments are left intact and may be used in addition
-    to the arguments created by `passed`.  You may even use them to tell
-    when an expansion has occurred.
+    to the arguments created by `passed`. You may even use them to tell
+    when an expansion has occurred, which is occasionally useful.
 
 Sorta API
 =========
 
 "Accepts literals or variable names" means that the arguments may be
 specified normally, using string literals or expansions for example, or
-with the bare name of a variable (as a normal string argument).  If the
+with the bare name of a variable (as a normal string argument). If the
 receiving function detects that the supplied argument is the name of a
 defined variable, it will automatically expand the variable itself.
 
 Array and hash (associative array) literals may also be passed as
-strings for parameters expecting those types.  Any literal that would
+strings for parameters expecting those types. Any literal that would
 work for the right-hand-side of an assignment statement works in that
 case, such as `'( [one]=1 [two]=2 )'` (remember to use single- or
 double-quotes).
 
 <dl>
-<dt><code>assign &lt;variable_name&gt;
-&lt;declaration_statement&gt;</code> - change the variable name of a
-declaration statement to <code>variable_name</code></dt>
-
+<dt>
+<code>assign &lt;variable\_name&gt;
+&lt;declaration\_statement&gt;</code> - change the variable name of a
+declaration statement to <code>variable\_name</code>
+</dt>
 <dd>
-<p><em>Returns</em>: the substituted declaration statement on stdout</p>
-
-<p>Allows you to assign the output of <code>pass</code> to a variable
-name in the local scope.  You must <code>eval</code> the output of
-<code>assign</code> to do so.</p>
+<p>
+<em>Returns</em>: the substituted declaration statement on stdout
+</p>
+<p>
+Allows you to assign the output of <code>pass</code> to a variable name
+in the local scope. You must <code>eval</code> the output of
+<code>assign</code> to do so.
+</p>
 </dd>
-
-<dt><code>assigna &lt;variable_name_array&gt;
-&lt;declaration_statement&gt;</code> - change the names in a compound
-declaration statement</dt>
-
+<dt>
+<code>assigna &lt;variable\_name\_array&gt;
+&lt;declaration\_statement&gt;</code> - change the names in a compound
+declaration statement
+</dt>
 <dd>
-<p><em>Returns</em>: the substituted declarations on stdout</p>
-
-<p>Allows you to reassign the names of a compound series of declaration
-statements to the names in the array.  A compound declaration is a
-series of individual declaration statements, usually separated with
-semicolons, joined into a single string.  It is up to you to ensure that
-the number of names and available statements match.  You must
-<code>eval</code> the output of <code>assigna</code> to instantiate the
-variables locally.</p>
-
+<p>
+<em>Returns</em>: the substituted declarations on stdout
+</p>
+<p>
+Allows you to reassign the names of a compound series of declaration
+statements to the names in the array. A compound declaration is a series
+of individual declaration statements, usually separated with semicolons,
+joined into a single string. It is up to you to ensure that the number
+of names and available statements match. You must <code>eval</code> the
+output of <code>assigna</code> to instantiate the variables locally.
+</p>
 </dd>
-
-<dt><code>froma &lt;hash&gt; &lt;keys&gt;</code> - create declaration
+<dt>
+<code>froma &lt;hash&gt; &lt;keys&gt;</code> - create declaration
 statements for a set of variables named in the array <code>keys</code>,
-values taken from the named hash</dt>
-
+values taken from the named hash
+</dt>
 <dd>
-<p>Accepts literals or variable names.</p>
-
-<p><em>Returns</em>: a compound declaration statement on stdout</p>
-
-<p>For the named hash, returns a set of declaration statements, joined
-by semicolons, for variables named in <code>keys</code>.  The values are
-taken from the corresponding keys of <code>hash</code>.</p>
-
-<p>You must <code>eval</code> the output of <code>froma</code> to
-instantiate the variables locally.</p>
+<p>
+Accepts literals or variable names.
+</p>
+<p>
+<em>Returns</em>: a compound declaration statement on stdout
+</p>
+<p>
+For the named hash, returns a set of declaration statements, joined by
+semicolons, for variables named in <code>keys</code>. The values are
+taken from the corresponding keys of <code>hash</code>.
+</p>
+<p>
+You must <code>eval</code> the output of <code>froma</code> to
+instantiate the variables locally.
+</p>
 </dd>
-
-<dt><code>fromh &lt;hash&gt; &lt;keyhash&gt;</code> - create declaration
+<dt>
+<code>fromh &lt;hash&gt; &lt;keyhash&gt;</code> - create declaration
 statements for a set of variables named in the keys of
-<code>keyhash</code>, values taken from <code>hash</code></dt>
-
+<code>keyhash</code>, values taken from <code>hash</code>
+</dt>
 <dd>
-<p>Accepts literals or variable names.</p>
-
-<p><em>Returns</em>: a compound declaration statement on stdout</p>
-
-<p>For the named hash, returns a set of declaration statements, joined
-by semicolons, for the keys of <code>hash</code> corresponding to the
-keys of <code>keyhash</code>, mapped to variables named by the values of
-<code>keyhash</code>.</p>
-
-<p>You must <code>eval</code> the output of <code>froma</code> to
-instantiate the variables locally.</p>
+<p>
+Accepts literals or variable names.
+</p>
+<p>
+<em>Returns</em>: a compound declaration statement on stdout
+</p>
+<p>
+For the named hash, returns a set of declaration statements, joined by
+semicolons, for the keys of <code>hash</code> corresponding to the keys
+of <code>keyhash</code>, mapped to variables named by the values of
+<code>keyhash</code>.
+</p>
+<p>
+You must <code>eval</code> the output of <code>froma</code> to
+instantiate the variables locally.
+</p>
 </dd>
-
-<dt><code>froms &lt;hash&gt; &lt;name_or_pattern&gt;</code> - create
+<dt>
+<code>froms &lt;hash&gt; &lt;name\_or\_pattern&gt;</code> - create
 declaration statement(s) for named variable or set of variables, values
-taken from from <code>hash</code></dt>
-
+taken from from <code>hash</code>
+</dt>
 <dd>
-<p>Accepts literals or variable names.</p>
-
-<p><em>Returns</em>: a declaration statement or compound declaration
-statement on stdout</p>
-
-<p>When supplied with a single name, creates a declaration statement for
+<p>
+Accepts literals or variable names.
+</p>
+<p>
+<em>Returns</em>: a declaration statement or compound declaration
+statement on stdout
+</p>
+<p>
+When supplied with a single name, creates a declaration statement for
 the named variable with the value taken from the corresponding key in
-<code>hash</code>.</p>
-
-<p>When supplied with the pattern '*', creates a compound declaration
+<code>hash</code>.
+</p>
+<p>
+When supplied with the pattern '\*', creates a compound declaration
 statement for variables with <em>all</em> of the keys and values of
-<code>hash</code>.</p>
-
-<p>When supplied with a prefixed asterisk, such as 'myvars_*', creates a
+<code>hash</code>.
+</p>
+<p>
+When supplied with a prefixed asterisk, such as 'myvars\_\*', creates a
 compound declaration as above but with the prefix on the resulting
-variable names.</p>
-
-<p>You must <code>eval</code> the output of <code>froms</code> to
-instantiate the variable(s) locally.</p>
+variable names.
+</p>
+<p>
+You must <code>eval</code> the output of <code>froms</code> to
+instantiate the variable(s) locally.
+</p>
 </dd>
-
-<dt><code>intoa &lt;hash&gt; &lt;keys&gt;</code> - create a declaration
+<dt>
+<code>intoa &lt;hash&gt; &lt;keys&gt;</code> - create a declaration
 statement for the named hash which includes the variables named in
-<code>keys</code> as new keys</dt>
-
+<code>keys</code> as new keys
+</dt>
 <dd>
-<p>Accepts literals or variable names.</p>
-
-<p><em>Returns</em>: a declaration statement on stdout</p>
-
-<p>Adds the variables named in <code>keys</code>, and their values, to
-the named hash.</p>
-
-<p>Existing keys of the same name are overwritten.  Other key/values in
-the hash are left alone.  This is basically a merge operation.</p>
-
-<p>You must <code>eval</code> the output of <code>intoa</code> to update
-(or localize) the hash with the new values.</p>
+<p>
+Accepts literals or variable names.
+</p>
+<p>
+<em>Returns</em>: a declaration statement on stdout
+</p>
+<p>
+Adds the variables named in <code>keys</code>, and their values, to the
+named hash.
+</p>
+<p>
+Existing keys of the same name are overwritten. Other key/values in the
+hash are left alone. This is basically a merge operation.
+</p>
+<p>
+You must <code>eval</code> the output of <code>intoa</code> to update
+(or localize) the hash with the new values.
+</p>
 </dd>
-
-<dt><code>intoh &lt;hash&gt; &lt;keyhash&gt;</code> - create a
-declaration statement for the named hash which includes the variables
-named in <code>keyhash</code> as new keys</dt>
-
+<dt>
+<code>intoh &lt;hash&gt; &lt;keyhash&gt;</code> - create a declaration
+statement for the named hash which includes the variables named in
+<code>keyhash</code> as new keys
+</dt>
 <dd>
-<p>Accepts literals or variable names.</p>
-
-<p><em>Returns</em>: a declaration statement on stdout</p>
-
-<p>Adds the variables named in <code>keyhash</code>, and their values,
-to the named hash.  <code>keyhash</code> is a mapping of the variables
-names to the keynames under which their values will be inserted into
-<code>hash</code>.</p>
-
-<p>Existing keys of the same name are overwritten.  Other key/values in
-the hash are left alone.  This is basically a merge operation.</p>
-
-<p>You must <code>eval</code> the output of <code>intoh</code> to update
-(or localize) the hash with the new values.</p>
+<p>
+Accepts literals or variable names.
+</p>
+<p>
+<em>Returns</em>: a declaration statement on stdout
+</p>
+<p>
+Adds the variables named in <code>keyhash</code>, and their values, to
+the named hash. <code>keyhash</code> is a mapping of the variables names
+to the keynames under which their values will be inserted into
+<code>hash</code>.
+</p>
+<p>
+Existing keys of the same name are overwritten. Other key/values in the
+hash are left alone. This is basically a merge operation.
+</p>
+<p>
+You must <code>eval</code> the output of <code>intoh</code> to update
+(or localize) the hash with the new values.
+</p>
 </dd>
-
-<dt><code>intos &lt;hash&gt; &lt;key&gt;</code> - create a declaration
+<dt>
+<code>intos &lt;hash&gt; &lt;key&gt;</code> - create a declaration
 statement for the named hash which includes the variable named in
-<code>key</code></dt>
-
+<code>key</code>
+</dt>
 <dd>
-<p>Accepts literals or variable names.</p>
-
-<p><em>Returns</em>: a declaration statement on stdout</p>
-
-<p>Adds the variable named by <code>key</code>, and its value, to the
-named hash.</p>
-
-<p>An existing key of the same name is overwritten.  Other key/values in
-the hash are left alone.  This is basically a merge operation.</p>
-
-<p>You must <code>eval</code> the output of <code>intos</code> to update
-(or localize) the hash with the new values.</p>
+<p>
+Accepts literals or variable names.
+</p>
+<p>
+<em>Returns</em>: a declaration statement on stdout
+</p>
+<p>
+Adds the variable named by <code>key</code>, and its value, to the named
+hash.
+</p>
+<p>
+An existing key of the same name is overwritten. Other key/values in the
+hash are left alone. This is basically a merge operation.
+</p>
+<p>
+You must <code>eval</code> the output of <code>intos</code> to update
+(or localize) the hash with the new values.
+</p>
 </dd>
-
-<dt><code>keys_of &lt;hash&gt;</code> - create a declaration statement
-for an array of the key names from <code>hash</code></dt>
-
+<dt>
+<code>keys\_of &lt;hash&gt;</code> - create a declaration statement for
+an array of the key names from <code>hash</code>
+</dt>
 <dd>
-<p>Accepts a literal or variable name.</p>
-
-<p><em>Returns</em>: a declaration statement on stdout</p>
-
-<p>Finds and returns an <code>eval</code>able array of the key names
-from the named <code>hash</code>.</p>
+<p>
+Accepts a literal or variable name.
+</p>
+<p>
+<em>Returns</em>: a declaration statement on stdout
+</p>
+<p>
+Finds and returns an <code>eval</code>able array of the key names from
+the named <code>hash</code>.
+</p>
 </dd>
-
-<dt><code>pass &lt;variable_name&gt;</code> - create a declaration
-statement for an the named variable</dt>
-
+<dt>
+<code>pass &lt;variable\_name&gt;</code> - create a declaration
+statement for an the named variable
+</dt>
 <dd>
-<p><em>Returns</em>: a declaration statement on stdout</p>
-
-<p>Returns an <code>eval</code>able statement to instantiate the given
-variable in a scope, usually as a return value from a function.</p>
-
-<p>Equivalent to <code>declare -p <variable_name>
-2>/dev/null</code>.</p>
+<p>
+<em>Returns</em>: a declaration statement on stdout
+</p>
+<p>
+Returns an <code>eval</code>able statement to instantiate the given
+variable in a scope, usually as a return value from a function.
+</p>
+<p>
+Equivalent to <code>declare -p <variable_name> 2&gt;/dev/null</code>.
+</p>
 </dd>
-
-<dt><code>passed &lt;parameter_array&gt; &lt;arg1&gt;
-[&lt;arg2&gt;...]</code> - create a compound declaration statement for
-the named variable parameters with the supplied argument values</dt>
-
+<dt>
+<code>passed &lt;parameter\_array&gt; &lt;arg1&gt;
+\[&lt;arg2&gt;...\]</code> - create a compound declaration statement for
+the named variable parameters with the supplied argument values
+</dt>
 <dd>
-<p>Accepts literals or variable names.</p>
-
-<p><em>Returns</em>: a declaration statement on stdout</p>
-
-<p>Reserves for internal use any variable names starting and ending with
+<p>
+Accepts literals or variable names.
+</p>
+<p>
+<em>Returns</em>: a declaration statement on stdout
+</p>
+<p>
+Reserves for internal use any variable names starting and ending with
 underscores, so such names are not allowed in parameter lists.
-<code>passed</code> does not support such parameter names.</p>
-
-<p>Returns and <code>eval</code>able statement to instantiate the given
-variables in a scope, usually as the first task in your function</p>
-
-<p>Named parameters are presumed to be scalars unless prefixed with the
-following qualifiers:</p>
-
+<code>passed</code> does not support such parameter names.
+</p>
+<p>
+Returns and <code>eval</code>able statement to instantiate the given
+variables in a scope, usually as the first task in your function
+</p>
+<p>
+Named parameters are presumed to be scalars unless prefixed with the
+following qualifiers:
+</p>
 <ul>
-  <li><code>@</code> - argument is an array name or literal</li>
-  <li><code>%</code> - argument is a hash name or literal</li>
-  <li><code>&</code> - parameter is aliased to the variable name given by argument with <code>declare -n</code></li>
-  <li><code>*</code> - argument is a reference to another variable name</li>
+<li>
+<code>@</code> - argument is an array name or literal
+</li>
+<li>
+<code>%</code> - argument is a hash name or literal
+</li>
+<li>
+<code>&</code> - parameter is aliased to the variable name given by
+argument with <code>declare -n</code>
+</li>
+<li>
+<code>\*</code> - argument is a reference to another variable name
+</li>
 </ul>
-
-<p>Note that <code>&amp;</code> and <code>*</code> require the quoting
-since bash treats them as special characters.</p>
-
-<p>Scalar arguments are tested to see if they refer to variables.  If
-so, they are dereferenced so the resulting declaration holds the value
-of the referenced variable.</p>
-
-<p>Array and hash parameters are presumed to hold references to an array
-or hash in the outer scope, or to hold an array/hash literal.  A
-literal, in this case, is any string which qualifies as the right-hand
-side of an assignment statement, i.e. that which follows the equals
-sign.  See the format of any <code>declare -p</code> output for
-examples.</p>
-
-<p>The <code>*</code> reference type tells <code>passed</code> to expect
-the result to be a variable name.  It still dereferences an argument if
+<p>
+Note that <code>&</code> and <code>\*</code> require the quoting since
+bash treats them as special characters.
+</p>
+<p>
+Scalar arguments are tested to see if they refer to variables. If so,
+they are dereferenced so the resulting declaration holds the value of
+the referenced variable.
+</p>
+<p>
+Array and hash parameters are presumed to hold references to an array or
+hash in the outer scope, or to hold an array/hash literal. A literal, in
+this case, is any string which qualifies as the right-hand side of an
+assignment statement, i.e. that which follows the equals sign. See the
+format of any <code>declare -p</code> output for examples.
+</p>
+<p>
+The <code>\*</code> reference type tells <code>passed</code> to expect
+the result to be a variable name. It still dereferences an argument if
 the dereferenced argument's value is the name of another variable, but
 will prevent dereferencing if the argument is simply a variable
-reference and nothing more.</p>
-
-<p>The <code>&</code> dereference type sets the parameter to point to
-the variable named by the argument directly, effectively making it call
-by reference.  Changes to the parameter variable in the function body
-will affect the original variable directly in the outer scope.  This is
-not call by value.</p>
-
-<p>All parameters in the list may have a default value specified by
-appending <code>=<value></code> to the parameter name.  Parameters with
-default values must, however, be contiguous at the end of the list.</p>
-
-<p>You must <code>eval</code> the output of <code>passed</code> to
-instantiate the variables.</p>
+reference and nothing more.
+</p>
+<p>
+The <code>&</code> dereference type sets the parameter to point to the
+variable named by the argument directly, effectively making it call by
+reference. Changes to the parameter variable in the function body will
+affect the original variable directly in the outer scope. This is not
+call by value.
+</p>
+<p>
+All parameters in the list may have a default value specified by
+appending <code>=<value></code> to the parameter name. Parameters with
+default values must, however, be contiguous at the end of the list.
+</p>
+<p>
+You must <code>eval</code> the output of <code>passed</code> to
+instantiate the variables.
+</p>
 </dd>
-
-<dt><code>reta &lt;values_array&gt; &lt;return_variable&gt;</code> -
+<dt>
+<code>reta &lt;values\_array&gt; &lt;return\_variable&gt;</code> -
 directly set an array variable in an outer scope, by name, "returning"
-the value</dt>
-
+the value
+</dt>
 <dd>
-<p>Accepts an array literal or variable name.</p>
-
-<p><em>Returns</em>: the values in <code>values_array</code>, directly setting
-<code>return_variable</code></p>
-
-<p>Allows you to return a value into a named variable in an outer scope.
+<p>
+Accepts an array literal or variable name.
+</p>
+<p>
+<em>Returns</em>: the values in <code>values\_array</code>, directly
+setting <code>return\_variable</code>
+</p>
+<p>
+Allows you to return a value into a named variable in an outer scope.
 Usually used to receive a return variable name as an argument to a
-function, then set that variable using <code>reta</code>.</p>
-
-<p>Note that the variable name must also be explicitly locally set
-before calling <code>reta</code>.  For example, if the variable name has
-been passed in as <code>$1</code>, the following will return the values
-"one" and "two" into that array:</p>
-
+function, then set that variable using <code>reta</code>.
+</p>
+<p>
+Note that the variable name must also be explicitly locally set before
+calling <code>reta</code>. For example, if the variable name has been
+passed in as <code>$1</code>, the following will return the values "one"
+and "two" into that array:
+</p>
 <pre><code>
 local "$1"= && reta '( one two )' "$1"
 </code></pre>
-
-<p>The assignment requires a value (even blank), which is why there is
-an equals sign as part of the declaration.</p>
-
-<p><code>reta</code> prevents name collisions between the outer variable
-name and the variable names in your function scope.</p>
+<p>
+The assignment requires a value (even blank), which is why there is an
+equals sign as part of the declaration.
+</p>
+<p>
+<code>reta</code> prevents name collisions between the outer variable
+name and the variable names in your function scope.
+</p>
 </dd>
-
-<dt><code>reth &lt;values_hash&gt; &lt;return_variable_name&gt;</code> -
+<dt>
+<code>reth &lt;values\_hash&gt; &lt;return\_variable\_name&gt;</code> -
 directly set a hash variable in an outer scope, by name, "returning" the
-value</dt>
-
+value
+</dt>
 <dd>
-<p>Accepts a hash literal or variable name.</p>
-
-<p><em>Returns</em>: the values in <code>values_hash</code>, directly
-setting <code>return_variable</code></p>
-
-<p>Same usage as <code>reta</code> above.</p>
+<p>
+Accepts a hash literal or variable name.
+</p>
+<p>
+<em>Returns</em>: the values in <code>values\_hash</code>, directly
+setting <code>return\_variable</code>
+</p>
+<p>
+Same usage as <code>reta</code> above.
+</p>
 </dd>
-
-<dt><code>rets &lt;value&gt; &lt;return_variable_name&gt;</code> -
+<dt>
+<code>rets &lt;value&gt; &lt;return\_variable\_name&gt;</code> -
 directly set a scalar variable in an outer scope, by name, "returning"
-the value</dt>
-
+the value
+</dt>
 <dd>
-<p>Accepts a literal or variable name.</p>
-
-<p><em>Returns</em>: the values in <code>value</code>, directly setting
-<code>return_variable</code></p>
-
-<p>Same usage as <code>reta</code> above.</p>
+<p>
+Accepts a literal or variable name.
+</p>
+<p>
+<em>Returns</em>: the values in <code>value</code>, directly setting
+<code>return\_variable</code>
+</p>
+<p>
+Same usage as <code>reta</code> above.
+</p>
 </dd>
-
-<dt><code>values_of &lt;hash&gt;</code> - create a declaration statement
-for an array of the values in <code>hash</code></dt>
-
+<dt>
+<code>values\_of &lt;hash&gt;</code> - create a declaration statement
+for an array of the values in <code>hash</code>
+</dt>
 <dd>
-<p>Accepts a hash literal or variable name.</p>
-
-<p><em>Returns</em>: a declaration statement on stdout</p>
-
-<p>Iterates through the keys of <code>hash</code>, putting the
-associated values into a declaration for an array.  Usually the output
-is used as input to <code>assign</code> to give it the array name of
-your choice.</p>
-
-<p>You must <code>eval</code> the output of <code>assign</code> to
-instantiate the array.</p>
+<p>
+Accepts a hash literal or variable name.
+</p>
+<p>
+<em>Returns</em>: a declaration statement on stdout
+</p>
+<p>
+Iterates through the keys of <code>hash</code>, putting the associated
+values into a declaration for an array. Usually the output is used as
+input to <code>assign</code> to give it the array name of your choice.
+</p>
+<p>
+You must <code>eval</code> the output of <code>assign</code> to
+instantiate the array.
+</p>
 </dd>
 </dl>
 
-[dynamic scoping]: https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping_vs._dynamic_scoping
+  [dynamic scoping]: https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping_vs._dynamic_scoping
