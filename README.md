@@ -480,77 +480,64 @@ Outputs:
 FAQ
 ===
 
-**Why?**
+- *Why?*
 
-<dd>
-<p>The command line is the fundamental tool for system management, and
-Bash is its de facto interface.  For many such uses, it's the lowest
-impedance tool for the job, beating out other scripting tools by virtue
-of staying out of your way.  Bash has the added virtue of being
-preinstalled on almost every major Unix distribution.</p>
+    The command line is the fundamental tool for system management, and
+    Bash is its de facto interface.  For many such uses, it's the lowest
+    impedance tool for the job, beating out other scripting tools by
+    virtue of staying out of your way.  Bash has the added virtue of
+    being preinstalled on almost every major Unix distribution.
 
-<p>When trying to do anything somewhat sophisticated however, Bash
-quickly falls on its face due to its weak support for passing
-parameters, its use of [dynamic scoping] and its lack of support for
-reasonable packaging of libraries.
+    When trying to do anything somewhat sophisticated however, Bash
+    quickly falls on its face due to its weak support for passing
+    parameters, its use of [dynamic scoping] and its lack of support for
+    reasonable packaging of libraries.
 
-Sorta is aimed at improving parameter passing just a bit, so you can
-more effectively use the tools which Bash does provide.</p>
-</dd>
+    Sorta is aimed at improving parameter passing just a bit, so you can
+    more effectively use the tools which Bash does provide.
 
-<dt>Why "_params"?</dt>
+- *Why "_params"?*
 
-<dd>
-<p>In order for the "passed" function to determine whether an argument
-needs to be expanded, it has to check the outside scope for the
-existence of variable names.  If it finds one, it reads in that value.
-Therefore you don't want to declare any local variables before calling
-"passed", since those might mask an outside variable name it was passed
-as an argument.</p>
+    In order for the `passed` function to determine whether an argument
+    needs to be expanded, it has to check the outside scope for the
+    existence of variable names.  If it finds one, it reads in that
+    value.  Therefore you don't want to declare any local variables
+    before calling `passed`, since those might mask an outside variable
+    name that was passed as an argument.
 
-<p>If the parameter list is declared as a variable (as opposed to a
-literal), then it may also mask an argument.  Prefixing it with an
-underscore prevents most possibilities for a name collision.</p>
-</dd>
+    If the parameter list is declared as a variable (as opposed to a
+    literal), then it may also mask an argument.  Prefixing it with an
+    underscore prevents most possibilities for a name collision.
 
-<dt>What if I want to pass a string that happens to be a variable name
-as well?  Won't it be expanded when I don't want it to be?</dt>
+- *What if I want to pass a string that happens to be a variable name
+as well?  Won't it be expanded when I don't want it to be?*
 
-<dd>
-<p>Short answer, yes, the string will be expanded if "passed" detects
-that it is a reference to a variable name.  If you don't want it
-expanded, there are two things you can do:</p>
+    Short answer, yes, the string will be expanded if `passed` detects
+    that it is a reference to a variable name.  If you don't want it
+    expanded, there are two things you can do:
 
-<ol>
-<li> Make the parameter an array instead and pass the argument as an
-    entry in the array.  Array items are not expanded.</li>
+    - Make the parameter an array instead and pass the argument as an
+      entry in the array.  Array items are not expanded.
 
-<li> Make the parameter a reference type, by qualifying it with a "*" in
-    the parameter list.  If the variable name held by the argument is
-    not itself a reference, no expansion will be done.  Since this is
-    less reliable, option (1) is recommended instead.</li>
-</ol>
-</dd>
+    - Make the parameter a reference type, by qualifying it with a "*"
+      in the parameter list.  If the variable name held by the argument
+      is not itself a reference, no expansion will be done.  Since this
+      is less reliable, option (1) is recommended instead.
 
-<dt>Should I use sorta's <code>passed</code> function to pass user input
-to functions?</dt>
+- *Should I use sorta's `passed` function to pass user input to
+  functions?*
 
-<dd>
-<p>As scalars, no, you generally shouldn't use <code>passed</code> for
-any data which might inadvertently contain a string which matches a
-variable name.</p>
+    As scalars, no, you generally shouldn't use `passed` for any data
+    which might inadvertently contain just a variable name, which would
+    get expanded when you wouldn't want it to.
 
-<p>However you <em>can</em> pass such data through arrays, which are
-not expanded, as described above.</p>
-</dd>
+    However you *can* pass such data through arrays, which are not
+    expanded, as described above.
 
-<dt>What about the positional arguments, $1, $2, etc.?</dt>
+- *What about the positional arguments, $1, $2, etc.?*
 
-<dd>
-The positional arguments are left intact and may be used in addition to
-the arguments created by <code>passed</code>.
-</dd>
-</dl>
+    The positional arguments are left intact and may be used in addition
+    to the arguments created by `passed`.
 
 Sorta API
 =========
