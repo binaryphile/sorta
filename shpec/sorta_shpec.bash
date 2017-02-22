@@ -2,6 +2,7 @@ library=./shpec-helper.bash
 source "${BASH_SOURCE%/*}/$library" 2>/dev/null || source "$library"
 unset -v library
 
+initialize_shpec_helper
 shpec_source lib/sorta.bash
 
 stop_on_error=true
