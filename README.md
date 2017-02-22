@@ -17,9 +17,9 @@ Sorta lets you write Bash functions which:
 
 -   return array and hash values
 
--   pack/unpack variables into/out of hashes as key/value pairs
+-   pack/unpack variables into/out of hashes as key-value pairs
 
-Basically, Sorta is about controlling your variable namespace as much as
+Basically, sorta is about controlling your variable namespace as much as
 possible. These features are designed to help you do that.
 
 Requires Bash 4.3 or higher.
@@ -437,7 +437,7 @@ for the name:
 
     eval "$(froms myhash '*')"
 
-Since that operation can result in namespace clashes, you can make it
+Since that operation can result in namespace collisions, you can make it
 safer by applying a prefix to all of the imported names like so:
 
     eval "$(froms myhash 'prefix_*')"
@@ -581,8 +581,8 @@ double-quotes).
     name in the local scope. You must `eval` the output of
     `assign` to do so.
 
-- *`assigna <variable_name_array> <declaration_statement>`* - change the
-  names in a compound declaration statement
+- **`assigna`** *`variable_name_array declaration_statement`* - change
+  the names in a compound declaration statement
 
     *Returns*: the substituted declarations on stdout
 
@@ -593,7 +593,7 @@ double-quotes).
     that the number of names and available statements match. You must
     `eval` the output of `assigna` to instantiate the variables locally.
 
-- *`froma <hash> <keys>`* - create declaration statements for a set of
+- **`froma`** *`hash keys`* - create declaration statements for a set of
   variables named in the array `keys`, values taken from the named hash
 
     Accepts literals or variable names.
@@ -607,7 +607,7 @@ double-quotes).
     You must `eval` the output of `froma` to instantiate the variables
     locally.
 
-- *`fromh <hash> <keyhash>`* - create declaration statements for a set
+- **`fromh`** *`hash keyhash`* - create declaration statements for a set
   of variables named in the keys of `keyhash`, values taken from `hash`
 
     Accepts literals or variable names.
@@ -621,7 +621,7 @@ double-quotes).
     You must `eval` the output of `froma` to instantiate the variables
     locally.
 
-- *`froms <hash> <name_or_pattern>`* - create declaration statement(s)
+- **`froms`** *`hash name_or_pattern`* - create declaration statement(s)
   for named variable or set of variables, values taken from from `hash`
 
     Accepts literals or variable names.
@@ -644,284 +644,186 @@ double-quotes).
     You must `eval` the output of `froms` to instantiate the variable(s)
     locally.
 
-<dt>
-`intoa <hash> <keys>` - create a declaration
-statement for the named hash which includes the variables named in
-`keys` as new keys
-</dt>
+- **`intoa`** *`hash keys`* - create a declaration statement for the
+  named hash which includes the variables named in `keys` as new keys
 
+    Accepts literals or variable names.
 
-Accepts literals or variable names.
+    *Returns*: a declaration statement on stdout
 
+    Adds the variables named in `keys`, and their values, to the named
+    hash.
 
-*Returns*: a declaration statement on stdout
+    Existing keys of the same name are overwritten. Other key-values in
+    the hash are left alone. This is basically a merge operation.
 
+    You must `eval` the output of `intoa` to update the hash with the
+    new values.
 
-Adds the variables named in `keys`, and their values, to the
-named hash.
+- **`intoh`** *`hash keyhash`* - create a declaration statement for the
+  named hash which includes the variables named in `keyhash` as new keys
 
+    Accepts literals or variable names.
 
-Existing keys of the same name are overwritten. Other key/values in the
-hash are left alone. This is basically a merge operation.
+    *Returns*: a declaration statement on stdout
 
+    Adds the variables named in `keyhash`, and their values, to the
+    named hash. `keyhash` is a mapping of the variables names to the
+    keynames under which their values will be inserted into `hash`.
 
-You must `eval` the output of `intoa` to update
-(or localize) the hash with the new values.
+    Existing keys of the same name are overwritten. Other key-values in
+    the hash are left alone. This is basically a merge operation.
 
+    You must `eval` the output of `intoh` to update the hash with the
+    new values.
 
-<dt>
-`intoh <hash> <keyhash>` - create a declaration
-statement for the named hash which includes the variables named in
-`keyhash` as new keys
-</dt>
+- **`intos`** *`hash key`* - create a declaration statement for the
+  named hash which includes the variable named in `key`
 
+    Accepts literals or variable names.
 
-Accepts literals or variable names.
+    *Returns*: a declaration statement on stdout
 
+    Adds the variable named by `key`, and its value, to the named hash.
 
-*Returns*: a declaration statement on stdout
+    An existing key of the same name is overwritten. Other key-values in
+    the hash are left alone. This is basically a merge operation.
 
+    You must `eval` the output of `intos` to update the hash with the
+    new values.
 
-Adds the variables named in `keyhash`, and their values, to
-the named hash. `keyhash` is a mapping of the variables names
-to the keynames under which their values will be inserted into
-`hash`.
+- **`keys_of`** *`hash`* - create a declaration statement for an array
+  of the key names from `hash`
 
+    Accepts a literal or variable name.
 
-Existing keys of the same name are overwritten. Other key/values in the
-hash are left alone. This is basically a merge operation.
+    *Returns*: a declaration statement on stdout
 
+    Finds and returns an `eval`able array of the key names from the
+    named `hash`.
 
-You must `eval` the output of `intoh` to update
-(or localize) the hash with the new values.
+- **`pass`** *`variable_name`* - create a declaration statement for an
+  the named variable
 
+    *Returns*: a declaration statement on stdout
 
-<dt>
-`intos <hash> <key>` - create a declaration
-statement for the named hash which includes the variable named in
-`key`
-</dt>
+    Returns an `eval`able statement to instantiate the given variable in
+    a scope, usually as a return value from a function.
 
+    Equivalent to `declare -p <variable_name> 2>/dev/null`.
 
-Accepts literals or variable names.
+- **`passed`** *`parameter_array arg1 \[arg2...\]`* - create a compound
+  declaration statement for the named variable parameters with the
+  supplied argument values
 
+    Accepts literals or variable names.
 
-*Returns*: a declaration statement on stdout
+    *Returns*: a declaration statement on stdout
 
+    Reserves for internal use any variable names starting and ending
+    with underscores, so such names are not allowed in parameter lists.
+    `passed` does not support such parameter names.
 
-Adds the variable named by `key`, and its value, to the named
-hash.
+    Returns and `eval`able statement to instantiate the given variables
+    in a scope, usually as the first task in your function
 
+    Named parameters are presumed to be scalars unless prefixed with the
+    following qualifiers:
 
-An existing key of the same name is overwritten. Other key/values in the
-hash are left alone. This is basically a merge operation.
+    - `@` - argument is an array name or literal
 
+    - `%` - argument is a hash name or literal
 
-You must `eval` the output of `intos` to update
-(or localize) the hash with the new values.
+    - `&` - parameter is aliased to the variable name given by argument
+      with `declare -n`
 
+    - `*` - argument is a reference to another variable name
 
-<dt>
-`keys\_of <hash>` - create a declaration statement for
-an array of the key names from `hash`
-</dt>
+    Note that `&` and `*` require the quoting since bash treats them as
+    special characters.
 
+    Scalar arguments are tested to see if they refer to variables. If
+    so, they are dereferenced so the resulting declaration holds the
+    value of the referenced variable.
 
-Accepts a literal or variable name.
+    Array and hash parameters are presumed to hold references to an
+    array or hash in the outer scope, or to hold an array/hash literal.
+    A literal, in this case, is any string which qualifies as the
+    right-hand side of an assignment statement, i.e. that which follows
+    the equals sign. See the format of any `declare -p` output for
+    examples.
 
+    The `*` reference type tells `passed` to expect the result to be a
+    variable name. It still dereferences an argument if the dereferenced
+    argument's value is the name of another variable, but will prevent
+    dereferencing if the argument is simply a variable reference and
+    nothing more.
 
-*Returns*: a declaration statement on stdout
+    The `&` dereference type sets the parameter to point to the variable
+    named by the argument directly, effectively making it call by
+    reference. Changes to the parameter variable in the function body
+    will affect the original variable directly in the outer scope. This
+    is not call by value.
 
+    All parameters in the list may have a default value specified by
+    appending `=<value>` to the parameter name. Parameters with default
+    values must, however, be contiguous at the end of the list.
 
-Finds and returns an `eval`able array of the key names from
-the named `hash`.
+    You must `eval` the output of `passed` to instantiate the variables.
 
+- **`reta`** *`values_array return_variable`* - directly set an array
+  variable in an outer scope, by name, "returning" the value
 
-<dt>
-`pass <variable\_name>` - create a declaration
-statement for an the named variable
-</dt>
+    Accepts an array literal or variable name.
 
+    *Returns*: the values in `values_array`, directly setting
+    `return_variable`
 
-*Returns*: a declaration statement on stdout
+    Allows you to return a value into a named variable in an outer
+    scope.  Usually used to receive a return variable name as an
+    argument to a function, then set that variable using `reta`.
 
+    Note that the variable name must also be explicitly locally set
+    before calling `reta`. For example, if the variable name has been
+    passed in as `$1`, the following will return the values "one" and
+    "two" into that array:
 
-Returns an `eval`able statement to instantiate the given
-variable in a scope, usually as a return value from a function.
+        local "$1" || return
+        reta '( one two )' "$1"
 
+    `reta` prevents name collisions between the outer variable name and
+    the variable names in your function scope.
 
-Equivalent to `declare -p <variable_name> 2>/dev/null`.
+- **`reth`** *`values_hash return_variable_name`* - directly set a hash
+  variable in an outer scope, by name, "returning" the value
 
+    Accepts a hash literal or variable name.
 
-<dt>
-`passed <parameter\_array> <arg1>
-\[<arg2>...\]` - create a compound declaration statement for
-the named variable parameters with the supplied argument values
-</dt>
+    *Returns*: the values in `values_hash`, directly setting
+    `return_variable`
 
+    Same usage as `reta` above.
 
-Accepts literals or variable names.
+- **`rets`** *`value return_variable_name` - directly set a scalar
+  variable in an outer scope, by name, "returning" the value
 
+    Accepts a literal or variable name.
 
-*Returns*: a declaration statement on stdout
+    *Returns*: the values in `value`, directly setting `return_variable`
 
+    Same usage as `reta` above.
 
-Reserves for internal use any variable names starting and ending with
-underscores, so such names are not allowed in parameter lists.
-`passed` does not support such parameter names.
+- **`values_of`** *`hash`* - create a declaration statement for an array
+  of the values in `hash`
 
+    Accepts a hash literal or variable name.
 
-Returns and `eval`able statement to instantiate the given
-variables in a scope, usually as the first task in your function
+    *Returns*: a declaration statement on stdout
 
+    Iterates through the keys of `hash`, putting the associated values
+    into a declaration for an array. Usually the output is used as input
+    to `assign` to give it the array name of your choice.
 
-Named parameters are presumed to be scalars unless prefixed with the
-following qualifiers:
-
-<ul>
-<li>
-`@` - argument is an array name or literal
-</li>
-<li>
-`%` - argument is a hash name or literal
-</li>
-<li>
-`&` - parameter is aliased to the variable name given by
-argument with `declare -n`
-</li>
-<li>
-`\*` - argument is a reference to another variable name
-</li>
-</ul>
-
-Note that `&` and `\*` require the quoting since
-bash treats them as special characters.
-
-
-Scalar arguments are tested to see if they refer to variables. If so,
-they are dereferenced so the resulting declaration holds the value of
-the referenced variable.
-
-
-Array and hash parameters are presumed to hold references to an array or
-hash in the outer scope, or to hold an array/hash literal. A literal, in
-this case, is any string which qualifies as the right-hand side of an
-assignment statement, i.e. that which follows the equals sign. See the
-format of any `declare -p` output for examples.
-
-
-The `\*` reference type tells `passed` to expect
-the result to be a variable name. It still dereferences an argument if
-the dereferenced argument's value is the name of another variable, but
-will prevent dereferencing if the argument is simply a variable
-reference and nothing more.
-
-
-The `&` dereference type sets the parameter to point to the
-variable named by the argument directly, effectively making it call by
-reference. Changes to the parameter variable in the function body will
-affect the original variable directly in the outer scope. This is not
-call by value.
-
-
-All parameters in the list may have a default value specified by
-appending `=<value>` to the parameter name. Parameters with
-default values must, however, be contiguous at the end of the list.
-
-
-You must `eval` the output of `passed` to
-instantiate the variables.
-
-
-<dt>
-`reta <values\_array> <return\_variable>` -
-directly set an array variable in an outer scope, by name, "returning"
-the value
-</dt>
-
-
-Accepts an array literal or variable name.
-
-
-*Returns*: the values in `values\_array`, directly
-setting `return\_variable`
-
-
-Allows you to return a value into a named variable in an outer scope.
-Usually used to receive a return variable name as an argument to a
-function, then set that variable using `reta`.
-
-
-Note that the variable name must also be explicitly locally set before
-calling `reta`. For example, if the variable name has been
-passed in as `$1`, the following will return the values "one"
-and "two" into that array:
-
-<pre>`
-local "$1"= && reta '( one two )' "$1"
-`</pre>
-
-The assignment requires a value (even blank), which is why there is an
-equals sign as part of the declaration.
-
-
-`reta` prevents name collisions between the outer variable
-name and the variable names in your function scope.
-
-
-<dt>
-`reth <values\_hash> <return\_variable\_name>` -
-directly set a hash variable in an outer scope, by name, "returning" the
-value
-</dt>
-
-
-Accepts a hash literal or variable name.
-
-
-*Returns*: the values in `values\_hash`, directly
-setting `return\_variable`
-
-
-Same usage as `reta` above.
-
-
-<dt>
-`rets <value> <return\_variable\_name>` -
-directly set a scalar variable in an outer scope, by name, "returning"
-the value
-</dt>
-
-
-Accepts a literal or variable name.
-
-
-*Returns*: the values in `value`, directly setting
-`return\_variable`
-
-
-Same usage as `reta` above.
-
-
-<dt>
-`values\_of <hash>` - create a declaration statement
-for an array of the values in `hash`
-</dt>
-
-
-Accepts a hash literal or variable name.
-
-
-*Returns*: a declaration statement on stdout
-
-
-Iterates through the keys of `hash`, putting the associated
-values into a declaration for an array. Usually the output is used as
-input to `assign` to give it the array name of your choice.
-
-
-You must `eval` the output of `assign` to
-instantiate the array.
-
+    You must `eval` the output of `assign` to instantiate the array.
 
   [dynamic scoping]: https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping_vs._dynamic_scoping
