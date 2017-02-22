@@ -126,7 +126,8 @@ my_function() {
   local array=( "$@" )
   local -A to_hash
 
-  somehow_copy_the_hash_values_from "$hash_name" "to_hash" # since you can't pass a hash in bash
+  # since you can't pass a hash in bash
+  somehow_copy_the_hash_values_from "$hash_name" "to_hash"
   declare -p hash
   declare -p array
 }
