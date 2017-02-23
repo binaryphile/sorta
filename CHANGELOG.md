@@ -39,16 +39,18 @@ v0 in semver parlance.
 
 -   `import.bash` brought into project, but not documented
 
+-   added changelog
+
 ### Changed
 
--   Clarified README with better examples
+-   clarified README with better examples
 
 [v10.10.11] - 2017-01-31
 ------------------------
 
 ### Added
 
--   Second release
+-   second release
 
   [Keep a Changelog]: http://keepachangelog.com/
   [Semantic Versioning]: http://semver.org/
