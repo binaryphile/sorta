@@ -14,6 +14,15 @@ v0 in semver parlance.
 
 ### Changed
 
+- the old "retx" suite of functions has been replaced with a single
+  "ret" function, wrapping the "_ret" call from the [nano] library
+
+### Deprecated
+
+- the old "retx" functions
+
+### Fixed
+
 [v10.11.10] - 2017-02-23
 ------------------------
 
@@ -34,6 +43,7 @@ v0 in semver parlance.
 
   [Keep a Changelog]: http://keepachangelog.com/
   [Semantic Versioning]: http://semver.org/
-  [Unreleased]: https://github.com/binaryphile/sorta/compare/v10.11.10...v10.12
+  [Unreleased]: https://github.com/binaryphile/sorta/compare/v10.11.10...v11.10
   [v10.11.10]: https://github.com/binaryphile/sorta/compare/v10.10.11...v10.11.10
   [v10.10.11]: https://github.com/binaryphile/sorta/compare/v10.10.10...v10.10.11
+  [nano]: https://github.com/binaryphile/nano
