@@ -223,8 +223,8 @@ the `passed` function:
       local _params=( first second )
       eval "$(passed _params "$@")"
 
-      echo 'first: '"$first"
-      echo 'second: '"$second"
+      echo "first: $first"
+      echo "second: $second"
     }
 
 Outputs:
@@ -280,7 +280,7 @@ end of the definition:
       local _params=( first=1 )
       eval "$(passed _params "$@")"
 
-      echo 'first: '"$first"
+      echo "first: $first"
     }
 
 Outputs:
@@ -303,9 +303,9 @@ Caller beware.
 Pass Arrays
 -----------
 
-Arrays can be passed by name or by literal value. The array is passed by
-value, which means the receiving function gets its own copy of the
-array, not a reference to the original.
+Arrays can be passed by name or with an array literal (see below). The
+array is passed by value, which means the receiving function gets its
+own copy of the array, not a reference to the original.
 
 To receive an array, the entry in the parameter list is simply prefixed
 with an "@" which symbolizes the expected type:
@@ -320,7 +320,7 @@ with an "@" which symbolizes the expected type:
     }
 
 `declare -p` shows you bash's conception of the variable, namely that
-"first" is an array ("declare -a"):
+"first" is an array, shown by the "declare -a" response:
 
     $ array=( 1 2 )
     $ my_function3 array
@@ -354,7 +354,7 @@ specified with a "%" (thanks, Perl) rather than an "@":
     $ my_function4 hash
     declare -A first='([one]="1" [two]="2" )'
 
-Literals work much the same but require the indices:
+Literals work much the same but require keys (unlike arrays):
 
     $ my_function4 '( [one]=1 [two]=2 )'
     declare -A first='([one]="1" [two]="2" )'
@@ -368,7 +368,7 @@ Return Arrays and Hashes
 Returning scalars from functions doesn't require any special syntax
 since you can already do this in bash:
 
-    do_something_with "$(echo 'a string returned by echo')"
+    do_something_with "$(echo "a string returned by echo")"
 
 Returning arrays and hashes isn't natively supported by bash however.
 With sorta, you can write your functions to return a special form:
@@ -407,8 +407,8 @@ parentheses around it to get the string it was returning.
 Hashes are passed the same way. There's no difference in syntax for
 dealing with arrays versus hashes.
 
-Import Hash Keys into Local Variables
--------------------------------------
+Import Hash Key-Values into Local Variables
+-------------------------------------------
 
 Finally, we address importing hash values into the local namespace.
 
@@ -423,7 +423,7 @@ namespace on the receiving side. `froms` imports a single key name:
       eval "$(passed _params "$@")"
 
       eval "$(froms myhash one)"
-      echo 'one: '"$one"
+      echo "one: $one"
     }
 
 Outputs:
@@ -456,9 +456,9 @@ array variable):
 
       local keys=( one two three )
       eval "$(froma myhash keys)"
-      echo 'one: '"$one"
-      echo 'two: '"$two"
-      echo 'three: '"$three"
+      echo "one: $one"
+      echo "two: $two"
+      echo "three: $three"
     }
 
 Outputs:
@@ -480,9 +480,9 @@ names of the variables to import the keys to:
 
       local -A keymap=( [one]=singing [two]=inthe [three]=rain )
       eval "$(fromh myhash keymap)"
-      echo 'singing: '"$singing"
-      echo 'inthe: '"$inthe"
-      echo 'rain: '"$rain"
+      echo "singing: $singing"
+      echo "inthe: $inthe"
+      echo "rain: $rain"
     }
 
 Outputs:
@@ -727,8 +727,8 @@ double-quotes).
     with underscores, so such names are not allowed in parameter lists.
     `passed` does not support such parameter names.
 
-    Returns and `eval`able statement to instantiate the given variables
-    in a scope, usually as the first task in your function
+    Returns an `eval`able statement to instantiate the given variables
+    in a scope, usually as the first task in your function.
 
     Named parameters are presumed to be scalars unless prefixed with the
     following qualifiers:
