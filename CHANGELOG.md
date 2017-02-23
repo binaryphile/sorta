@@ -25,6 +25,9 @@ v0 in semver parlance.
 -   added direct-return options for `keys_of`, `values_of` and the
     `intox` suite of functions
 
+-   README updated with instructions for running shpecs, basic
+    contributing
+
 ### Deprecated
 
 -   the old `retx` functions
