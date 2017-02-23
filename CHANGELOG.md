@@ -27,7 +27,7 @@ v0 in semver parlance.
 
 ### Deprecated
 
--   the old "retx" functions
+-   the old `retx` functions
 
 ### Fixed
 
