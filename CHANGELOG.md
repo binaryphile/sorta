@@ -12,19 +12,22 @@ v0 in semver parlance.
 
 ### Added
 
-- dependency on [nano].bash added
+-   dependency on [nano].bash added
+
+-   ability to write libraries which allow importing of named functions
+    with `import.bash`, and documentation
 
 ### Changed
 
-- the old `retx` suite of functions has been replaced with a single
-  `ret` function, wrapping the "_ret" call from the [nano] library
+-   the old `retx` suite of functions has been replaced with a single
+    `ret` function, wrapping the "\_ret" call from the [nano] library
 
-- added direct-return options for `keys_of`, `values_of` and the `intox`
-  suite of functions
+-   added direct-return options for `keys_of`, `values_of` and the
+    `intox` suite of functions
 
 ### Deprecated
 
-- the old "retx" functions
+-   the old "retx" functions
 
 ### Fixed
 
@@ -39,8 +42,8 @@ v0 in semver parlance.
 
 -   Clarified README with better examples
 
-[v10.10.11] - ??
-----------------
+[v10.10.11] - 2017-01-31
+------------------------
 
 ### Added
 
@@ -49,6 +52,6 @@ v0 in semver parlance.
   [Keep a Changelog]: http://keepachangelog.com/
   [Semantic Versioning]: http://semver.org/
   [Unreleased]: https://github.com/binaryphile/sorta/compare/v10.11.10...v11.10
+  [nano]: https://github.com/binaryphile/nano
   [v10.11.10]: https://github.com/binaryphile/sorta/compare/v10.10.11...v10.11.10
   [v10.10.11]: https://github.com/binaryphile/sorta/compare/v10.10.10...v10.10.11
-  [nano]: https://github.com/binaryphile/nano
