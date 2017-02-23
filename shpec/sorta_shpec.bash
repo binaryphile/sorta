@@ -1,5 +1,9 @@
-source sorta.bash
-source shpec-helper.bash
+library=./shpec-helper.bash
+source "${BASH_SOURCE%/*}/$library" 2>/dev/null || source "$library"
+unset -v library
+
+initialize_shpec_helper
+shpec_source lib/sorta.bash
 
 stop_on_error=true
 
@@ -248,6 +252,38 @@ describe 'froms'
   end
 end
 
+describe '_includes_'
+  it "returns true if a string is in an array"
+    unset -v one
+    samples=( one two three )
+    _includes_ one samples
+    assert equal 0 $?
+  end
+
+  it "returns true if a string is in an array more than once"
+    unset -v one
+    samples=( one two three one )
+    _includes_ one samples
+    assert equal 0 $?
+  end
+
+  it "returns false if a string isn't in an array"
+    samples=( one two three )
+    stop_on_error off
+    _includes_ four samples
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if only a substring is in an array"
+    samples=( one two three )
+    stop_on_error off
+    _includes_ on samples
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
 describe 'intoa'
   it "generates a declaration for a hash with the named keys from the local namespace"
     one=1
@@ -370,6 +406,83 @@ describe '_is_array_literal_'
   end
 end
 
+describe '_is_declared_array_'
+  it "returns true for a declared array"
+    unset -v samples
+    declare -a samples
+    _is_declared_array_ samples
+    assert equal 0 $?
+  end
+
+  it "returns false for not declared array"
+    unset -v samples
+    stop_on_error off
+    _is_declared_array_ samples
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
+describe '_is_declared_hash_'
+  it "returns true for a declared array"
+    unset -v sampleh
+    declare -A sampleh
+    _is_declared_hash_ sampleh
+    assert equal 0 $?
+  end
+
+  it "returns false for not declared array"
+    unset -v sampleh
+    stop_on_error off
+    _is_declared_hash_ sampleh
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
+describe '_is_declared_scalar_'
+  it "returns true for a declared scalar"
+    unset -v sample
+    samplef() { local sample; _is_declared_scalar_ sample ;}
+    samplef
+    assert equal 0 $?
+  end
+
+  it "returns false for not declared scalar"
+    unset -v sample
+    samplef() { _is_declared_scalar_ sample ;}
+    stop_on_error off
+    samplef
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "doesn't alter a global variable's contents"
+    sample=one
+    samplef() { local sample; _is_declared_scalar_ sample ;}
+    samplef
+    assert equal one "$sample"
+  end
+end
+
+describe '_is_declared_type_'
+  it "returns true for a declared array"
+    unset -v samples
+    declare -a samples
+    _is_declared_type_ a samples
+    assert equal 0 $?
+  end
+
+  it "returns false for not declared array"
+    unset -v samples
+    stop_on_error off
+    _is_declared_type_ a samples
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
+
 describe '_is_hash_literal_'
   it "returns true for a parenthetical list of indices"
     _is_hash_literal_ '([one]=1)'
@@ -459,8 +572,26 @@ describe '_is_ref_'
     stop_on_error
   end
 
+  it "returns false if the named variable is an array whose first element is a 'ref'"
+    example=one
+    samples=( example )
+    stop_on_error off
+    _is_ref_ samples
+    assert unequal 0 $?
+    stop_on_error
+  end
+
   it "returns false if the named variable is a hash"
     declare -A sampleh=( [example]=one )
+    stop_on_error off
+    _is_ref_ sampleh
+    assert unequal 0 $?
+    stop_on_error
+  end
+
+  it "returns false if the named variable is a hash whose first element in a 'ref'"
+    example=one
+    declare -A sampleh=( [0]=example )
     stop_on_error off
     _is_ref_ sampleh
     assert unequal 0 $?
@@ -697,20 +828,44 @@ describe '_map_arg_type_'
     stop_on_error
   end
 
-  it "errors if _ref_declaration_ errors"
-    unset -v sample
-    _results_=()
-    stop_on_error off
-    _map_arg_type_ '*ref' sample
-    assert unequal 0 $?
-    stop_on_error
-  end
-
   it "errors if _array_declaration_ errors on an array"
     declare -A sampleh=( [one]=1 [two]=2 )
     _results_=()
     stop_on_error off
     _map_arg_type_ @array sampleh a
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
+describe '_name_from_declaration_'
+  it "returns the name of a simple declaration"
+    result=$(_name_from_declaration_ 'declare -- sample="one"')
+    assert equal sample "$result"
+  end
+
+  it "errors if the format doesn't have an equals sign"
+    stop_on_error off
+    _name_from_declaration_ 'declare -- sample"one"'
+    assert unequal 0 $?
+    stop_on_error
+  end
+end
+
+describe '_names_from_declarations_'
+  it "returns the name of a single declaration in 'names'"
+    declarations=( 'declare -- sample="one"' )
+    names=()
+    _names_from_declarations_
+    printf -v expected 'declare -a names=%s([0]="sample")%s' \' \'
+    assert equal "$expected" "$(declare -p names)"
+  end
+
+  it "errors on a declaration missing an equals sign"
+    declarations=( 'declare -- sample"one"' )
+    names=()
+    stop_on_error off
+    _names_from_declarations_
     assert unequal 0 $?
     stop_on_error
   end
@@ -922,11 +1077,26 @@ describe '_ref_declaration_'
     assert unequal 0 $?
     stop_on_error
   end
+
+  it "errors on a blank argument"
+    stop_on_error off
+    _ref_declaration_ result ''
+    assert unequal 0 $?
+    stop_on_error
+  end
 end
 
 describe 'reta'
   it "sets an array of values in a named variable"
-    my_func() { local values=( one two three ); local "$1"= && reta values "$1" ;}
+    my_func() { local examples=( one two three ); local "$1" && reta examples "$1" ;}
+    samples=()
+    my_func samples
+    printf -v expected 'declare -a samples=%s([0]="one" [1]="two" [2]="three")%s' \' \'
+    assert equal "$expected" "$(declare -p samples)"
+  end
+
+  it "sets an array of values in a named variable of the same name as a local"
+    my_func() { local samples=( one two three ); local "$1" && reta samples "$1" ;}
     samples=()
     my_func samples
     printf -v expected 'declare -a samples=%s([0]="one" [1]="two" [2]="three")%s' \' \'
@@ -934,7 +1104,7 @@ describe 'reta'
   end
 
   it "sets an array of values in a named variable with a literal"
-    my_func() { local "$1"= && reta '( one two three )' "$1" ;}
+    my_func() { local "$1" && reta '( one two three )' "$1" ;}
     samples=()
     my_func samples
     printf -v expected 'declare -a samples=%s([0]="one" [1]="two" [2]="three")%s' \' \'
@@ -944,7 +1114,7 @@ end
 
 describe 'reth'
   it "sets an hash of values in a named variable"
-    my_func() { local -A valueh=( [one]=1 [two]=2 [three]=3 ); local "$1"= && reth valueh "$1" ;}
+    my_func() { local -A sampleh=( [one]=1 [two]=2 [three]=3 ); local "$1" && reth sampleh "$1" ;}
     declare -A sampleh=()
     my_func sampleh
     printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
@@ -952,7 +1122,7 @@ describe 'reth'
   end
 
   it "sets an hash of values in a named variable with a literal"
-    my_func() { local "$1"= && reth '( [one]=1 [two]=2 [three]=3 )' "$1" ;}
+    my_func() { local "$1" && reth '( [one]=1 [two]=2 [three]=3 )' "$1" ;}
     declare -A sampleh=()
     my_func sampleh
     printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
@@ -962,14 +1132,14 @@ end
 
 describe 'rets'
   it "sets a string value in a named variable"
-    my_func() { local value=0; local "$1"= && rets value "$1" ;}
+    my_func() { local sample=0; local "$1" && rets sample "$1" ;}
     sample=''
     my_func sample
     assert equal '0' "$sample"
   end
 
   it "sets a string value in a named variable with a literal"
-    my_func() { local "$1"= && rets 0 "$1" ;}
+    my_func() { local "$1" && rets 0 "$1" ;}
     sample=''
     my_func sample
     assert equal '0' "$sample"

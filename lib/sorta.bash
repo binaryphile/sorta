@@ -1,7 +1,7 @@
-[[ -n ${_sorta_:-} ]] && return
-readonly _sorta_=loaded
+[[ -n ${_sorta:-} ]] && return
+readonly _sorta=loaded
 
-_array_declaration_() {
+_array_declaration_ () {
   local _parameter_=$1
   local _argument_=$2
   local _option_=$3
@@ -11,7 +11,7 @@ _array_declaration_() {
   _copy_declaration_ "$_argument_" "$_parameter_"
 }
 
-assign() {
+assign () {
   local _ref_=$1
   local _value_=$2
   local _name_
@@ -21,7 +21,7 @@ assign() {
   printf '%s\n' "${_value_/$_name_/$_ref_}"
 }
 
-assigna() {
+assigna () {
   local -n _refa_=$1
   local _value_=$2
   local -a _results_
@@ -39,15 +39,15 @@ assigna() {
   _print_joined_ ';' "${_results_[@]}"
 }
 
-_contains_() { [[ $2 == *"$1"* ]] ;}
+_contains_ () { [[ $2 == *"$1"* ]] ;}
 
-_copy_declaration_() {
+_copy_declaration_ () {
   _is_name_ "$1" || return
   set -- "$1" "$2" "$(declare -p "$1")"
   _results_+=( "${3/$1/$2}" )
 }
 
-_deref_declaration_() {
+_deref_declaration_ () {
   local _parameter_=$1
   local _argument_=$2
 
@@ -55,7 +55,7 @@ _deref_declaration_() {
   _results_+=( "$(printf 'declare -n %s="%s"' "$_parameter_" "$_argument_")" )
 }
 
-froma() {
+froma () {
   local _params=( %hash @keys )
   eval "$(passed _params "$@")"
 
@@ -70,7 +70,7 @@ froma() {
   printf '%s\n' "${results[*]}"
 }
 
-fromh() {
+fromh () {
   local _params=( %hash %keyh )
   eval "$(passed _params "$@")"
   local -a keys
@@ -81,7 +81,7 @@ fromh() {
   assigna values "$(froma hash keys)"
 }
 
-froms() {
+froms () {
   local _params=( %hash key )
   eval "$(passed _params "$@")"
   local -a keys
@@ -102,7 +102,22 @@ froms() {
   assign "$key" "$(declare -p value)"
 }
 
-intoa() {
+_includes_ () {
+  eval "$(passed '( item @items )' "$@")"
+  local expression
+  local status
+  local retval
+
+  printf -v expression '+(%s)' "$(_print_joined_ '|' "${items[@]}")"
+  status=$(set -- $(shopt extglob); echo "$2")
+  shopt -s extglob
+  [[ $1 == $expression ]]
+  retval=$?
+  [[ $status == 'off' ]] && shopt -u extglob
+  return "$retval"
+}
+
+intoa () {
   eval "$(passed '( %hash @keys )' "$@")"
   local key
 
@@ -113,7 +128,7 @@ intoa() {
   assign "$1" "$(pass hash)"
 }
 
-intoh() {
+intoh () {
   eval "$(passed '( %hash %keyh )' "$@")"
   local -a keys
   local -a values
@@ -127,7 +142,7 @@ intoh() {
   assign "$1" "$(pass hash)"
 }
 
-intos() {
+intos () {
   eval "$(passed '( %hash ref )' "$@")"
 
   hash[$ref]=${!ref}
@@ -135,15 +150,43 @@ intos() {
   assign "$1" "$(pass hash)"
 }
 
-_is_array_()          { _is_type_ "$1" a ;}
-_is_array_literal_()  { [[ $1 == '('* && $1 == *')'  ]] ;}
-_is_hash_literal_()   { _is_array_literal_ "$1" && [[ ${1// /} == '(['* ]] ;}
-_is_name_()           { declare -p "$1" >/dev/null 2>&1 ;}
-_is_ref_()            { _is_name_ "${!1}" ;}
-_is_set_()            { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
-_is_type_()           { [[ $(declare -p "$1" 2>/dev/null) == 'declare -'"$2"* ]] ;}
+_is_array_ ()          { _is_type_ "$1" a ;}
+_is_array_literal_ ()  { [[ $1 == '('* && $1 == *')'  ]] ;}
 
-keys_of() {
+_is_declared_array_ () { _is_declared_type_ a "$@" ;}
+_is_declared_hash_ () { _is_declared_type_ A "$@" ;}
+
+_is_declared_scalar_ () {
+  local name=$1
+  local names=()
+
+  _is_name_ "$name" && return
+  IFS=$'\n' read -rd '' -a names <<<"$(compgen -v)" ||:
+  _includes_ "$name" names && return
+  declare -g "$1"=''
+  ! _is_name_ "$1"
+}
+
+_is_declared_type_ () {
+  local option=$1
+  local name=$2
+  local declarations=()
+  local names=()
+
+  _is_name_ "$2" && return
+  IFS=$'\n' read -rd '' -a declarations <<<"$(declare -"$option")" ||:
+  _names_from_declarations_
+  _includes_ "$name" names
+}
+
+_is_hash_literal_ ()   { _is_array_literal_ "$1" && [[ ${1// /} == '(['* ]] ;}
+_is_name_ ()           { declare -p "$1" >/dev/null 2>&1 ;}
+_is_ref_ ()            { _is_scalar_ "$1" && _is_name_ "${!1}" ;}
+_is_scalar_ ()         { _is_type_ "$1" - ;}
+_is_set_ ()            { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
+_is_type_ ()           { [[ $(declare -p "$1" 2>/dev/null) == 'declare -'"$2"* ]] ;}
+
+keys_of () {
   eval "$(passed '( %hash )' "$@")"
   local -a results
 
@@ -151,7 +194,7 @@ keys_of() {
   pass results
 }
 
-_literal_declaration_() {
+_literal_declaration_ () {
   case $3 in
     a ) _is_array_literal_  "$2" || return;;
     A ) _is_hash_literal_   "$2" || return;;
@@ -160,7 +203,7 @@ _literal_declaration_() {
   _results_+=( "$(declare -p "$1")" )
 }
 
-_map_arg_type_() {
+_map_arg_type_ () {
   local _parameter_=$1
   local _argument_=$2
 
@@ -173,9 +216,25 @@ _map_arg_type_() {
   esac
 }
 
-pass() { declare -p "$1" ;}
+_name_from_declaration_ () {
+  local name
 
-passed() {
+  [[ $1 == 'declare -'*[[:alpha:]_]=* ]] || return
+  name=${1%%=*}
+  printf '%s\n' ${name##* }
+}
+
+_names_from_declarations_ () {
+  local declaration
+
+  for declaration in "${declarations[@]}"; do
+    names+=( "$(_name_from_declaration_ "$declaration")" )
+  done
+}
+
+pass () { declare -p "$1" ;}
+
+passed () {
   _is_array_ "$1" || _is_array_literal_ "$1" || return
   if _is_array_ "$1"; then
     set -- "$(declare -p "$1")" "$@"
@@ -191,13 +250,13 @@ passed() {
   _print_joined_ ';' "${_results_[@]}"
 }
 
-_print_joined_() {
+_print_joined_ () {
   local IFS=$1; shift
 
   printf '%s\n' "$*"
 }
 
-_process_parameters_() {
+_process_parameters_ () {
   local _argument_=''
   local _i_
   local _parameter_
@@ -210,30 +269,28 @@ _process_parameters_() {
   done
 }
 
-_ref_declaration_() {
+_ref_declaration_ () {
   local _parameter_=$1
   local _argument_=$2
 
-  _is_name_ "$_argument_" || return
-  if _is_ref_ "$_argument_"; then
-    _copy_declaration_ "$_argument_" "$_parameter_"
-  else
-    _copy_declaration_ _argument_ "$_parameter_"
-  fi
+  [[ -n $_argument_ ]] || return
+  _is_name_ "$_argument_" || _is_declared_array_ "$_argument_" || _is_declared_hash_ "$_argument_" || _is_declared_scalar_ "$_argument_" || return
+  _is_ref_ "$_argument_" && { _copy_declaration_ "$_argument_" "$_parameter_"; return ;}
+  _copy_declaration_ _argument_ "$_parameter_"
 }
 
-reta() {
-  eval "$(passed '( @_values "*_ref" )' "$@")"
+reta () {
+  eval "$(passed '( @_values "*_refa" )' "$@")"
   local _declaration
 
-  unset -v "$_ref"
+  unset -v "$_refa"
   _declaration=$(declare -p _values)
   _declaration=${_declaration#*=}
   _declaration=${_declaration:1:-1}
-  eval "$(printf '%s=%s' "$_ref" "$_declaration")"
+  eval "$(printf '%s=%s' "$_refa" "$_declaration")"
 }
 
-reth() {
+reth () {
   eval "$(passed '( %_valueh "*_ref" )' "$@")"
   local _declaration
 
@@ -241,17 +298,18 @@ reth() {
   _declaration=$(declare -p _valueh)
   _declaration=${_declaration#*=}
   _declaration=${_declaration:1:-1}
-  eval "$(printf '%s=%s' "$_ref" "$_declaration")"
+  printf -v _declaration '%s=%s' "$_ref" "$_declaration"
+  eval "$_declaration"
 }
 
-rets() {
+rets () {
   eval "$(passed '( _value "*_ref" )' "$@")"
 
   unset -v "$_ref"
   printf -v "$_ref" '%s' "$_value"
 }
 
-_scalar_declaration_() {
+_scalar_declaration_ () {
   local _parameter_=$1
   local _argument_=$2
 
@@ -259,7 +317,7 @@ _scalar_declaration_() {
   _copy_declaration_ _argument_ "$_parameter_"
 }
 
-values_of() {
+values_of () {
   eval "$(passed '( %hash )' "$@")"
 
   local -a results
