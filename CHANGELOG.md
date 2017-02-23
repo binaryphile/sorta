@@ -1,8 +1,6 @@
 Change Log
 ==========
 
-All notable changes to this project will be documented in this file.
-
 The format is based on [Keep a Changelog] and this project adheres to
 [Semantic Versioning], with the minor exception that v10 is considered
 v0 in semver parlance.
