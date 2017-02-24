@@ -19,8 +19,14 @@ Sorta lets you write Bash functions which:
 
 -   pack/unpack variables into/out of hashes as key-value pairs
 
+-   are able to be imported a la carte via `import.bash`
+
 Basically, sorta is about controlling your variable namespace as much as
 possible. These features are designed to help you do that.
+
+The `import.bash` library is about doing the same for your function
+namespace.  See the bottom of this document for information on its
+usage.
 
 Requires Bash 4.3 or higher.
 
@@ -37,7 +43,7 @@ name.
 Of course this trickery has some consequences, so caveat emptor.
 
 Examples
-========
+--------
 
 <table>
 <thead>
@@ -200,18 +206,21 @@ the array, nor worry about separating other arguments from the array
 elements with `shift` at the receiving side.
 
 Installation
-============
+------------
 
 Clone this repository and place it's `lib` directory on your path.
 
 In your scripts you can then use `source sorta.bash` and it will be
 found automatically.
 
-Usage
-=====
+`import.bash` can also be sourced the same way since it's in the `lib`
+directory as well.  See the bottom of this document for information on
+`import`.
 
-Pass Scalar Values (strings)
-----------------------------
+Sorta Usage
+-----------
+
+### Pass Scalar Values (strings)
 
 To write a function which receives variables this way, you need to
 declare a local array of parameter names/types, then eval the output of
@@ -494,7 +503,7 @@ Outputs:
     rain: 3
 
 FAQ
-===
+---
 
 -   *Why?*
 
@@ -558,7 +567,7 @@ FAQ
     when an expansion has occurred, which is occasionally useful.
 
 Sorta API
-=========
+---------
 
 "Accepts literals or variable names" means that the arguments may be
 specified normally, using string literals or expansions for example, or
@@ -831,5 +840,105 @@ double-quotes).
     to `assign` to give it the array name of your choice.
 
     You must `eval` the output of `assign` to instantiate the array.
+
+import.bash
+-----------
+
+`import.bash` is another library included with sorta.  It allows you to
+write libraries that may have their functions imported a la carte.
+
+For example, if you have a library named `my_great_library.bash` which
+has been written with `import` in mind, you can get functions from it
+like so:
+
+    source import.bash
+
+    mgl_imports=(
+      my_great_function1
+      my_great_function2
+    )
+    eval "$(importa my_great_library mgl_imports)"
+
+If `my_great_library.bash` has 100 functions defined, you will only get
+the two you wanted, plus dependency functions.
+
+Any functions which are dependencies of `my_great_library` will be
+imported as well, but that is handled automatically at import time by
+some meta-information you add to your library.
+
+There are two primary benefits provided by `import.bash`:
+
+-   it gives you control over the function namespace when sourcing
+    libraries, making it easier to effectively structure your code into
+    libraries or use others' code
+
+-   it provides you a trail back to the source file of functions used in
+    your code. By tying the function name to the source file when the
+    function is imported, you are able to explicitly see where the
+    function came from.  This makes it easier to use multiple libraries
+    in your code since you can tell from where functions originated when
+    you need to examine their implementations.
+
+`import.bash` works by opening a subshell, importing the named library,
+and then extracting and `eval`ing the code for the functions you care
+about.  Performance may be an issue with large files, since you are
+parsing potentially a large amount of code twice rather than once.
+
+Import Usage
+------------
+
+The basic usage pattern for the consumer of an import-compatible library
+is above.  The `imports` function imports an individual function (the
+"s" is for string), while the `importa` function imports an array of
+function names.
+
+The library name may be qualified with its file extension (e.g. `.sh`),
+but if it is not qualified, it will be searched for without an
+extension, then with ".bash" and ".sh" extensions.
+
+Writing libraries which can be imported is the other half of the
+picture.  The only requirement is that any dependencies of the library's
+functions are listed in a special variable, `_required_imports`,
+declared by the library.
+
+For example, if you have a function `one` which calls function `two`,
+your library would look like so:
+
+    source import.bash
+
+    _required_imports=(
+      two
+    )
+
+    one () {
+      echo "Calling 'two'..."
+      two
+    }
+
+    two () {
+      echo "Hello from 'two'."
+    }
+
+The reason is that the `import` functions do not do any dependency
+analysis of their own.  Although `one` calls `two` and depends on it to
+succeed, importing `one` won't automatically import `two` if you don't
+import it explicitly as well.  Because of that, calling `one` will fail
+when it tries to use `two` if you haven't included it as a dependency.
+
+The same goes for dependencies satisfied by libraries sourced by your
+library.  To make it possible for any function in your library to be
+importable, you will have to determine all of the functions called by
+any of your functions, wherever they have been defined, and list their
+names in `_required_imports` in your library.
+
+Anything in `_required_imports` will automatically be imported so the
+consumer of your library won't have to handle that dependency analysis.
+
+This means that if you have a lot of dependencies, you will be getting
+some extra baggage with your imports, so be aware that just because you
+named one function to import, it doesn't mean you won't get others as
+well in the bargain.  Still, you're usually keeping your namespace
+cleaner than it would have been if you had imported the entirety of a
+library where you're only concerned with a handful of functions.
 
   [dynamic scoping]: https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping_vs._dynamic_scoping
