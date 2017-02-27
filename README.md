@@ -842,7 +842,7 @@ double-quotes).
     You must `eval` the output of `assign` to instantiate the array.
 
 import.bash
------------
+===========
 
 `import.bash` is another library included with sorta.  It allows you to
 write libraries that may have their functions imported a la carte.
@@ -860,7 +860,7 @@ like so:
     eval "$(importa my_great_library mgl_imports)"
 
 If `my_great_library.bash` has 100 functions defined, you will only get
-the two you wanted, plus dependency functions.
+the two you wanted, plus dependencies.
 
 Any functions which are dependencies of `my_great_library` will be
 imported as well, but that is handled automatically at import time by
@@ -904,8 +904,6 @@ declared by the library.
 For example, if you have a function `one` which calls function `two`,
 your library would look like so:
 
-    source import.bash
-
     _required_imports=(
       two
     )
@@ -919,17 +917,22 @@ your library would look like so:
       echo "Hello from 'two'."
     }
 
+Note that you do not need to source `import.bash`.
+
 The reason is that the `import` functions do not do any dependency
 analysis of their own.  Although `one` calls `two` and depends on it to
 succeed, importing `one` won't automatically import `two` if you don't
-import it explicitly as well.  Because of that, calling `one` will fail
-when it tries to use `two` if you haven't included it as a dependency.
+import `two` explicitly as well.  Because of that, calling `one` will
+fail when it tries to use `two`, unless you include it in your
+`_required_imports`.
 
 The same goes for dependencies satisfied by libraries sourced by your
 library.  To make it possible for any function in your library to be
-importable, you will have to determine all of the functions called by
-any of your functions, wherever they have been defined, and list their
-names in `_required_imports` in your library.
+imported, you will have to determine all of the functions called by any
+of your library's, wherever they have been defined, and list their names
+in `_required_imports` in your library.  For example, if `two` had been
+defined in a separated file, it still would have needed to be listed in
+`_required_imports` in the file where `one` is defined.
 
 Anything in `_required_imports` will automatically be imported so the
 consumer of your library won't have to handle that dependency analysis.
@@ -939,6 +942,7 @@ some extra baggage with your imports, so be aware that just because you
 named one function to import, it doesn't mean you won't get others as
 well in the bargain.  Still, you're usually keeping your namespace
 cleaner than it would have been if you had imported the entirety of a
-library where you're only concerned with a handful of functions.
+library that only had a handful of functions in which you were actually
+interested.
 
   [dynamic scoping]: https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping_vs._dynamic_scoping
