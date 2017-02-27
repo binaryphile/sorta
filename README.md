@@ -25,8 +25,7 @@ Basically, sorta is about controlling your variable namespace as much as
 possible. These features are designed to help you do that.
 
 The `import.bash` library is about doing the same for your function
-namespace.  See the bottom of this document for information on its
-usage.
+namespace. See the bottom of this document for information on its usage.
 
 Requires Bash 4.3 or higher.
 
@@ -214,7 +213,7 @@ In your scripts you can then use `source sorta.bash` and it will be
 found automatically.
 
 `import.bash` can also be sourced the same way since it's in the `lib`
-directory as well.  See the bottom of this document for information on
+directory as well. See the bottom of this document for information on
 `import`.
 
 Sorta Usage
@@ -631,9 +630,9 @@ double-quotes).
     You must `eval` the output of `froma` to instantiate the
     variables locally.
 
--   **`froms`** *`hash name_or_pattern`* - create declaration
-    statement(s) for named variable or set of variables, values taken
-    from from `hash`
+-   **`froms`** *`hash name_or_pattern`* - create
+    declaration statement(s) for named variable or set of variables,
+    values taken from from `hash`
 
     Accepts literals or variable names.
 
@@ -652,8 +651,8 @@ double-quotes).
     creates a compound declaration as above but with the prefix on the
     resulting variable names.
 
-    You must `eval` the output of `froms` to instantiate the
-    variable(s) locally.
+    You must `eval` the output of `froms` to instantiate the variable(s)
+    locally.
 
 -   **`intoa`** *`hash keys`* - create a declaration statement for the
     named hash which includes the variables named in `keys` as new keys
@@ -732,8 +731,8 @@ double-quotes).
 
     *Returns*: a declaration statement on stdout
 
-    Reserves for internal use any variable names starting and ending
-    with underscores, so such names are not allowed in parameter lists.
+    Reserves for internal use any variable names starting with double
+    underscores, so such names are not allowed in parameter lists.
     `passed` does not support such parameter names.
 
     Returns an `eval`able statement to instantiate the given variables
@@ -844,7 +843,7 @@ double-quotes).
 import.bash
 ===========
 
-`import.bash` is another library included with sorta.  It allows you to
+`import.bash` is another library included with sorta. It allows you to
 write libraries that may have their functions imported a la carte.
 
 For example, if you have a library named `my_great_library.bash` which
@@ -875,21 +874,21 @@ There are two primary benefits provided by `import.bash`:
 -   it provides you a trail back to the source file of functions used in
     your code. By tying the function name to the source file when the
     function is imported, you are able to explicitly see where the
-    function came from.  This makes it easier to use multiple libraries
+    function came from. This makes it easier to use multiple libraries
     in your code since you can tell from where functions originated when
     you need to examine their implementations.
 
 `import.bash` works by opening a subshell, importing the named library,
 and then extracting and `eval`ing the code for the functions you care
-about.  Performance may be an issue with large files, since you are
+about. Performance may be an issue with large files, since you are
 parsing potentially a large amount of code twice rather than once.
 
 Import Usage
 ------------
 
 The basic usage pattern for the consumer of an import-compatible library
-is above.  The `imports` function imports an individual function (the
-"s" is for string), while the `importa` function imports an array of
+is above. The `imports` function imports an individual function (the "s"
+is for string), while the `importa` function imports an array of
 function names.
 
 The library name may be qualified with its file extension (e.g. `.sh`),
@@ -897,7 +896,7 @@ but if it is not qualified, it will be searched for without an
 extension, then with ".bash" and ".sh" extensions.
 
 Writing libraries which can be imported is the other half of the
-picture.  The only requirement is that any dependencies of the library's
+picture. The only requirement is that any dependencies of the library's
 functions are listed in a special variable, `_required_imports`,
 declared by the library.
 
@@ -920,17 +919,17 @@ your library would look like so:
 Note that you do not need to source `import.bash`.
 
 The reason is that the `import` functions do not do any dependency
-analysis of their own.  Although `one` calls `two` and depends on it to
+analysis of their own. Although `one` calls `two` and depends on it to
 succeed, importing `one` won't automatically import `two` if you don't
-import `two` explicitly as well.  Because of that, calling `one` will
+import `two` explicitly as well. Because of that, calling `one` will
 fail when it tries to use `two`, unless you include it in your
 `_required_imports`.
 
 The same goes for dependencies satisfied by libraries sourced by your
-library.  To make it possible for any function in your library to be
+library. To make it possible for any function in your library to be
 imported, you will have to determine all of the functions called by any
 of your library's, wherever they have been defined, and list their names
-in `_required_imports` in your library.  For example, if `two` had been
+in `_required_imports` in your library. For example, if `two` had been
 defined in a separated file, it still would have needed to be listed in
 `_required_imports` in the file where `one` is defined.
 
@@ -940,7 +939,7 @@ consumer of your library won't have to handle that dependency analysis.
 This means that if you have a lot of dependencies, you will be getting
 some extra baggage with your imports, so be aware that just because you
 named one function to import, it doesn't mean you won't get others as
-well in the bargain.  Still, you're usually keeping your namespace
+well in the bargain. Still, you're usually keeping your namespace
 cleaner than it would have been if you had imported the entirety of a
 library that only had a handful of functions in which you were actually
 interested.

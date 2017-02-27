@@ -30,8 +30,6 @@ v0 in semver parlance.
 
 -   the old `retx` functions
 
-### Fixed
-
 [v10.11.10] - 2017-02-23
 ------------------------
 
