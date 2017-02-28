@@ -1,6 +1,8 @@
 [[ -n ${_sorta:-} ]] && return
 readonly _sorta=loaded
 
+source nano.bash
+
 __array_declaration () {
   local __parameter=$1
   local __argument=$2
@@ -188,9 +190,8 @@ __is_type ()           { [[ $(declare -p "$1" 2>/dev/null) == 'declare -'"$2"* ]
 
 keys_of () {
   eval "$(passed '( %hash )' "$@")"
-  local -a results
+  local results=( "${!hash[@]}" )
 
-  results=( "${!hash[@]}" )
   pass results
 }
 
@@ -279,35 +280,7 @@ __ref_declaration () {
   __copy_declaration __argument "$__parameter"
 }
 
-reta () {
-  eval "$(passed '( @_values "*_refa" )' "$@")"
-  local _declaration
-
-  unset -v "$_refa"
-  _declaration=$(declare -p _values)
-  _declaration=${_declaration#*=}
-  _declaration=${_declaration:1:-1}
-  eval "$(printf '%s=%s' "$_refa" "$_declaration")"
-}
-
-reth () {
-  eval "$(passed '( %_valueh "*_ref" )' "$@")"
-  local _declaration
-
-  unset -v "$_ref"
-  _declaration=$(declare -p _valueh)
-  _declaration=${_declaration#*=}
-  _declaration=${_declaration:1:-1}
-  printf -v _declaration '%s=%s' "$_ref" "$_declaration"
-  eval "$_declaration"
-}
-
-rets () {
-  eval "$(passed '( _value "*_ref" )' "$@")"
-
-  unset -v "$_ref"
-  printf -v "$_ref" '%s' "$_value"
-}
+ret () { _ret "$@" ;}
 
 __scalar_declaration () {
   local __parameter=$1

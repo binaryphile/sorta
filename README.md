@@ -217,7 +217,10 @@ directory as well. See the bottom of this document for information on
 Sorta Usage
 -----------
 
-### Pass Scalar Values (strings)
+Notably, `sorta` is not importable with `import` (see below), as it is
+small and coherent enough that it's not meant to be imported by parts.
+
+### Pass Scalar Values (strings and ints)
 
 To write a function which receives variables this way, you need to
 declare a local array of parameter names/types, then eval the output of
@@ -522,8 +525,8 @@ FAQ
 
     In order for the `passed` function to determine whether an argument
     needs to be expanded, it has to check the outside scope for the
-    existence of variable names. If it finds one, it reads in that
-    value. Therefore you don't want to declare any local variables
+    existence of variable names. If it finds one, it reads in
+    that value. Therefore you don't want to declare any local variables
     before calling `passed`, since those might mask an outside variable
     name that was passed as an argument.
 
@@ -769,8 +772,8 @@ double-quotes).
     nothing more.
 
     The `&` dereference type sets the parameter to point to the variable
-    named by the argument directly, effectively making it call by
-    reference. Changes to the parameter variable in the function body
+    named by the argument directly, effectively making it call
+    by reference. Changes to the parameter variable in the function body
     will affect the original variable directly in the outer scope. This
     is not call by value.
 

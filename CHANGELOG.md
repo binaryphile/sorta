@@ -18,10 +18,7 @@ v0 in semver parlance.
 ### Changed
 
 -   the old `retx` suite of functions has been replaced with a single
-    `ret` function, wrapping the "\_ret" call from the [nano] library
-
--   added direct-return options for `keys_of`, `values_of` and the
-    `intox` suite of functions
+    `ret` function, wrapping the `ret` call from the [nano] library
 
 ### Deprecated
 

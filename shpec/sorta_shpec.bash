@@ -1085,63 +1085,12 @@ describe '__ref_declaration'
   end
 end
 
-describe 'reta'
-  it "sets an array of values in a named variable"
-    my_func() { local examples=( one two three ); local "$1" && reta examples "$1" ;}
-    samples=()
-    my_func samples
-    printf -v expected 'declare -a samples=%s([0]="one" [1]="two" [2]="three")%s' \' \'
-    assert equal "$expected" "$(declare -p samples)"
-  end
+describe 'ret'
+  it "calls _ret"; (
+    stub_command _ret 'echo called'
 
-  it "sets an array of values in a named variable of the same name as a local"
-    my_func() { local samples=( one two three ); local "$1" && reta samples "$1" ;}
-    samples=()
-    my_func samples
-    printf -v expected 'declare -a samples=%s([0]="one" [1]="two" [2]="three")%s' \' \'
-    assert equal "$expected" "$(declare -p samples)"
-  end
-
-  it "sets an array of values in a named variable with a literal"
-    my_func() { local "$1" && reta '( one two three )' "$1" ;}
-    samples=()
-    my_func samples
-    printf -v expected 'declare -a samples=%s([0]="one" [1]="two" [2]="three")%s' \' \'
-    assert equal "$expected" "$(declare -p samples)"
-  end
-end
-
-describe 'reth'
-  it "sets an hash of values in a named variable"
-    my_func() { local -A sampleh=( [one]=1 [two]=2 [three]=3 ); local "$1" && reth sampleh "$1" ;}
-    declare -A sampleh=()
-    my_func sampleh
-    printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
-    assert equal "$expected" "$(declare -p sampleh)"
-  end
-
-  it "sets an hash of values in a named variable with a literal"
-    my_func() { local "$1" && reth '( [one]=1 [two]=2 [three]=3 )' "$1" ;}
-    declare -A sampleh=()
-    my_func sampleh
-    printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
-    assert equal "$expected" "$(declare -p sampleh)"
-  end
-end
-
-describe 'rets'
-  it "sets a string value in a named variable"
-    my_func() { local sample=0; local "$1" && rets sample "$1" ;}
-    sample=''
-    my_func sample
-    assert equal '0' "$sample"
-  end
-
-  it "sets a string value in a named variable with a literal"
-    my_func() { local "$1" && rets 0 "$1" ;}
-    sample=''
-    my_func sample
-    assert equal '0' "$sample"
+    assert equal called "$(ret)"
+    return "$_shpec_failures" ); let "_shpec_failures += $?"
   end
 end
 
