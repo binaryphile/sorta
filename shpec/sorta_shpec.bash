@@ -751,8 +751,16 @@ end
 describe 'keys_of'
   it "declares the keys of a hash"
     declare -A sampleh=([zero]=0 [one]=1)
-    printf -v expected 'declare -a results=%s([0]="one" [1]="zero")%s' \' \'
+    expected='declare -a results='\''([0]="one" [1]="zero")'\'
     assert equal "$expected" "$(keys_of sampleh)"
+  end
+
+  it "returns the keys of a hash"
+    declare examples=()
+    declare -A sampleh=([zero]=0 [one]=1)
+    keys_of sampleh examples
+    expected='declare -a examples='\''([0]="one" [1]="zero")'\'
+    assert equal "$expected" "$(declare -p examples)"
   end
 end
 

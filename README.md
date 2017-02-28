@@ -652,15 +652,16 @@ double-quotes).
     creates a compound declaration as above but with the prefix on the
     resulting variable names.
 
-    You must `eval` the output of `froms` to instantiate the
-    variable(s) locally.
+    You must `eval` the output of `froms` to instantiate the variable(s)
+    locally.
 
--   **`intoa`** *`hash keys`* - create a declaration statement for the
-    named hash which includes the variables named in `keys` as new keys
+-   **`intoa`** *`hash keys [return_variable]`* - return a hash which
+    includes the variables named in `keys` as new keys
 
     Accepts literals or variable names.
 
-    *Returns*: a declaration statement on stdout
+    *Returns*: a declaration statement on stdout, or a hash in
+    `return_variable`, if supplied
 
     Adds the variables named in `keys`, and their values, to the
     named hash.
@@ -668,16 +669,19 @@ double-quotes).
     Existing keys of the same name are overwritten. Other key-values in
     the hash are left alone. This is basically a merge operation.
 
-    You must `eval` the output of `intoa` to update the hash with the
-    new values.
+    `return_variable`, if supplied, must be a hash variable declared
+    outside the scope of `intoa`, and may be the same as the named hash.
 
--   **`intoh`** *`hash keyhash`* - create a declaration statement for
-    the named hash which includes the variables named in `keyhash` as
-    new keys
+    Otherwise you must `eval` the output of `intoa` to update the hash
+    with the new values.
+
+-   **`intoh`** *`hash keyhash [return_variable]`* - return a hash which
+    includes the variables named in `keyhash` as new keys
 
     Accepts literals or variable names.
 
-    *Returns*: a declaration statement on stdout
+    *Returns*: a declaration statement on stdout, or a hash in
+    `return_variable`, if supplied
 
     Adds the variables named in `keyhash`, and their values, to the
     named hash. `keyhash` is a mapping of the variables names to the
@@ -686,30 +690,41 @@ double-quotes).
     Existing keys of the same name are overwritten. Other key-values in
     the hash are left alone. This is basically a merge operation.
 
-    You must `eval` the output of `intoh` to update the hash with the
-    new values.
+    `return_variable`, if supplied, must be a hash variable declared
+    outside the scope of `intoh`.
 
--   **`intos`** *`hash key`* - create a declaration statement for the
-    named hash which includes the variable named in `key`
+    Otherwise you must `eval` the output of `intoh` to update the hash
+    with the new values.
+
+-   **`intos`** *`hash key [return_variable]`* - return a hash which
+    includes the variable named in `key`
 
     Accepts literals or variable names.
 
-    *Returns*: a declaration statement on stdout
+    *Returns*: a declaration statement on stdout, or a hash in
+    `return_variable`, if supplied
 
     Adds the variable named by `key`, and its value, to the named hash.
 
     An existing key of the same name is overwritten. Other key-values in
     the hash are left alone. This is basically a merge operation.
 
-    You must `eval` the output of `intos` to update the hash with the
-    new values.
+    `return_variable`, if supplied, must be a hash variable declared
+    outside the scope of `intos`, and may be the same as the named hash.
 
--   **`keys_of`** *`hash`* - create a declaration statement for an array
-    of the key names from `hash`
+    Otherwisee you must `eval` the output of `intos` to update the hash
+    with the new values.
+
+-   **`keys_of`** *`hash [return_variable]`* - return an array of the
+    key names from `hash`
 
     Accepts a literal or variable name.
 
-    *Returns*: a declaration statement on stdout
+    *Returns*: a declaration statement on stdout or the value in
+    `return_variable`, if supplied
+
+    `return_variable`, if supplied, must be an array variable declared
+    outside the scope of `values_of`.
 
     Finds and returns an `eval`able array of the key names from the
     named `hash`.
@@ -837,6 +852,20 @@ double-quotes).
 
     It is also a wrapper for the `_ret` function from \[nano\], which is
     the actual implementation.
+
+-   **`values_of`** *`hash [return_variable]`* - return an array of the
+    values (corresponding to keys) from `hash`
+
+    Accepts a literal or variable name.
+
+    *Returns*: a declaration statement on stdout, or the value in
+    `return_variable`, if supplied
+
+    `return_variable`, if supplied, must be an array variable declared
+    outside the scope of `values_of`.
+
+    Finds and returns an `eval`able array of the values from the named
+    `hash`.
 
 import.bash
 ===========

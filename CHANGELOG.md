@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog] and this project adheres to
 [Semantic Versioning], with the minor exception that v10 is considered
 v0 in semver parlance.
 
+[Unreleased]
+------------
+
+### Changed
+
+-   added direct-return options for `keys_of`, `values_of` and the
+    `intox` suite of functions
+
+-   README updated with instructions for running shpecs, basic
+    contributing
+
 [v11.10.10] - 2017-02-28
 ------------------------
 
@@ -46,6 +57,7 @@ v0 in semver parlance.
 
   [Keep a Changelog]: http://keepachangelog.com/
   [Semantic Versioning]: http://semver.org/
+  [Unreleased]: https://github.com/binaryphile/sorta/compare/v11.10.10...v11.11
   [nano]: https://github.com/binaryphile/nano
   [v11.10.10]: https://github.com/binaryphile/sorta/compare/v10.11.10...v11.10.10
   [v10.11.10]: https://github.com/binaryphile/sorta/compare/v10.10.11...v10.11.10
