@@ -1,58 +1,60 @@
 [[ -n ${_sorta:-} ]] && return
 readonly _sorta=loaded
 
-_array_declaration_ () {
-  local _parameter_=$1
-  local _argument_=$2
-  local _option_=$3
+source nano.bash
 
-  _is_array_literal_ "$_argument_" && { _literal_declaration_ "$_parameter_" "$_argument_" "$_option_"; return ;}
-  _is_type_ "$_argument_" "$_option_" || return
-  _copy_declaration_ "$_argument_" "$_parameter_"
+__array_declaration () {
+  local __parameter=$1
+  local __argument=$2
+  local __option=$3
+
+  __is_array_literal "$__argument" && { __literal_declaration "$__parameter" "$__argument" "$__option"; return ;}
+  __is_type "$__argument" "$__option" || return
+  __copy_declaration "$__argument" "$__parameter"
 }
 
 assign () {
-  local _ref_=$1
-  local _value_=$2
-  local _name_
+  local __ref=$1
+  local __value=$2
+  local __name
 
-  _name_=${_value_%%=*}
-  _name_=${_name_##* }
-  printf '%s\n' "${_value_/$_name_/$_ref_}"
+  __name=${__value%%=*}
+  __name=${__name##* }
+  printf '%s\n' "${__value/$__name/$__ref}"
 }
 
 assigna () {
-  local -n _refa_=$1
-  local _value_=$2
-  local -a _results_
-  local -a _values_
+  local -n __refa=$1
+  local __value=$2
+  local -a __results
+  local -a __values
   local IFS
-  local _i_
+  local __i
 
   IFS=';'
-  set -- $_value_
+  set -- $__value
   IFS=$' \t\n'
-  _values_=( "$@" )
-  for _i_ in "${!_values_[@]}"; do
-    _results_+=( "$(assign "${_refa_[$_i_]}" "${_values_[$_i_]}")" )
+  __values=( "$@" )
+  for __i in "${!__values[@]}"; do
+    __results+=( "$(assign "${__refa[$__i]}" "${__values[$__i]}")" )
   done
-  _print_joined_ ';' "${_results_[@]}"
+  __print_joined ';' "${__results[@]}"
 }
 
-_contains_ () { [[ $2 == *"$1"* ]] ;}
+__contains () { [[ $2 == *"$1"* ]] ;}
 
-_copy_declaration_ () {
-  _is_name_ "$1" || return
+__copy_declaration () {
+  __is_name "$1" || return
   set -- "$1" "$2" "$(declare -p "$1")"
-  _results_+=( "${3/$1/$2}" )
+  __results+=( "${3/$1/$2}" )
 }
 
-_deref_declaration_ () {
-  local _parameter_=$1
-  local _argument_=$2
+__deref_declaration () {
+  local __parameter=$1
+  local __argument=$2
 
-  _is_name_ "$_argument_" || return
-  _results_+=( "$(printf 'declare -n %s="%s"' "$_parameter_" "$_argument_")" )
+  __is_name "$__argument" || return
+  __results+=( "$(printf 'declare -n %s="%s"' "$__parameter" "$__argument")" )
 }
 
 froma () {
@@ -102,13 +104,13 @@ froms () {
   assign "$key" "$(declare -p value)"
 }
 
-_includes_ () {
+__includes () {
   eval "$(passed '( item @items )' "$@")"
   local expression
   local status
   local retval
 
-  printf -v expression '+(%s)' "$(_print_joined_ '|' "${items[@]}")"
+  printf -v expression '+(%s)' "$(__print_joined '|' "${items[@]}")"
   status=$(set -- $(shopt extglob); echo "$2")
   shopt -s extglob
   [[ $1 == $expression ]]
@@ -124,7 +126,7 @@ intoa () {
   for key in "${keys[@]}"; do
     eval "$(intos hash key)"
   done
-  { [[ -z $1 ]] || _is_array_literal_ "$1" ;} && { pass hash; return ;}
+  { [[ -z $1 ]] || __is_array_literal "$1" ;} && { pass hash; return ;}
   assign "$1" "$(pass hash)"
 }
 
@@ -138,7 +140,7 @@ intoh () {
   for key in "${keys[@]}"; do
     hash[${keyh[$key]}]=${resulth[$key]}
   done
-  { [[ -z $1 ]] || _is_array_literal_ "$1" ;} && { pass hash; return ;}
+  { [[ -z $1 ]] || __is_array_literal "$1" ;} && { pass hash; return ;}
   assign "$1" "$(pass hash)"
 }
 
@@ -146,77 +148,76 @@ intos () {
   eval "$(passed '( %hash ref )' "$@")"
 
   hash[$ref]=${!ref}
-  { [[ -z $1 ]] || _is_array_literal_ "$1" ;} && { pass hash; return ;}
+  { [[ -z $1 ]] || __is_array_literal "$1" ;} && { pass hash; return ;}
   assign "$1" "$(pass hash)"
 }
 
-_is_array_ ()          { _is_type_ "$1" a ;}
-_is_array_literal_ ()  { [[ $1 == '('* && $1 == *')'  ]] ;}
+__is_array ()          { __is_type "$1" a ;}
+__is_array_literal ()  { [[ $1 == '('* && $1 == *')'  ]] ;}
 
-_is_declared_array_ () { _is_declared_type_ a "$@" ;}
-_is_declared_hash_ () { _is_declared_type_ A "$@" ;}
+__is_declared_array () { __is_declared_type a "$@" ;}
+__is_declared_hash () { __is_declared_type A "$@" ;}
 
-_is_declared_scalar_ () {
+__is_declared_scalar () {
   local name=$1
   local names=()
 
-  _is_name_ "$name" && return
+  __is_name "$name" && return
   IFS=$'\n' read -rd '' -a names <<<"$(compgen -v)" ||:
-  _includes_ "$name" names && return
+  __includes "$name" names && return
   declare -g "$1"=''
-  ! _is_name_ "$1"
+  ! __is_name "$1"
 }
 
-_is_declared_type_ () {
+__is_declared_type () {
   local option=$1
   local name=$2
   local declarations=()
   local names=()
 
-  _is_name_ "$2" && return
+  __is_name "$2" && return
   IFS=$'\n' read -rd '' -a declarations <<<"$(declare -"$option")" ||:
-  _names_from_declarations_
-  _includes_ "$name" names
+  __names_from_declarations
+  __includes "$name" names
 }
 
-_is_hash_literal_ ()   { _is_array_literal_ "$1" && [[ ${1// /} == '(['* ]] ;}
-_is_name_ ()           { declare -p "$1" >/dev/null 2>&1 ;}
-_is_ref_ ()            { _is_scalar_ "$1" && _is_name_ "${!1}" ;}
-_is_scalar_ ()         { _is_type_ "$1" - ;}
-_is_set_ ()            { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
-_is_type_ ()           { [[ $(declare -p "$1" 2>/dev/null) == 'declare -'"$2"* ]] ;}
+__is_hash_literal ()   { __is_array_literal "$1" && [[ ${1// /} == '(['* ]] ;}
+__is_name ()           { declare -p "$1" >/dev/null 2>&1 ;}
+__is_ref ()            { __is_scalar "$1" && __is_name "${!1}" ;}
+__is_scalar ()         { __is_type "$1" - ;}
+__is_set ()            { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
+__is_type ()           { [[ $(declare -p "$1" 2>/dev/null) == 'declare -'"$2"* ]] ;}
 
 keys_of () {
   eval "$(passed '( %hash )' "$@")"
-  local -a results
+  local results=( "${!hash[@]}" )
 
-  results=( "${!hash[@]}" )
   pass results
 }
 
-_literal_declaration_ () {
+__literal_declaration () {
   case $3 in
-    a ) _is_array_literal_  "$2" || return;;
-    A ) _is_hash_literal_   "$2" || return;;
+    a ) __is_array_literal  "$2" || return;;
+    A ) __is_hash_literal   "$2" || return;;
   esac
   declare -"$3" "$1"="$2"
-  _results_+=( "$(declare -p "$1")" )
+  __results+=( "$(declare -p "$1")" )
 }
 
-_map_arg_type_ () {
-  local _parameter_=$1
-  local _argument_=$2
+__map_arg_type () {
+  local __parameter=$1
+  local __argument=$2
 
-  case ${_parameter_:0:1} in
-    '%' ) _array_declaration_  "${_parameter_:1}" "$_argument_" A ;;
-    '&' ) _deref_declaration_  "${_parameter_:1}" "$_argument_"   ;;
-    '*' ) _ref_declaration_    "${_parameter_:1}" "$_argument_"   ;;
-    '@' ) _array_declaration_  "${_parameter_:1}" "$_argument_" a ;;
-    *   ) _scalar_declaration_ "$_parameter_"     "$_argument_"   ;;
+  case ${__parameter:0:1} in
+    '%' ) __array_declaration  "${__parameter:1}" "$__argument" A ;;
+    '&' ) __deref_declaration  "${__parameter:1}" "$__argument"   ;;
+    '*' ) __ref_declaration    "${__parameter:1}" "$__argument"   ;;
+    '@' ) __array_declaration  "${__parameter:1}" "$__argument" a ;;
+    *   ) __scalar_declaration "$__parameter"     "$__argument"   ;;
   esac
 }
 
-_name_from_declaration_ () {
+__name_from_declaration () {
   local name
 
   [[ $1 == 'declare -'*[[:alpha:]_]=* ]] || return
@@ -224,97 +225,69 @@ _name_from_declaration_ () {
   printf '%s\n' ${name##* }
 }
 
-_names_from_declarations_ () {
+__names_from_declarations () {
   local declaration
 
   for declaration in "${declarations[@]}"; do
-    names+=( "$(_name_from_declaration_ "$declaration")" )
+    names+=( "$(__name_from_declaration "$declaration")" )
   done
 }
 
 pass () { declare -p "$1" ;}
 
 passed () {
-  _is_array_ "$1" || _is_array_literal_ "$1" || return
-  if _is_array_ "$1"; then
+  __is_array "$1" || __is_array_literal "$1" || return
+  if __is_array "$1"; then
     set -- "$(declare -p "$1")" "$@"
-    eval "${1/$2/_parameters_}"
+    eval "${1/$2/__parameters}"
     shift
   else
-    local -a _parameters_="$1"
+    local -a __parameters="$1"
   fi
   shift
-  local _results_=()
-  local _arguments_=( "$@" )
-  _process_parameters_ || return
-  _print_joined_ ';' "${_results_[@]}"
+  local __results=()
+  local __arguments=( "$@" )
+  __process_parameters || return
+  __print_joined ';' "${__results[@]}"
 }
 
-_print_joined_ () {
+__print_joined () {
   local IFS=$1; shift
 
   printf '%s\n' "$*"
 }
 
-_process_parameters_ () {
-  local _argument_=''
-  local _i_
-  local _parameter_
+__process_parameters () {
+  local __argument=''
+  local __i
+  local __parameter
 
-  for _i_ in "${!_parameters_[@]}"; do
-    _parameter_=${_parameters_[$_i_]}
-    _contains_ '=' "$_parameter_" && { _argument_=${_parameter_#*=}; _parameter_=${_parameter_%%=*} ;}
-    _is_set_ _arguments_[$_i_] && _argument_=${_arguments_[$_i_]}
-    _map_arg_type_ "$_parameter_" "$_argument_" || return
+  for __i in "${!__parameters[@]}"; do
+    __parameter=${__parameters[$__i]}
+    __contains '=' "$__parameter" && { __argument=${__parameter#*=}; __parameter=${__parameter%%=*} ;}
+    __is_set __arguments[$__i] && __argument=${__arguments[$__i]}
+    __map_arg_type "$__parameter" "$__argument" || return
   done
 }
 
-_ref_declaration_ () {
-  local _parameter_=$1
-  local _argument_=$2
+__ref_declaration () {
+  local __parameter=$1
+  local __argument=$2
 
-  [[ -n $_argument_ ]] || return
-  _is_name_ "$_argument_" || _is_declared_array_ "$_argument_" || _is_declared_hash_ "$_argument_" || _is_declared_scalar_ "$_argument_" || return
-  _is_ref_ "$_argument_" && { _copy_declaration_ "$_argument_" "$_parameter_"; return ;}
-  _copy_declaration_ _argument_ "$_parameter_"
+  [[ -n $__argument ]] || return
+  __is_name "$__argument" || __is_declared_array "$__argument" || __is_declared_hash "$__argument" || __is_declared_scalar "$__argument" || return
+  __is_ref "$__argument" && { __copy_declaration "$__argument" "$__parameter"; return ;}
+  __copy_declaration __argument "$__parameter"
 }
 
-reta () {
-  eval "$(passed '( @_values "*_refa" )' "$@")"
-  local _declaration
+ret () { _ret "$@" ;}
 
-  unset -v "$_refa"
-  _declaration=$(declare -p _values)
-  _declaration=${_declaration#*=}
-  _declaration=${_declaration:1:-1}
-  eval "$(printf '%s=%s' "$_refa" "$_declaration")"
-}
+__scalar_declaration () {
+  local __parameter=$1
+  local __argument=$2
 
-reth () {
-  eval "$(passed '( %_valueh "*_ref" )' "$@")"
-  local _declaration
-
-  unset -v "$_ref"
-  _declaration=$(declare -p _valueh)
-  _declaration=${_declaration#*=}
-  _declaration=${_declaration:1:-1}
-  printf -v _declaration '%s=%s' "$_ref" "$_declaration"
-  eval "$_declaration"
-}
-
-rets () {
-  eval "$(passed '( _value "*_ref" )' "$@")"
-
-  unset -v "$_ref"
-  printf -v "$_ref" '%s' "$_value"
-}
-
-_scalar_declaration_ () {
-  local _parameter_=$1
-  local _argument_=$2
-
-  _is_set_ "$_argument_" && _argument_=${!_argument_}
-  _copy_declaration_ _argument_ "$_parameter_"
+  __is_set "$__argument" && __argument=${!__argument}
+  __copy_declaration __argument "$__parameter"
 }
 
 values_of () {

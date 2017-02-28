@@ -19,8 +19,13 @@ Sorta lets you write Bash functions which:
 
 -   pack/unpack variables into/out of hashes as key-value pairs
 
+-   are able to be imported a la carte via `import.bash`
+
 Basically, sorta is about controlling your variable namespace as much as
 possible. These features are designed to help you do that.
+
+The `import.bash` library is about doing the same for your function
+namespace. See the bottom of this document for information on its usage.
 
 Requires Bash 4.3 or higher.
 
@@ -37,7 +42,7 @@ name.
 Of course this trickery has some consequences, so caveat emptor.
 
 Examples
-========
+--------
 
 <table>
 <thead>
@@ -87,7 +92,6 @@ my_function "$myvar"
 </tr>
 </tbody>
 </table>
-
 Notice the call to `my_function` with the name of the variable, `myvar`,
 rather than the shell expansion. `my_function`, however, doesn't see
 that name, it just gets the already-expanded value `hello` in
@@ -176,7 +180,6 @@ my_function myhash "${myarray[@]}"
 </tr>
 </tbody>
 </table>
-
 You can do this with sorta by adding special type designators to the
 `_params` list:
 
@@ -200,18 +203,24 @@ the array, nor worry about separating other arguments from the array
 elements with `shift` at the receiving side.
 
 Installation
-============
+------------
 
 Clone this repository and place it's `lib` directory on your path.
 
 In your scripts you can then use `source sorta.bash` and it will be
 found automatically.
 
-Usage
-=====
+`import.bash` can also be sourced the same way since it's in the `lib`
+directory as well. See the bottom of this document for information on
+`import`.
 
-Pass Scalar Values (strings)
-----------------------------
+Sorta Usage
+-----------
+
+Notably, `sorta` is not importable with `import` (see below), as it is
+small and coherent enough that it's not meant to be imported by parts.
+
+### Pass Scalar Values (strings and ints)
 
 To write a function which receives variables this way, you need to
 declare a local array of parameter names/types, then eval the output of
@@ -494,7 +503,7 @@ Outputs:
     rain: 3
 
 FAQ
-===
+---
 
 -   *Why?*
 
@@ -558,7 +567,7 @@ FAQ
     when an expansion has occurred, which is occasionally useful.
 
 Sorta API
-=========
+---------
 
 "Accepts literals or variable names" means that the arguments may be
 specified normally, using string literals or expansions for example, or
@@ -622,9 +631,9 @@ double-quotes).
     You must `eval` the output of `froma` to instantiate the
     variables locally.
 
--   **`froms`** *`hash name_or_pattern`* - create declaration
-    statement(s) for named variable or set of variables, values taken
-    from from `hash`
+-   **`froms`** *`hash name_or_pattern`* - create
+    declaration statement(s) for named variable or set of variables,
+    values taken from from `hash`
 
     Accepts literals or variable names.
 
@@ -723,8 +732,8 @@ double-quotes).
 
     *Returns*: a declaration statement on stdout
 
-    Reserves for internal use any variable names starting and ending
-    with underscores, so such names are not allowed in parameter lists.
+    Reserves for internal use any variable names starting with double
+    underscores, so such names are not allowed in parameter lists.
     `passed` does not support such parameter names.
 
     Returns an `eval`able statement to instantiate the given variables
@@ -774,62 +783,163 @@ double-quotes).
 
     You must `eval` the output of `passed` to instantiate the variables.
 
--   **`reta`** *`values_array return_variable`* - directly set an array
-    variable in an outer scope, by name, "returning" the value
+-   **`ret`** *`return_variable string_value|array_name|hash_name`* -
+    return a value via a named return variable
 
-    Accepts an array literal or variable name.
+    *Returns*: the value, in `return_variable`
 
-    *Returns*: the values in `values_array`, directly setting
-    `return_variable`
+    `return_variable` must exist outside of your function scope, usually
+    declared by your function's caller. The existing variable must also
+    be the appropriate type; scalar, array or hash (a.k.a.
+    associative array).
 
-    Allows you to return a value into a named variable in an
-    outer scope. Usually used to receive a return variable name as an
-    argument to a function, then set that variable using `reta`.
+    `return_variable` is therefore usually passed into your function as
+    an argument, which is then passed onto `ret`.
 
-    Note that the variable name must also be declared `local` before
-    calling `reta`. For example, if the variable name has been passed in
-    as `$1`, the following will return the values "one" and "two" into
-    that array:
+    Example:
 
-        local "$1" || return
-        reta '( one two )' "$1"
+          myfunc () {
+            return_variable=$1
 
-    Since `$1`'s value may be malformed for an identifier, there is a
-    return clause to indicate the error to the caller.
+            local "$return_variable" || return
+            ret "$return_variable" 'my value' # pass back a string
+          }
 
-    `reta` prevents name collisions between the outer variable name and
-    the variable names in your function scope.
+    Before calling `ret`, your function must also declare
+    `return_variable` locally, as shown. Since the variable name may not
+    be a valid identifier string, this is usually done with a `return`
+    clause in case it errors. This should only be done right before
+    calling `ret`.
 
--   **`reth`** *`values_hash return_variable_name`* - directly set a
-    hash variable in an outer scope, by name, "returning" the value
+    You could accomplish the same thing without `ret` by using
+    indirection via `local -n ref` or `${!ref}`, but both of these allow
+    the referenced variable name to conflict with your local variables.
+    `ret` prevents naming conflicts with your local variables.
 
-    Accepts a hash literal or variable name.
+    Calling `ret`, however, does unset the named variable in your
+    function's scope. If the variable name is also used by one of your
+    local variables (always possible), then your variable will be unset.
+    Therefore you may not be able to rely on variables after calling
+    `ret`, so you should only do so right before your function returns.
 
-    *Returns*: the values in `values_hash`, directly setting
-    `return_variable`
+    The returned value(s) may be a scalar value, or may be contained in
+    a named array or hash. If passing an array or hash, simply use the
+    variable name as the second argument. If passing back a scalar
+    value, use the value, not its variable name (if stored in
+    a variable).
 
-    Same usage as `reta` above.
+    As a corollary, the `ret` function is unable to pass back the names
+    of arrays or hashes as scalar values. They will always be passed as
+    their array values. Be forewarned.
 
--   **`rets`** *`value return_variable_name`* - directly set a scalar
-    variable in an outer scope, by name, "returning" the value
+    `ret` is based on the discussion \[here\], but is enhanced to pass
+    arrays by name.
 
-    Accepts a literal or variable name.
+    It is also a wrapper for the `_ret` function from \[nano\], which is
+    the actual implementation.
 
-    *Returns*: the values in `value`, directly setting `return_variable`
+import.bash
+===========
 
-    Same usage as `reta` above.
+`import.bash` is another library included with sorta. It allows you to
+write libraries that may have their functions imported a la carte.
 
--   **`values_of`** *`hash`* - create a declaration statement for an
-    array of the values in `hash`
+For example, if you have a library named `my_great_library.bash` which
+has been written with `import` in mind, you can get functions from it
+like so:
 
-    Accepts a hash literal or variable name.
+    source import.bash
 
-    *Returns*: a declaration statement on stdout
+    mgl_imports=(
+      my_great_function1
+      my_great_function2
+    )
+    eval "$(importa my_great_library mgl_imports)"
 
-    Iterates through the keys of `hash`, putting the associated values
-    into a declaration for an array. Usually the output is used as input
-    to `assign` to give it the array name of your choice.
+If `my_great_library.bash` has 100 functions defined, you will only get
+the two you wanted, plus dependencies.
 
-    You must `eval` the output of `assign` to instantiate the array.
+Any functions which are dependencies of `my_great_library` will be
+imported as well, but that is handled automatically at import time by
+some meta-information you add to your library.
+
+There are two primary benefits provided by `import.bash`:
+
+-   it gives you control over the function namespace when sourcing
+    libraries, making it easier to effectively structure your code into
+    libraries or use others' code
+
+-   it provides you a trail back to the source file of functions used in
+    your code. By tying the function name to the source file when the
+    function is imported, you are able to explicitly see where the
+    function came from. This makes it easier to use multiple libraries
+    in your code since you can tell from where functions originated when
+    you need to examine their implementations.
+
+`import.bash` works by opening a subshell, importing the named library,
+and then extracting and `eval`ing the code for the functions you care
+about. Performance may be an issue with large files, since you are
+parsing potentially a large amount of code twice rather than once.
+
+Import Usage
+------------
+
+The basic usage pattern for the consumer of an import-compatible library
+is above. The `imports` function imports an individual function (the "s"
+is for string), while the `importa` function imports an array of
+function names.
+
+The library name may be qualified with its file extension (e.g. `.sh`),
+but if it is not qualified, it will be searched for without an
+extension, then with ".bash" and ".sh" extensions.
+
+Writing libraries which can be imported is the other half of the
+picture. The only requirement is that any dependencies of the library's
+functions are listed in a special variable, `_required_imports`,
+declared by the library.
+
+For example, if you have a function `one` which calls function `two`,
+your library would look like so:
+
+    _required_imports=(
+      two
+    )
+
+    one () {
+      echo "Calling 'two'..."
+      two
+    }
+
+    two () {
+      echo "Hello from 'two'."
+    }
+
+Note that you do not need to source `import.bash`.
+
+The reason is that the `import` functions do not do any dependency
+analysis of their own. Although `one` calls `two` and depends on it to
+succeed, importing `one` won't automatically import `two` if you don't
+import `two` explicitly as well. Because of that, calling `one` will
+fail when it tries to use `two`, unless you include it in your
+`_required_imports`.
+
+The same goes for dependencies satisfied by libraries sourced by your
+library. To make it possible for any function in your library to be
+imported, you will have to determine all of the functions called by any
+of your library's, wherever they have been defined, and list their names
+in `_required_imports` in your library. For example, if `two` had been
+defined in a separated file, it still would have needed to be listed in
+`_required_imports` in the file where `one` is defined.
+
+Anything in `_required_imports` will automatically be imported so the
+consumer of your library won't have to handle that dependency analysis.
+
+This means that if you have a lot of dependencies, you will be getting
+some extra baggage with your imports, so be aware that just because you
+named one function to import, it doesn't mean you won't get others as
+well in the bargain. Still, you're usually keeping your namespace
+cleaner than it would have been if you had imported the entirety of a
+library that only had a handful of functions in which you were actually
+interested.
 
   [dynamic scoping]: https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping_vs._dynamic_scoping

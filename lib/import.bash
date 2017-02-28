@@ -1,4 +1,4 @@
-[[ -n $_import ]] && return
+[[ -n ${_import:-} ]] && return
 readonly _import=loaded
 
 source sorta.bash
