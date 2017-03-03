@@ -1090,7 +1090,7 @@ describe 'ret'
     stub_command _ret 'echo called'
 
     assert equal called "$(ret)"
-    return "$_shpec_failures" ); let "_shpec_failures += $?"
+    return "$_shpec_failures" ); (( _shpec_failures += $? )) ||:
   end
 end
 
