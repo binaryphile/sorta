@@ -200,7 +200,7 @@ __literal_declaration () {
     a ) __is_array_literal  "$2" || return;;
     A ) __is_hash_literal   "$2" || return;;
   esac
-  declare -"$3" "$1"="$2"
+  eval "declare -$3 $1=$2"
   __results+=( "$(declare -p "$1")" )
 }
 
@@ -242,7 +242,7 @@ passed () {
     eval "${1/$2/__parameters}"
     shift
   else
-    local -a __parameters="$1"
+    eval "local -a __parameters=$1"
   fi
   shift
   local __results=()
