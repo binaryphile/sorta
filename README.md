@@ -58,7 +58,7 @@ Regular Bash
 <tbody>
 <tr valign="top">
 <td>
-<pre><code lang="shell">
+<pre><code>
 myvar=hello
 
 my_function () {
@@ -74,7 +74,7 @@ my_function myvar
 </code></pre>
 </td>
 <td>
-<pre><code lang="bash">
+<pre><code>
 myvar=hello
 
 my_function () {
@@ -92,6 +92,7 @@ my_function "$myvar"
 </tr>
 </tbody>
 </table>
+
 Notice the call to `my_function` with the name of the variable, `myvar`,
 rather than the shell expansion. `my_function`, however, doesn't see
 that name, it just gets the already-expanded value `hello` in
@@ -134,7 +135,7 @@ Regular Bash
 <tbody>
 <tr valign="top">
 <td>
-<pre><code lang="shell">
+<pre><code>
 myarray=( zero one )
 declare -A myhash=( [zero]=0 [one]=1 )
 
@@ -156,7 +157,7 @@ my_function myhash myarray
 </code></pre>
 </td>
 <td>
-<pre><code lang="bash">
+<pre><code>
 myarray=( zero one )
 declare -A myhash=( [zero]=0 [one]=1 )
 
@@ -180,6 +181,7 @@ my_function myhash "${myarray[@]}"
 </tr>
 </tbody>
 </table>
+
 You can do this with sorta by adding special type designators to the
 `_params` list:
 

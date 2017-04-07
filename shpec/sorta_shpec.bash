@@ -1,10 +1,18 @@
-library=./shpec-helper.bash
-source "${BASH_SOURCE%/*}/$library" 2>/dev/null || source "$library"
-unset -v library
+source import.bash
+
+shpec_helper_imports=(
+  cleanup
+  initialize_shpec_helper
+  shpec_source
+  stop_on_error
+  validate_dirname
+)
+eval "$(importa shpec-helper shpec_helper_imports)"
+initialize_shpec_helper
+stop_on_error=true
+stop_on_error
 
 shpec_source lib/sorta.bash
-
-stop_on_error=true
 
 describe '__array_declaration'
   it "declares an array from an existing array"
@@ -1098,7 +1106,7 @@ describe 'ret'
     stub_command _ret 'echo called'
 
     assert equal called "$(ret)"
-    return "$_shpec_failures" ); let "_shpec_failures += $?"
+    return "$_shpec_failures" ); (( _shpec_failures += $? )) ||:
   end
 end
 
