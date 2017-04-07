@@ -1,4 +1,4 @@
-set -x
+cat ./shpec/shpec-helper.bash
 
 library=./shpec-helper.bash
 source "${BASH_SOURCE%/*}/$library" 2>/dev/null || source "$library"
