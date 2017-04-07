@@ -1,3 +1,5 @@
+echo $TRAVIS_BUILD_DIR
+
 library=./shpec-helper.bash
 source "${BASH_SOURCE%/*}/$library" 2>/dev/null || source "$library"
 unset -v library
