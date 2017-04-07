@@ -14,7 +14,7 @@ stop_on_error
 
 shpec_source lib/sorta.bash
 
-describe '__array_declaration'
+describe __array_declaration
   it "declares an array from an existing array"
     samples=( one two )
     __results=()
@@ -132,7 +132,7 @@ describe '__array_declaration'
   # end
 end
 
-describe 'assign'
+describe assign
   it "assigns an array result"
     printf -v sample    'declare -a sample=%s([0]="zero" [1]="one")%s' \' \'
     printf -v expected  'declare -a otherv=%s([0]="zero" [1]="one")%s' \' \'
@@ -146,7 +146,7 @@ describe 'assign'
   end
 end
 
-describe 'assigna'
+describe assigna
   it "assigns a set of array results"
     printf -v sample    'declare -a sample=%s([0]="zero" [1]="one")%s;declare -a sample2=%s([0]="three" [1]="four")%s' \' \' \' \'
     printf -v expected  'declare -a other1=%s([0]="zero" [1]="one")%s;declare -a other2=%s([0]="three" [1]="four")%s' \' \' \' \'
@@ -155,7 +155,7 @@ describe 'assigna'
   end
 end
 
-describe '__contains'
+describe __contains
   it "returns true if it finds a string in another string"
     __contains "one" "stones"
     assert equal 0 $?
@@ -169,7 +169,7 @@ describe '__contains'
   end
 end
 
-describe '__copy_declaration'
+describe __copy_declaration
   it "creates a declaration from an existing scalar variable with the supplied variable name"
     __results=()
     sample=one
@@ -187,7 +187,7 @@ describe '__copy_declaration'
   end
 end
 
-describe '__deref_declaration'
+describe __deref_declaration
   it "declares the parameter as dereferencing the argument"
     example=''
     sample=example
@@ -215,7 +215,7 @@ describe '__deref_declaration'
   end
 end
 
-describe 'froma'
+describe froma
   it "imports named keys"
     unset -v zero one
     declare -A sampleh=( [zero]="0" [one]="1" )
@@ -224,7 +224,7 @@ describe 'froma'
   end
 end
 
-describe 'fromh'
+describe fromh
   it "imports a hash key into the current scope given a name"
     unset -v zero
     declare -A sampleh=( [zero]=0 )
@@ -233,7 +233,7 @@ describe 'fromh'
   end
 end
 
-describe 'froms'
+describe froms
   it "imports a hash key into the current scope"
     unset -v zero
     declare -A sampleh=( [zero]=0 )
@@ -259,7 +259,7 @@ describe 'froms'
   end
 end
 
-describe '__includes'
+describe __includes
   it "returns true if a string is in an array"
     unset -v one
     samples=( one two three )
@@ -291,7 +291,7 @@ describe '__includes'
   end
 end
 
-describe 'intoa'
+describe intoa
   it "generates a declaration for a hash with the named keys from the local namespace"
     one=1
     two=2
@@ -309,7 +309,7 @@ describe 'intoa'
   end
 end
 
-describe 'intoh'
+describe intoh
   it "generates a declaration for a hash with the named keys from the local namespace"
     one=1
     two=2
@@ -327,7 +327,7 @@ describe 'intoh'
   end
 end
 
-describe 'intos'
+describe intos
   it "generates a declaration for a hash with the named key from the local namespace"
     one=1
     ref=one
@@ -345,7 +345,7 @@ describe 'intos'
   end
 end
 
-describe '__is_array'
+describe __is_array
   it "returns true if the argument is the name of an array"
     samples=( one )
     __is_array samples
@@ -385,7 +385,7 @@ describe '__is_array'
   end
 end
 
-describe '__is_array_literal'
+describe __is_array_literal
   it "returns true if the argument is a string starting and ending with parentheses"
     __is_array_literal '()'
     assert equal 0 $?
@@ -413,7 +413,7 @@ describe '__is_array_literal'
   end
 end
 
-describe '__is_declared_array'
+describe __is_declared_array
   it "returns true for a declared array"
     unset -v samples
     declare -a samples
@@ -430,7 +430,7 @@ describe '__is_declared_array'
   end
 end
 
-describe '__is_declared_hash'
+describe __is_declared_hash
   it "returns true for a declared array"
     unset -v sampleh
     declare -A sampleh
@@ -447,7 +447,7 @@ describe '__is_declared_hash'
   end
 end
 
-describe '__is_declared_scalar'
+describe __is_declared_scalar
   it "returns true for a declared scalar"
     unset -v sample
     samplef() { local sample; __is_declared_scalar sample ;}
@@ -472,7 +472,7 @@ describe '__is_declared_scalar'
   end
 end
 
-describe '__is_declared_type'
+describe __is_declared_type
   it "returns true for a declared array"
     unset -v samples
     declare -a samples
@@ -490,7 +490,7 @@ describe '__is_declared_type'
 end
 
 
-describe '__is_hash_literal'
+describe __is_hash_literal
   it "returns true for a parenthetical list of indices"
     __is_hash_literal '([one]=1)'
     assert equal 0 $?
@@ -509,7 +509,7 @@ describe '__is_hash_literal'
   end
 end
 
-describe '__is_name'
+describe __is_name
   it "returns true if argument is the name of a scalar"
     sample=one
     __is_name sample
@@ -553,7 +553,7 @@ describe '__is_name'
   end
 end
 
-describe '__is_ref'
+describe __is_ref
   it "returns true if the named variable holds the name of another variable"
     unset -v example
     example=''
@@ -606,7 +606,7 @@ describe '__is_ref'
   end
 end
 
-describe '__is_set'
+describe __is_set
   it "returns true if the argument is the name of a scalar variable"
     sample=one
     __is_set sample
@@ -664,7 +664,7 @@ describe '__is_set'
   end
 end
 
-describe '__is_type'
+describe __is_type
   it "returns true if the arguments are a scalar and a dash"
     sample=one
     __is_type sample -
@@ -756,23 +756,23 @@ describe '__is_type'
   end
 end
 
-describe 'keys_of'
+describe keys_of
   it "declares the keys of a hash"
     declare -A sampleh=([zero]=0 [one]=1)
     expected='declare -a results='\''([0]="one" [1]="zero")'\'
     assert equal "$expected" "$(keys_of sampleh)"
   end
 
-  it "returns the keys of a hash"
-    declare examples=()
-    declare -A sampleh=([zero]=0 [one]=1)
-    keys_of sampleh examples
-    expected='declare -a examples='\''([0]="one" [1]="zero")'\'
-    assert equal "$expected" "$(declare -p examples)"
-  end
+  # it "returns the keys of a hash"
+  #   declare examples=()
+  #   declare -A sampleh=([zero]=0 [one]=1)
+  #   keys_of sampleh examples
+  #   expected='declare -a examples='\''([0]="one" [1]="zero")'\'
+  #   assert equal "$expected" "$(declare -p examples)"
+  # end
 end
 
-describe '__literal_declaration'
+describe __literal_declaration
   it "declares an array from an array literal"
     __results=()
     __literal_declaration array '( one two )' a
@@ -796,7 +796,7 @@ describe '__literal_declaration'
   end
 end
 
-describe '__map_arg_type'
+describe __map_arg_type
   it "creates a hash declaration"
     __results=()
     declare -A sampleh=()
@@ -853,7 +853,7 @@ describe '__map_arg_type'
   end
 end
 
-describe '__name_from_declaration'
+describe __name_from_declaration
   it "returns the name of a simple declaration"
     result=$(__name_from_declaration 'declare -- sample="one"')
     assert equal sample "$result"
@@ -867,7 +867,7 @@ describe '__name_from_declaration'
   end
 end
 
-describe '__names_from_declarations'
+describe __names_from_declarations
   it "returns the name of a single declaration in 'names'"
     declarations=( 'declare -- sample="one"' )
     names=()
@@ -886,14 +886,14 @@ describe '__names_from_declarations'
   end
 end
 
-describe 'pass'
+describe pass
   it "declares a variable"
     sample=var
     assert equal 'declare -- sample="var"' "$(pass sample)"
   end
 end
 
-describe 'passed'
+describe passed
   it "creates a scalar declaration from an array naming a single parameter with the value passed after"
     set -- 0
     params=( zero )
@@ -1010,13 +1010,13 @@ describe 'passed'
   end
 end
 
-describe '__print_joined'
+describe __print_joined
   it "prints arguments joined by a delimiter"
     assert equal 'one;two' "$(__print_joined ';' one two)"
   end
 end
 
-describe '__process_parameters'
+describe __process_parameters
   it "creates a scalar declaration from an array naming a single parameter with the value passed after"
     __results=()
     __arguments=( 0 )
@@ -1068,7 +1068,7 @@ describe '__process_parameters'
   end
 end
 
-describe '__ref_declaration'
+describe __ref_declaration
   it "declares a scalar with the name of a variable with a normal value"
     unset -v one
     sample=one
@@ -1101,7 +1101,7 @@ describe '__ref_declaration'
   end
 end
 
-describe 'ret'
+describe ret
   it "calls _ret"; (
     stub_command _ret 'echo called'
 
@@ -1110,7 +1110,7 @@ describe 'ret'
   end
 end
 
-describe '__scalar_declaration'
+describe __scalar_declaration
   it "declares a scalar with a supplied value"
     unset -v sample
     __results=()
@@ -1154,7 +1154,7 @@ describe '__scalar_declaration'
   end
 end
 
-describe 'values_of'
+describe values_of
   it "declares the values of a hash"
     declare -A sampleh=([zero]=0 [one]=1)
     printf -v expected 'declare -a results=%s([0]="1" [1]="0")%s' \' \'

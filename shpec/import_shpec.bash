@@ -1,5 +1,3 @@
-echo $TRAVIS_BUILD_DIR
-
 library=./shpec-helper.bash
 source "${BASH_SOURCE%/*}/$library" 2>/dev/null || source "$library"
 unset -v library
@@ -21,9 +19,9 @@ describe 'importa'
               filename=$(basename path);
               path=$(dirname path)
           };
-          is_directory path || return 1;
-          result=$( ( cd "$path"; pwd ) ) || return;
-          puts "$result${filename:+/}${filename:-}"
+          is_directory path || return;
+          path=$(cd "$path"; pwd) || return;
+          puts "$path${filename:+/}${filename:-}"
       }
       dirname () 
       { 
@@ -48,6 +46,17 @@ describe 'importa'
       { 
           eval "$(passed '( message )' "$@")";
           printf '%s\n' "$message"
+      }
+      putserr () 
+      { 
+          eval "$(passed '( message )' "$@")";
+          puts message 1>&2
+      }
+      shpec_cleanup () 
+      { 
+          eval "$(passed '( path )' "$@")";
+          validate_dirname path || return;
+          $rm "$path"
       }
       validate_dirname () 
       { 
@@ -78,9 +87,9 @@ describe 'imports'
               filename=$(basename path);
               path=$(dirname path)
           };
-          is_directory path || return 1;
-          result=$( ( cd "$path"; pwd ) ) || return;
-          puts "$result${filename:+/}${filename:-}"
+          is_directory path || return;
+          path=$(cd "$path"; pwd) || return;
+          puts "$path${filename:+/}${filename:-}"
       }
       dirname () 
       { 
@@ -105,6 +114,17 @@ describe 'imports'
       { 
           eval "$(passed '( message )' "$@")";
           printf '%s\n' "$message"
+      }
+      putserr () 
+      { 
+          eval "$(passed '( message )' "$@")";
+          puts message 1>&2
+      }
+      shpec_cleanup () 
+      { 
+          eval "$(passed '( path )' "$@")";
+          validate_dirname path || return;
+          $rm "$path"
       }
       validate_dirname () 
       { 
