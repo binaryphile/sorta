@@ -8,6 +8,11 @@ v0 in semver parlance.
 [v11.10.11] - 2017-04-08
 ------------------------
 
+### Added
+
+-   Compatibility with Bash 4.3.11 (Ubuntu precise default, for Travis
+    CI)
+
 ### Changed
 
 -   prefer (()) to [let]
