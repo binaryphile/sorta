@@ -45,8 +45,11 @@ __contains () { [[ $2 == *"$1"* ]] ;}
 
 __copy_declaration () {
   __is_name "$1" || return
-  set -- "$1" "$2" "$(declare -p "$1")"
-  __results+=( "${3/$1/$2}" )
+  set -- "$(declare -p "$1")" "$@"
+  set -- "${1%%=*}=" "${1#*=}" "${@:2}"
+  set -- "$1" "${2#\'}" "${@:3}"
+  set -- "$1" "${2%\'}" "${@:3}"
+  __results+=( "${1/$3/$4}$2" )
 }
 
 __deref_declaration () {
@@ -200,8 +203,12 @@ __literal_declaration () {
     a ) __is_array_literal  "$2" || return;;
     A ) __is_hash_literal   "$2" || return;;
   esac
-  declare -"$3" "$1"="$2"
-  __results+=( "$(declare -p "$1")" )
+  eval "declare -$3 $1=$2"
+  set -- "$(declare -p "$1")"
+  set -- "${1%%=*}=" "${1#*=}"
+  set -- "$1" "${2%\'}"
+  set -- "$1" "${2#\'}"
+  __results+=( "$1$2" )
 }
 
 __map_arg_type () {
@@ -239,10 +246,12 @@ passed () {
   __is_array "$1" || __is_array_literal "$1" || return
   if __is_array "$1"; then
     set -- "$(declare -p "$1")" "$@"
-    eval "${1/$2/__parameters}"
+    set -- "${1#*=\'}" "${@:2}"
+    set -- "${1%\'}" "${@:2}"
+    eval "local -a __parameters=$1"
     shift
   else
-    local -a __parameters="$1"
+    eval "local -a __parameters=$1"
   fi
   shift
   local __results=()
