@@ -1,5 +1,5 @@
-Sane Parameter Handling in Bash, Sorta
-======================================
+Sane Parameter Handling in Bash, Sorta [![Build Status]]
+========================================================
 
 Sorta lets you write Bash functions which:
 
@@ -654,8 +654,8 @@ double-quotes).
     creates a compound declaration as above but with the prefix on the
     resulting variable names.
 
-    You must `eval` the output of `froms` to instantiate the variable(s)
-    locally.
+    You must `eval` the output of `froms` to instantiate the
+    variable(s) locally.
 
 -   **`intoa`** *`hash keys [return_variable]`* - return a hash which
     includes the variables named in `keys` as new keys
@@ -973,4 +973,6 @@ cleaner than it would have been if you had imported the entirety of a
 library that only had a handful of functions in which you were actually
 interested.
 
+  [Build Status]: https://travis-ci.org/binaryphile/sorta.svg?branch=master
+  [![Build Status]]: https://travis-ci.org/binaryphile/sorta
   [dynamic scoping]: https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping_vs._dynamic_scoping
