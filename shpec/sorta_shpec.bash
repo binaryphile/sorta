@@ -19,14 +19,14 @@ describe __array_declaration
     samples=( one two )
     __results=()
     __array_declaration array samples a
-    printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+    expected='declare -a array=([0]="one" [1]="two")'
     assert equal "$expected" "${__results[0]}"
   end
 
   it "passes a literal declaration to _literal_declaration_"
     __results=()
     __array_declaration array '( one two )' a
-    printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+    expected='declare -a array=([0]="one" [1]="two")'
     assert equal "$expected" "${__results[0]}"
   end
 
@@ -34,7 +34,7 @@ describe __array_declaration
     declare -A sampleh=( [one]=1 [two]=2 )
     __results=()
     __array_declaration hash sampleh A
-    printf -v expected 'declare -A hash=%s([one]="1" [two]="2" )%s' \' \'
+    expected='declare -A hash=([one]="1" [two]="2" )'
     assert equal "$expected" "${__results[0]}"
   end
 
@@ -85,7 +85,7 @@ describe __array_declaration
     __arguments=( one two )
     __results=()
     __array_declaration array __arguments a
-    printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+    expected='declare -a array=([0]="one" [1]="two")'
     assert equal "$expected" "${__results[0]}"
   end
 
@@ -110,7 +110,7 @@ describe __array_declaration
     __parameters=( one two )
     __results=()
     __array_declaration array __parameters a
-    printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+    expected='declare -a array=([0]="one" [1]="two")'
     assert equal "$expected" "${__results[0]}"
   end
 
@@ -776,14 +776,14 @@ describe __literal_declaration
   it "declares an array from an array literal"
     __results=()
     __literal_declaration array '( one two )' a
-    printf -v expected 'declare -a array=%s([0]="one" [1]="two")%s' \' \'
+    expected='declare -a array=([0]="one" [1]="two")'
     assert equal "$expected" "${__results[0]}"
   end
 
   it "declares a hash from a hash literal"
     __results=()
     __literal_declaration hash '( [one]=1 [two]=2 )' A
-    printf -v expected 'declare -A hash=%s([one]="1" [two]="2" )%s' \' \'
+    expected='declare -A hash=([one]="1" [two]="2" )'
     assert equal "$expected" "${__results[0]}"
   end
 
@@ -801,7 +801,7 @@ describe __map_arg_type
     __results=()
     declare -A sampleh=()
     __map_arg_type %resulth sampleh
-    printf -v expected 'declare -A resulth=%s()%s' \' \'
+    expected='declare -A resulth=()'
     assert equal "$expected" "${__results[0]}"
   end
 
@@ -824,7 +824,7 @@ describe __map_arg_type
     __results=()
     samples=()
     __map_arg_type @res samples
-    printf -v expected 'declare -a res=%s()%s' \' \'
+    expected='declare -a res=()'
     assert equal "$expected" "${__results[0]}"
   end
 
