@@ -1,5 +1,5 @@
-Sane Parameter Handling in Bash, Sorta [![Build Status]]
-========================================================
+Sane Parameter Handling in Bash, Sorta [![Build Status](https://travis-ci.org/binaryphile/sorta.svg?branch=master)](https://travis-ci.org/binaryphile/sorta)
+======================================
 
 Sorta lets you write Bash functions which:
 
