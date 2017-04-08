@@ -973,6 +973,4 @@ cleaner than it would have been if you had imported the entirety of a
 library that only had a handful of functions in which you were actually
 interested.
 
-  [Build Status]: https://travis-ci.org/binaryphile/sorta.svg?branch=master
-  [![Build Status]]: https://travis-ci.org/binaryphile/sorta
   [dynamic scoping]: https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping_vs._dynamic_scoping
