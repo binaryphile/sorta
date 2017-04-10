@@ -1,4 +1,13 @@
-source shpec-helper.bash
+source import.bash
+
+shpec_helper_imports=(
+  cleanup
+  initialize_shpec_helper
+  shpec_cwd
+  stop_on_error
+  validate_dirname
+)
+eval "$(importa shpec-helper shpec_helper_imports)"
 initialize_shpec_helper
 stop_on_error=true
 stop_on_error
