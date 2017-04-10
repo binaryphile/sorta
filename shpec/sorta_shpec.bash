@@ -1,18 +1,9 @@
-source import.bash
-
-shpec_helper_imports=(
-  cleanup
-  initialize_shpec_helper
-  shpec_source
-  stop_on_error
-  validate_dirname
-)
-eval "$(importa shpec-helper shpec_helper_imports)"
+source shpec-helper.bash
 initialize_shpec_helper
 stop_on_error=true
 stop_on_error
 
-shpec_source lib/sorta.bash
+source "$(shpec_cwd)"/../lib/sorta.bash
 
 describe __array_declaration
   it "declares an array from an existing array"
@@ -30,12 +21,14 @@ describe __array_declaration
     assert equal "$expected" "${__results[0]}"
   end
 
-  it "declares a hash from an existing hash"
+  it "declares a hash from an existing hash"; (
+    _shpec_failures=0
     declare -A sampleh=( [one]=1 [two]=2 )
     __results=()
     __array_declaration hash sampleh A
-    expected='declare -A hash=([one]="1" [two]="2" )'
-    assert equal "$expected" "${__results[0]}"
+    eval "${__results[0]}"
+    assert equal 12 "${hash[one]}${hash[two]}"
+    return "$_shpec_failures" ); (( _shpec_failures += $? )) ||:
   end
 
   it "errors on an array with a hash option"
@@ -292,56 +285,70 @@ describe __includes
 end
 
 describe intoa
-  it "generates a declaration for a hash with the named keys from the local namespace"
+  it "generates a declaration for a hash with the named keys from the local namespace"; (
+    _shpec_failures=0
     one=1
     two=2
     declare -A hash=()
-    printf -v expected 'declare -A hash=%s([one]="1" [two]="2" )%s' \' \'
-    assert equal "$expected" "$(intoa hash '( one two )')"
+    expected='declare -A hash=([one]="1" [two]="2" )'
+    eval "$(intoa hash '( one two )')"
+    assert equal 12 "${hash[one]}${hash[two]}"
+    return "$_shpec_failures" ); (( _shpec_failures += $? )) ||:
   end
 
-  it "generates a declaration for a hash merging the named keys with the existing key(s)"
+  it "generates a declaration for a hash merging the named keys with the existing key(s)"; (
+    _shpec_failures=0
     one=1
     two=2
     declare -A sampleh=([three]=3)
-    printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" [three]="3" )%s' \' \'
-    assert equal "$expected" "$(intoa sampleh '( one two )')"
+    eval "$(intoa sampleh '( one two )')"
+    assert equal 123 "${sampleh[one]}${sampleh[two]}${sampleh[three]}"
+    return "$_shpec_failures" ); (( _shpec_failures += $? )) ||:
   end
 end
 
 describe intoh
-  it "generates a declaration for a hash with the named keys from the local namespace"
+  it "generates a declaration for a hash with the named keys from the local namespace"; (
+    _shpec_failures=0
     one=1
     two=2
     declare -A hash=()
-    printf -v expected 'declare -A hash=%s([dumpty]="2" [humpty]="1" )%s' \' \'
-    assert equal "$expected" "$(intoh hash '( [one]=humpty [two]=dumpty )')"
+    eval "$(intoh hash '( [one]=humpty [two]=dumpty )')"
+    assert equal 12 "${hash[humpty]}${hash[dumpty]}"
+    return "$_shpec_failures" ); (( _shpec_failures += $? )) ||:
   end
 
-  it "generates a declaration for a hash merging the named keys with the existing key(s)"
+  it "generates a declaration for a hash merging the named keys with the existing key(s)"; (
+    _shpec_failures=0
     one=1
     two=2
     declare -A sampleh=([three]=3)
-    printf -v expected 'declare -A sampleh=%s([dumpty]="2" [humpty]="1" [three]="3" )%s' \' \'
-    assert equal "$expected" "$(intoh sampleh '( [one]=humpty [two]=dumpty )')"
+    eval "$(intoh sampleh '( [one]=humpty [two]=dumpty )')"
+    assert equal 123 "${sampleh[humpty]}${sampleh[dumpty]}${sampleh[three]}"
+    return "$_shpec_failures" ); (( _shpec_failures += $? )) ||:
   end
 end
 
 describe intos
-  it "generates a declaration for a hash with the named key from the local namespace"
+  it "generates a declaration for a hash with the named key from the local namespace"; (
+    _shpec_failures=0
     one=1
     ref=one
     declare -A hash=()
-    printf -v expected 'declare -A hash=%s([one]="1" )%s' \' \'
-    assert equal "$expected" "$(intos hash ref)"
+    eval "$(intos hash ref)"
+    assert equal 1 "${hash[one]}"
+    return "$_shpec_failures" ); (( _shpec_failures += $? )) ||:
   end
 
-  it "generates a declaration for a hash merging the named key with the existing key(s)"
+  it "generates a declaration for a hash merging the named key with the existing key(s)"; (
+    _shpec_failures=0
     one=1
     ref=one
     declare -A sampleh=([two]=2)
     printf -v expected 'declare -A sampleh=%s([one]="1" [two]="2" )%s' \' \'
-    assert equal "$expected" "$(intos sampleh ref)"
+    eval "$(intos sampleh ref)"
+    assert equal 12 "${sampleh[one]}${sampleh[two]}"
+    return "$_shpec_failures" ); (( _shpec_failures += $? )) ||:
   end
 end
 
@@ -757,10 +764,12 @@ describe __is_type
 end
 
 describe keys_of
-  it "declares the keys of a hash"
+  it "declares the keys of a hash"; (
+    _shpec_failures=0
     declare -A sampleh=([zero]=0 [one]=1)
-    expected='declare -a results='\''([0]="one" [1]="zero")'\'
-    assert equal "$expected" "$(keys_of sampleh)"
+    eval "$(keys_of sampleh)"
+    assert equal 'one zero' "${results[*]}"
+    return "$_shpec_failures" ); (( _shpec_failures += $?)) ||:
   end
 
   # it "returns the keys of a hash"
@@ -780,11 +789,13 @@ describe __literal_declaration
     assert equal "$expected" "${__results[0]}"
   end
 
-  it "declares a hash from a hash literal"
+  it "declares a hash from a hash literal"; (
+    _shpec_failures=0
     __results=()
     __literal_declaration hash '( [one]=1 [two]=2 )' A
-    expected='declare -A hash=([one]="1" [two]="2" )'
-    assert equal "$expected" "${__results[0]}"
+    eval "${__results[0]}"
+    assert equal 12 "${hash[one]}${hash[two]}"
+    return "$_shpec_failures" ); (( _shpec_failures += $? )) ||:
   end
 
   it "errors on an array literal with a hash option"
@@ -868,12 +879,13 @@ describe __name_from_declaration
 end
 
 describe __names_from_declarations
-  it "returns the name of a single declaration in 'names'"
+  it "returns the name of a single declaration in 'names'"; (
+    _shpec_failures=0
     declarations=( 'declare -- sample="one"' )
     names=()
     __names_from_declarations
-    printf -v expected 'declare -a names=%s([0]="sample")%s' \' \'
-    assert equal "$expected" "$(declare -p names)"
+    assert equal sample "${names[0]}"
+    return "$_shpec_failures" ); (( _shpec_failures += $? )) ||:
   end
 
   it "errors on a declaration missing an equals sign"
@@ -1155,9 +1167,11 @@ describe __scalar_declaration
 end
 
 describe values_of
-  it "declares the values of a hash"
+  it "declares the values of a hash"; (
+    _shpec_failures=0
     declare -A sampleh=([zero]=0 [one]=1)
-    printf -v expected 'declare -a results=%s([0]="1" [1]="0")%s' \' \'
-    assert equal "$expected" "$(values_of sampleh)"
+    eval "$(values_of sampleh)"
+    assert equal '1 0' "${results[*]}"
+    return "$_shpec_failures" ); (( _shpec_failures += $? )) ||:
   end
 end
