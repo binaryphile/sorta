@@ -5,6 +5,22 @@ The format is based on [Keep a Changelog] and this project adheres to
 [Semantic Versioning], with the minor exception that v10 is considered
 v0 in semver parlance.
 
+[v11.10.12] - 2017-04-10
+------------------------
+
+### Added
+
+-   bash 4.4 compatibility
+
+### Changed
+
+-   `all-shpecs` script echoes command before output instead of all at
+    top
+
+### Fixed
+
+-   `all-shpecs` script invokes bash directly
+
 [v11.10.11] - 2017-04-08
 ------------------------
 
@@ -60,6 +76,7 @@ v0 in semver parlance.
 
   [Keep a Changelog]: http://keepachangelog.com/
   [Semantic Versioning]: http://semver.org/
+  [v11.10.12]: https://github.com/binaryphile/sorta/compare/v11.10.11...v11.10.12
   [v11.10.11]: https://github.com/binaryphile/sorta/compare/v11.10.10...v11.10.11
   [let]: http://wiki.bash-hackers.org/commands/builtin/let
   [v11.10.10]: https://github.com/binaryphile/sorta/compare/v10.11.10...v11.10.10
