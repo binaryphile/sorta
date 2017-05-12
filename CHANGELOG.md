@@ -2,8 +2,10 @@ Change Log
 ==========
 
 The format is based on [Keep a Changelog] and this project adheres to
-[Semantic Versioning], with the minor exception that v10 is considered
-v0 in semver parlance.
+[Semantic Versioning].
+
+Latest Changes
+==============
 
 [v11.10.12] - 2017-04-10
 ------------------------
@@ -53,6 +55,9 @@ v0 in semver parlance.
 ### Deprecated
 
 -   the old `retx` functions
+
+Older Changes
+=============
 
 [v10.11.10] - 2017-02-23
 ------------------------
