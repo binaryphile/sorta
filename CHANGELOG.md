@@ -7,8 +7,15 @@ The format is based on [Keep a Changelog] and this project adheres to
 Latest Changes
 ==============
 
-[v11.10.12] - 2017-04-10
-------------------------
+[v1.0.3] - 2017-05-12
+---------------------
+
+### Changed
+
+-   revert to normal versioning
+
+[v1.0.2] - 2017-04-10
+---------------------
 
 ### Added
 
@@ -23,8 +30,8 @@ Latest Changes
 
 -   `all-shpecs` script invokes bash directly
 
-[v11.10.11] - 2017-04-08
-------------------------
+[v1.0.1] - 2017-04-08
+---------------------
 
 ### Added
 
@@ -37,8 +44,11 @@ Latest Changes
 
 -   update license to 2017
 
-[v11.10.10] - 2017-02-28
-------------------------
+Older Changes
+=============
+
+[v1.0.0] - 2017-02-28
+---------------------
 
 ### Added
 
@@ -56,11 +66,8 @@ Latest Changes
 
 -   the old `retx` functions
 
-Older Changes
-=============
-
-[v10.11.10] - 2017-02-23
-------------------------
+[v0.3.0] - 2017-02-23
+---------------------
 
 ### Added
 
@@ -72,8 +79,8 @@ Older Changes
 
 -   clarified README with better examples
 
-[v10.10.11] - 2017-01-31
-------------------------
+[v0.2.1] - 2017-01-31
+---------------------
 
 ### Added
 
@@ -81,10 +88,11 @@ Older Changes
 
   [Keep a Changelog]: http://keepachangelog.com/
   [Semantic Versioning]: http://semver.org/
-  [v11.10.12]: https://github.com/binaryphile/sorta/compare/v11.10.11...v11.10.12
-  [v11.10.11]: https://github.com/binaryphile/sorta/compare/v11.10.10...v11.10.11
+  [v1.0.3]: https://github.com/binaryphile/sorta/compare/v1.0.2...v1.0.3
+  [v1.0.2]: https://github.com/binaryphile/sorta/compare/v1.0.1...v1.0.2
+  [v1.0.1]: https://github.com/binaryphile/sorta/compare/v1.0.0...v1.0.1
   [let]: http://wiki.bash-hackers.org/commands/builtin/let
-  [v11.10.10]: https://github.com/binaryphile/sorta/compare/v10.11.10...v11.10.10
+  [v1.0.0]: https://github.com/binaryphile/sorta/compare/v0.3.0...v1.0.0
   [nano]: https://github.com/binaryphile/nano
-  [v10.11.10]: https://github.com/binaryphile/sorta/compare/v10.10.11...v10.11.10
-  [v10.10.11]: https://github.com/binaryphile/sorta/compare/v10.10.10...v10.10.11
+  [v0.3.0]: https://github.com/binaryphile/sorta/compare/v0.2.1...v0.3.0
+  [v0.2.1]: https://github.com/binaryphile/sorta/compare/v0.2.0...v0.2.1
