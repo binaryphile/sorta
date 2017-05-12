@@ -178,7 +178,7 @@ __is_declared_type () {
   local declarations=()
   local names=()
 
-  __is_name "$2" && return
+  __is_type "$2" "$1" && return
   IFS=$'\n' read -rd '' -a declarations <<<"$(declare -"$option")" ||:
   __names_from_declarations
   __includes "$name" names
@@ -188,7 +188,7 @@ __is_hash_literal ()   { __is_array_literal "$1" && [[ ${1// /} == '(['* ]] ;}
 __is_name ()           { declare -p "$1" >/dev/null 2>&1 ;}
 __is_ref ()            { __is_scalar "$1" && __is_name "${!1}" ;}
 __is_scalar ()         { __is_type "$1" - ;}
-__is_set ()            { [[ $1 == [[:alpha:]_]* && ${!1+x} == 'x' ]] ;}
+__is_set ()            { local __expression='^[[:alpha:]_][][[:alnum:]_]*$'; [[ $1 =~ $__expression && ${!1+x} == 'x' ]] ;}
 __is_type ()           { [[ $(declare -p "$1" 2>/dev/null) == 'declare -'"$2"* ]] ;}
 
 keys_of () {
@@ -246,7 +246,8 @@ passed () {
   __is_array "$1" || __is_array_literal "$1" || return
   if __is_array "$1"; then
     set -- "$(declare -p "$1")" "$@"
-    set -- "${1#*=\'}" "${@:2}"
+    set -- "${1#*=}" "${@:2}"
+    set -- "${1#\'}" "${@:2}"
     set -- "${1%\'}" "${@:2}"
     eval "local -a __parameters=$1"
     shift
