@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog] and this project adheres to
 Latest Changes
 ==============
 
-[v1.0.3] - 2017-05-12
+[v1.0.4] - 2017-05-12
 ---------------------
 
 ### Changed
